@@ -1,6 +1,6 @@
 import Homepage from "./pages/Homepage";
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
-
+import LeaveEntitlementPage from "./pages/LeaveEntitlementPage";
 
 function App() {
   return (
@@ -8,6 +8,7 @@ function App() {
       <Router>
         <Routes>
           <Route exact path = '/' element={<Homepage/>}/>
+          <Route exact path = '/entitlement' element={<LeaveEntitlementPage/>}/>
         </Routes>
       </Router>
     </div>
