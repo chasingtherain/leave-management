@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Select from '../components/layout/Select'
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import RadioSelection from '../components/layout/RadioSelection';
 
 function ApplyLeavePage() {
     const leaveOptions = [
@@ -26,6 +27,7 @@ function ApplyLeavePage() {
 
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
+    const [checkBoxStatus, setCheckBoxStatus] = useState(false)
   return (
     <form className="" onSubmit="">
         <div className="text-3xl text-center mt-8 text-gray-800">
@@ -40,14 +42,18 @@ function ApplyLeavePage() {
                 <label for="remarks" class="text-lg font-weight-900 mr-4 label">Leave Dates</label>
                 <div className='flex'>
                     <div>
-                        <label for="remarks" class="text-sm mr-4">Start Date</label>
-                        <ReactDatePicker className='border-2 border-secondary active:border-primary' selected={startDate} onChange={(date) => setStartDate(date)} />
+                        <label for="start date" class="text-sm mr-4">Start Date</label>
+                        <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={startDate} onChange={(date) => setStartDate(date)} />
+                        <RadioSelection id="startDateRadio"/>
                     </div>
-                    <div>
+                    <div className='mx-8'>
                         <label for="remarks" class="text-sm mr-4">End Date</label>
-                        <ReactDatePicker className='border-2 border-secondary active:border-primary' selected={endDate} onChange={(date) => setEndDate(date)} />
+                        <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={endDate} onChange={(date) => setEndDate(date)} />
+                        <RadioSelection id="endDateRadio"/>
                     </div>
                 </div>
+                <p className='text-sm mt-3'>You have selected X number of days of leaveType.</p>
+                <p className='text-sm'>Balance of: X days for leaveType</p>
             </div>
 
             <div className="my-4">
@@ -73,7 +79,7 @@ function ApplyLeavePage() {
             </div>
             <div class="flex items-center">
                 <label class="cursor-pointer label">
-                    <input type="checkbox" checked="checked" class="checkbox checkbox-secondary mr-2" />
+                    <input type="checkbox" checked={checkBoxStatus} onClick={() => setCheckBoxStatus(!checkBoxStatus)} class="checkbox checkbox-secondary mr-2" />
                 </label>
                 <div>   
                     <p class="label-text">I declare that my covering officer has agreed to cover my duties during my leave period. </p>
