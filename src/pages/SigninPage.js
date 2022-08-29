@@ -43,8 +43,6 @@ function SigninPage() {
                             <p className='text-red-600'>Sign up below if you haven done so.</p>
                         </>
                     }
-                    
-                    {/* <Link to="/forgot-password" className='text-secondary'>Forgot password?</Link> */}
                 </div>
             </div>
         </div>
