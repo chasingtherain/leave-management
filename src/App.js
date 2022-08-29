@@ -5,6 +5,7 @@ import Navbar from "./components/layout/Navbar";
 import ApplyLeavePage from "./pages/ApplyLeavePage";
 import SigninPage from "./pages/SigninPage";
 import ProfilePage from "./pages/ProfilePage";
+import UserManagementPage from "./pages/UserManagementPage";
 
 function App() {
   return (
@@ -16,7 +17,9 @@ function App() {
             <Route path = '/entitlement' element={<LeaveEntitlementPage/>}/>
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
             <Route path = '/sign-in' element={<SigninPage/>}/>
+            {/* private routes */}
             <Route path = '/profile' element={<ProfilePage/>}/>
+            <Route path = '/user-management' element={<UserManagementPage/>}/>
           </Routes>
         </Router>
     </>

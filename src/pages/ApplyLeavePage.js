@@ -30,8 +30,9 @@ function ApplyLeavePage() {
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
   return (
     <form className="" onSubmit="">
-        <div className="text-3xl text-center mt-8 text-gray-800">
-            Apply Leave 请假
+        <div className='grid place-items-center mt-8 mb-6'>
+            <p className='text-slate-600 text-3xl'>Apple <span className="text-sky-500">Leave</span> </p>
+            <p className='text-slate-600 text-3xl'>请<span className="text-sky-500">假</span> </p>
         </div>
         <div className="w-full px-5 py-8 ml-[35%]">
             <div className="my-4">

@@ -5,7 +5,7 @@ function ProfilePage() {
     return (
         <div>
             <div className="flex flex-col w-full border-opacity-50">
-                <div className='grid place-items-center mt-10 mb-8'>
+                <div className='grid place-items-center mt-8 mb-6'>
                     <p className='text-slate-600 text-3xl'>Profile <span className="text-sky-500">Page</span> </p>
                     <p className='text-slate-600 text-3xl'>个人 <span className="text-sky-500">信息</span> </p>
                 </div>
