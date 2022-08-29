@@ -10,7 +10,12 @@ function Tab() {
     }
     return (
     <div class="tabs">
-        {tabNames.map(tab => <Link to='' key={tab} id={tab} className={active === tab ? 'tab tab-lifted tab-active text-lg' : 'tab tab-lifted text-lg'} onClick={handleActiveTabClick}>{tab}</Link> )}
+        {tabNames.map(tab => <Link 
+            to='' 
+            key={tab} 
+            id={tab} 
+            className={active === tab ? 'tab tab-lifted tab-active text-lg' : 'tab tab-lifted text-lg'} 
+            onClick={handleActiveTabClick}>{tab}</Link> )}
     </div>
     )
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Tab from '../components/layout/Tab'
 import Table from '../components/layout/Table'
 import { useMainContext } from '../hooks/useMainContext'
@@ -7,7 +8,12 @@ function Homepage() {
     const {active} = useMainContext()
     return (
     <div>
-        <Tab/>
+        <div className='flex justify-between'> 
+            <Tab/>
+            <Link to="/apply-leave">
+                <button className='btn btn-primary mt-6 mr-6 px-12 text-lg'>Apply for Leave</button>
+            </Link>
+        </div>
         {/* based on user action, display active tab in homepage */}
         {active === "Home" ? 
             (
