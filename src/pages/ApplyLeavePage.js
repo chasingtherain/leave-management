@@ -35,19 +35,19 @@ function ApplyLeavePage() {
         </div>
         <div className="w-full px-5 py-8 ml-[35%]">
             <div className="my-4">
-                <label for="remarks" class="text-lg font-weight-900 mr-4 label">Leave Type</label>
+                <label for="remarks" class="text-lg font-weight-900 -ml-1 label">Leave Type</label>
                 <Select options={leaveOptions}/>
             </div>
             <div className="my-4">
-                <label for="remarks" class="text-lg font-weight-900 mr-4 label">Leave Dates</label>
+                <label for="remarks" class="text-lg font-weight-900 -ml-1 label">Leave Dates</label>
                 <div className='flex'>
                     <div>
-                        <label for="start date" class="text-sm mr-4">Start Date</label>
+                        <label for="start date" class="text-sm">Start Date</label>
                         <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={startDate} onChange={(date) => setStartDate(date)} />
                         <RadioSelection id="startDateRadio"/>
                     </div>
                     <div className='mx-8'>
-                        <label for="remarks" class="text-sm mr-4">End Date</label>
+                        <label for="remarks" class="text-sm">End Date</label>
                         <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={endDate} onChange={(date) => setEndDate(date)} />
                         <RadioSelection id="endDateRadio"/>
                     </div>
@@ -63,22 +63,22 @@ function ApplyLeavePage() {
                 </textarea> */}
             </div>
             <div>
-                <label for="RO" class="text-lg font-weight-900 label">Supporting documents / 证明</label>
+                <label for="RO" class="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
                 <p className='text-xs'> MC is compulsory / 病假单必上传</p>
                 <button className="btn btn-xs text-white text-center text-sm mt-2">
                     Upload
                 </button>
             </div>
             <div className="my-4">
-                <label for="RO" class="text-lg font-weight-900 mr-4 label">Reporting Officer</label>
+                <label for="RO" class="text-lg font-weight-900 -ml-1 label">Reporting Officer</label>
                 <input id="RO" type="text" disabled class="input input-bordered input-primary w-full max-w-xs" value="Shen Yun Xi"/>
             </div>
             <div className="my-4">
-                <label for="CO" class="text-lg font-weight-900 mr-4 label">Covering Officer</label>
+                <label for="CO" class="text-lg font-weight-900 -ml-1 label">Covering Officer</label>
                 <input id="CO" type="text" disabled class="input input-bordered input-primary w-full max-w-xs" value="He Hua"/>
             </div>
             <div class="flex items-center">
-                <label class="cursor-pointer label">
+                <label class="cursor-pointer label -ml-1">
                     <input type="checkbox" checked={checkBoxStatus} onClick={() => setCheckBoxStatus(!checkBoxStatus)} class="checkbox checkbox-secondary mr-2" />
                 </label>
                 <div>   
