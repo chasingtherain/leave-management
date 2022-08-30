@@ -29,6 +29,7 @@ function Navbar() {
                     {/* if user is signed in, sign up and sign in page will be hidden */}
                     {<Link to="/sign-in" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Login</Link>}
                     {<Link to="/profile" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Profile</Link>}
+                    {<Link to="/user-management" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Manage User</Link>}
                     
                     {/* if user is not signed in, log out will be hidden */}
                     {<Link to="/" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400" onClick={signOutCurrentUser}>Log Out</Link>}

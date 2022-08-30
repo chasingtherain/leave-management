@@ -33,7 +33,7 @@ function SigninPage() {
                 </div>
                 <div className="grid h-58 card rounded-box place-items-center my-1">
                     <div className="form-control w-full max-w-xs">
-                        <input type="text" placeholder="Email address 邮箱号" className="input input-bordered w-full max-w-xs" onChange={(event) => setUserEmail(event.target.value)}/>
+                        <input type="text" placeholder="Email 邮箱" className="input input-bordered w-full max-w-xs" onChange={(event) => setUserEmail(event.target.value)}/>
                         <input type="password" placeholder="Password 密码" className="input input-bordered w-full max-w-xs my-4" onChange={(event) => setUserPassword(event.target.value)}/>
                     </div>
                     <button className={`btn btn-wide bg-black my-8 ${loginBtnLoading}`} onClick={signInWithEmail}>LOGIN 登陆</button>

@@ -5,6 +5,8 @@ function Table({headerType}) {
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type", "Validity", "Entitlement", "Quota used", "Available"]
+    const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Account type","RO","RO email", "CO","CO email","Status","Action"]
+    
 
     const mockEntitlementData = [
         ["Vacation Leave", "05.05.2022 - 04.02.2023", "1 days", "1 days", "0 days"],
@@ -27,15 +29,45 @@ function Table({headerType}) {
         ["Vacation Leave", "05.05.2022 - 31.12.2022", "1 days", "05.04.2022", "1 days", "Approved"],
     ]
 
-    let header = (headerType === "entitlement") ? entitlementTableHeader 
-                                                        : (headerType === "request") ? requestTableHeader 
-                                                        : historyTableHeader
-
-    let tableContent = (headerType === "entitlement") ? mockEntitlementData 
-                                                        : (headerType === "request") ? mockRequestData 
-                                                        : mockHistoryData
+    const mockUserData = [
+        ["He Hua", "hehua@163.com", "03.04.2022", "03.04.2022", "admin", "Shen Yun Xi", "yunxi@mfa.sg", "Mao Se", "maose@mail.com", "Active", "Update"],
+        ["Yan Fang", "yanfang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Yan Fang", "huangxi@163.com", "Active", "Update"],
+        ["Huang Xi", "huangxi@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Huang Xi", "yanfang@163.com", "Active", "Update"],
 
 
+    ]
+
+    const tableHeaderSelection = (headerType) => {
+        switch (headerType) {
+            case "entitlement":
+                return entitlementTableHeader.map(headerName => <th>{headerName}</th>)
+            case "request":
+                return requestTableHeader.map(headerName => <th>{headerName}</th>)
+            case "history":
+                return historyTableHeader.map(headerName => <th>{headerName}</th>)
+            case "user-management":
+                return userManagementTableHeader.map(headerName => <th>{headerName}</th>)
+            default:
+                console.log("invalid table header provided!")
+                break;
+        }
+    }
+
+    const tableDataSelection = (headerType) => {
+        switch (headerType) {
+            case "entitlement":
+                return mockEntitlementData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+            case "request":
+                return mockRequestData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+            case "history":
+                return mockHistoryData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+            case "user-management":
+                return mockUserData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+            default:
+                console.log("invalid table header provided!")
+                break;
+        }
+    }
 
     return (
     <div class="overflow-x-auto">
@@ -43,14 +75,11 @@ function Table({headerType}) {
             {/* <!-- head --> */}
             <thead>
             <tr>
-                {header.map(headerName => <th>{headerName}</th>)}
+                {tableHeaderSelection(headerType)}
             </tr>
             </thead>
             <tbody>
-            {tableContent.map(list =>            
-            <tr>
-                {list.map(listItem => <th>{listItem}</th>)}
-            </tr>)}
+                {tableDataSelection(headerType)}
             </tbody>
         </table>
     </div>

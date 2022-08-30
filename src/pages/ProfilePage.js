@@ -11,7 +11,7 @@ function ProfilePage() {
                 </div>
                 <div className="grid h-58 card rounded-box place-items-center my-1">
                     <div className="form-control w-full max-w-xs">
-                        <label class="label text-sm">Email address 邮箱地址</label>
+                        <label class="label text-sm">Email 邮箱</label>
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
                         <label class="label text-sm">Role 角色</label>
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
