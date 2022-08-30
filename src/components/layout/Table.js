@@ -7,6 +7,7 @@ function Table({headerType}) {
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type", "Validity", "Entitlement", "Quota used", "Available"]
+    const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Account type","RO","RO email", "CO","CO email","Status","Action"]
     
 
@@ -37,6 +38,12 @@ function Table({headerType}) {
         ["Huang Xi", "huangxi@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Huang Xi", "yanfang@163.com", "Active"],
         ["Fang", "fang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Zhang", "zhang@163.com", "Active"],
     ]
+
+    const changeLogData = [
+        ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
+        ["01.04.2022", "Add", ["new account added"] , "yunxi@mfa.sg"],
+        ["03.07.2022", "Delete", ["account X deleted"] , "yunxi@mfa.sg"],
+    ]
     
     const handleEditClick = (event) => {
         // identify user's id, send user's data to update user info form
@@ -50,6 +57,8 @@ function Table({headerType}) {
 
     const tableHeaderSelection = (headerType) => {
         switch (headerType) {
+            case "change-log":
+                return changeLogHeader.map(headerName => <th>{headerName}</th>)
             case "entitlement":
                 return entitlementTableHeader.map(headerName => <th>{headerName}</th>)
             case "request":
@@ -66,6 +75,8 @@ function Table({headerType}) {
 
     const tableDataSelection = (headerType) => {
         switch (headerType) {
+            case "change-log":
+                return changeLogData.map(list => <tr>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "entitlement":
                 return mockEntitlementData.map(list => <tr>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "request":

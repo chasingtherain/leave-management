@@ -1,7 +1,7 @@
 import React from 'react'
 import Select from '../components/layout/Select'
 
-function AddUserPage() {
+function CreateUserPage() {
     return (
         <div>
             <div className='grid place-items-center mt-2 text-slate-600 text-3xl'>Create User</div>
@@ -28,4 +28,4 @@ function AddUserPage() {
         )
 }
 
-export default AddUserPage
+export default CreateUserPage
