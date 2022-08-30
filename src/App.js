@@ -6,6 +6,7 @@ import ApplyLeavePage from "./pages/ApplyLeavePage";
 import SigninPage from "./pages/SigninPage";
 import ProfilePage from "./pages/ProfilePage";
 import UserManagementPage from "./pages/UserManagementPage";
+import UpdateUserInfoPage from "./pages/UpdateUserInfoPage";
 
 function App() {
   return (
@@ -18,7 +19,9 @@ function App() {
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
             <Route path = '/sign-in' element={<SigninPage/>}/>
             {/* private routes */}
+
             <Route path = '/profile' element={<ProfilePage/>}/>
+            <Route path = '/update-user' element={<UpdateUserInfoPage/>}/>
             <Route path = '/user-management' element={<UserManagementPage/>}/>
           </Routes>
         </Router>

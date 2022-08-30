@@ -1,4 +1,6 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+import CancelLeaveModal from '../modal/CancelLeaveModal'
 
 function Table({headerType}) {
 
@@ -34,9 +36,17 @@ function Table({headerType}) {
         ["Yan Fang", "yanfang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Yan Fang", "huangxi@163.com", "Active"],
         ["Huang Xi", "huangxi@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Huang Xi", "yanfang@163.com", "Active"],
         ["Fang", "fang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Zhang", "zhang@163.com", "Active"],
-
-
     ]
+    
+    const handleEditClick = (event) => {
+        // identify user's id, send user's data to update user info form
+        console.log(event.target.id)
+    }
+
+    const handleCancelLeaveClick = (event) => {
+        // identify user's id, send user's data to update user info form
+        console.log(event.target.id)
+    }
 
     const tableHeaderSelection = (headerType) => {
         switch (headerType) {
@@ -64,7 +74,10 @@ function Table({headerType}) {
                         <tr>
                             {list.map(listItem => <td>{listItem}</td>)}
                             <td><div class="badge badge-neutral rounded-sm">Pending</div></td>
-                            <td><button className='btn btn-sm btn-error'>cancel 取消</button></td>
+                            <td>
+                                {/* <button className='btn btn-sm btn-error' onClick={handleCancelLeaveClick}>cancel 取消</button> */}
+                                <CancelLeaveModal/>
+                            </td>
                         </tr>
                     ))
             case "history":
@@ -80,7 +93,9 @@ function Table({headerType}) {
                         (
                             <tr>
                                 {list.map(listItem => <td>{listItem}</td>)}
-                                <td><button className='btn btn-xs btn-neutral'>edit</button></td>
+                                <td>
+                                    <Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link>
+                                </td>
                             </tr>
                         ))
             default:
