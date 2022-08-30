@@ -11,7 +11,7 @@ function Homepage() {
         <div className='flex justify-between'> 
             <Tab/>
             <Link to="/apply-leave">
-                <button className='btn bg-black rounded-md mt-6 mr-6 px-12 text-lg'>Apply for Leave</button>
+                <button className='btn bg-black rounded-md mt-6 mr-6 px-6 text-lg'>Apply Leave 申请休假</button>
             </Link>
         </div>
         {/* based on user action, display active tab in homepage */}

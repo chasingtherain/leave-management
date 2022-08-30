@@ -19,20 +19,21 @@ function Table({headerType}) {
     ]
 
     const mockRequestData = [
-        ["Medical Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days", "Pending", "Cancel Leave"],
-        ["Vacation Leave", "05.05.2022 - 06.05.2022", "1 days", "03.05.2022", "1 days", "Pending", "Cancel Leave"],
+        ["Medical Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
+        ["Vacation Leave", "05.05.2022 - 06.05.2022", "1 days", "03.05.2022", "1 days"],
     ]
     
     const mockHistoryData = [
-        ["Vacation Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days", "Approved"],
-        ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "04.04.2022", "1 days", "Approved"],
-        ["Vacation Leave", "05.05.2022 - 31.12.2022", "1 days", "05.04.2022", "1 days", "Approved"],
+        ["Vacation Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
+        ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "04.04.2022", "1 days"],
+        ["Vacation Leave", "05.05.2022 - 31.12.2022", "1 days", "05.04.2022", "1 days"],
     ]
 
     const mockUserData = [
-        ["He Hua", "hehua@163.com", "03.04.2022", "03.04.2022", "admin", "Shen Yun Xi", "yunxi@mfa.sg", "Mao Se", "maose@mail.com", "Active", "Update"],
-        ["Yan Fang", "yanfang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Yan Fang", "huangxi@163.com", "Active", "Update"],
-        ["Huang Xi", "huangxi@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Huang Xi", "yanfang@163.com", "Active", "Update"],
+        ["He Hua", "hehua@163.com", "03.04.2022", "03.04.2022", "admin", "Shen Yun Xi", "yunxi@mfa.sg", "Mao Se", "maose@mail.com", "Active"],
+        ["Yan Fang", "yanfang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Yan Fang", "huangxi@163.com", "Active"],
+        ["Huang Xi", "huangxi@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Huang Xi", "yanfang@163.com", "Active"],
+        ["Fang", "fang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Zhang", "zhang@163.com", "Active"],
 
 
     ]
@@ -56,13 +57,32 @@ function Table({headerType}) {
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "entitlement":
-                return mockEntitlementData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+                return mockEntitlementData.map(list => <tr>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "request":
-                return mockRequestData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+                return mockRequestData.map(list => 
+                    (
+                        <tr>
+                            {list.map(listItem => <td>{listItem}</td>)}
+                            <td><div class="badge badge-neutral rounded-sm">Pending</div></td>
+                            <td><button className='btn btn-sm btn-error'>cancel 取消</button></td>
+                        </tr>
+                    ))
             case "history":
-                return mockHistoryData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+                return mockHistoryData.map(list => 
+                    (
+                        <tr>
+                            {list.map(listItem => <td>{listItem}</td>)}
+                            <td><div class="badge badge-success rounded-sm">Approved</div></td>
+                        </tr>
+                    ))
             case "user-management":
-                return mockUserData.map(list => <tr>{list.map(listItem => <th>{listItem}</th>)}</tr>)
+                return mockUserData.map(list => 
+                        (
+                            <tr>
+                                {list.map(listItem => <td>{listItem}</td>)}
+                                <td><button className='btn btn-xs btn-neutral'>edit</button></td>
+                            </tr>
+                        ))
             default:
                 console.log("invalid table header provided!")
                 break;
@@ -71,7 +91,7 @@ function Table({headerType}) {
 
     return (
     <div class="overflow-x-auto">
-        <table class="table w-full">
+        <table class="table hover w-full">
             {/* <!-- head --> */}
             <thead>
             <tr>
