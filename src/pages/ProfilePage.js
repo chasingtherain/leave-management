@@ -17,11 +17,11 @@ function ProfilePage() {
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
                         <label class="label text-sm">Reporting Officer 主管</label>
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
-                        <label class="label text-sm">Reporting Officer Email 主管邮箱地址</label>
+                        <label class="label text-sm">Reporting Officer Email 主管邮箱</label>
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
                         <label class="label text-sm">Covering Officer 代办</label>
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
-                        <label class="label text-sm">Covering Officer Email 代办邮箱地址</label>
+                        <label class="label text-sm">Covering Officer Email 代办邮箱</label>
                         <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
                     </div>
                 </div>

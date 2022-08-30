@@ -7,6 +7,7 @@ import SigninPage from "./pages/SigninPage";
 import ProfilePage from "./pages/ProfilePage";
 import UserManagementPage from "./pages/UserManagementPage";
 import UpdateUserInfoPage from "./pages/UpdateUserInfoPage";
+import AddUserPage from "./pages/AddUserPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
 
             <Route path = '/profile' element={<ProfilePage/>}/>
             <Route path = '/update-user' element={<UpdateUserInfoPage/>}/>
+            <Route path = '/add-user' element={<AddUserPage/>}/>
             <Route path = '/user-management' element={<UserManagementPage/>}/>
           </Routes>
         </Router>
