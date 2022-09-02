@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const path = require('path')
 const app = express()
 const mongoose = require('mongoose')
@@ -12,7 +13,10 @@ const adminRoutes = require('./routes/admin')
 const leaveRoutes = require('./routes/leave')
 const userRoutes = require('./routes/user')
 
+app.use(cors())
+
 app.use(express.urlencoded({extended: true})) //Parse URL-encoded bodies
+app.use(express.json())
 
 app.use('/admin',adminRoutes)
 app.use('/leave',leaveRoutes)
@@ -33,7 +37,7 @@ mongoose
     })
     .catch(err => {
         console.log(err)
-        console.log("failed to conenct MongoDB".red)
+        console.log("failed to connect MongoDB".red)
     })
 // mongoConnect((client) => {
 //     console.log(client)

@@ -1,6 +1,8 @@
 import React from 'react'
+import { useMainContext } from '../../hooks/useMainContext';
 
 function RadioSelection({id, radioType}) {
+    const {setIsAdmin} = useMainContext()
     const leaveDateRadio = ["AM", "PM", "Full Day"]
     const accountTypeRadio = ["user", "admin"]
     let radioContent;
@@ -21,7 +23,7 @@ function RadioSelection({id, radioType}) {
     <div id={id} class="form-control">
         {radioContent.map((content) => 
         (<div className='flex mt-1'>
-            <input type="radio" name={id} class="radio-sm required"/>
+            <input type="radio" name={id} class="radio-sm required" value={content} onChange={(e) => setIsAdmin(content)}/>
             <span class="label-text">{content}</span> 
         </div>)
         )}

@@ -1,10 +1,14 @@
 const express = require('express')
 
+const adminController = require('../controllers/admin')
+
 const router = express.Router()
 
 const rootDir = require('../util/path')
 
-router.get('/add-user', (req,res)=> {
+
+
+router.get('/create-user', (req,res)=> {
     res.send(
         `<form action=/admin/posting-new-user method=POST>
         <input type="text" name="name">
@@ -12,10 +16,7 @@ router.get('/add-user', (req,res)=> {
         </form>`)
     })
 
-router.post('/posting-new-user', (req,res)=> {
-    console.log(req.body)
-    res.redirect('/')
-    // res.send("<h1>user info to be sent by server</h1>")
-})
+// route is /admin/create-user
+router.post('/create-user', adminController.postCreateUser)
 
 module.exports = router

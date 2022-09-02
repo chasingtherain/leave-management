@@ -3,6 +3,7 @@ import Select from '../components/layout/Select'
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import RadioSelection from '../components/layout/RadioSelection';
+import { useMainContext } from '../hooks/useMainContext';
 
 function ApplyLeavePage() {
     const leaveOptions = [
@@ -13,21 +14,11 @@ function ApplyLeavePage() {
     "No pay leave 无薪假",
     "Hospitalisation leave 住院假",
     ]
-    // const verifyFeedback = async (e) => {
-    //     e.preventDefault()
-    //     // Add a new document with a generated id.
-    //     const docRef = await addDoc(collection(db, "feedback"), {
-    //         feedback: feedbackContent,
-    //         timestamp: new Date()
-    //     });
-    //     console.log("Document written with ID: ", docRef.id);
-    //     setFeedbackContent("")
-    //     toast.success("Thank you for your feedback!")
-    // }
-
+    const {baseBackEndUrl} = useMainContext()
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
+
   return (
     <form className="" onSubmit="">
         <div className='grid place-items-center mt-8 mb-6'>

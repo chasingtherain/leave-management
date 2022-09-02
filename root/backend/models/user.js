@@ -41,13 +41,11 @@ const userSchema = new Schema({
     },
     isActive: {
         type: Boolean,
-        required: true
     },
-    leaveLeft: {
-        type: Schema.Types,
-        ref: 'User',
-        required: true
-    }
+    // leaveLeft: {
+    //     type: Schema.Types,
+    //     ref: 'User',
+    // }
 })
 
 module.exports = mongoose.model('User', userSchema)
