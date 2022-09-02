@@ -2,6 +2,8 @@ const express = require('express')
 
 const router = express.Router()
 
+const rootDir = require('../util/path')
+
 router.get('/add-user', (req,res)=> {
     res.send(
         `<form action=/admin/posting-new-user method=POST>
