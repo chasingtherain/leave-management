@@ -45,12 +45,12 @@ function ApplyLeavePage() {
                     <div>
                         <label for="start date" class="text-sm">Start Date</label>
                         <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={startDate} onChange={(date) => setStartDate(date)} />
-                        <RadioSelection id="startDateRadio"/>
+                        <RadioSelection radioType="leaveDateRadio" id="startDateRadio"/>
                     </div>
                     <div className='mx-8'>
                         <label for="remarks" class="text-sm">End Date</label>
                         <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={endDate} onChange={(date) => setEndDate(date)} />
-                        <RadioSelection id="endDateRadio"/>
+                        <RadioSelection radioType="leaveDateRadio" id="endDateRadio"/>
                     </div>
                 </div>
                 <p className='text-sm mt-3'>You have selected X number of days of leaveType.</p>

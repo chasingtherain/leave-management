@@ -1,4 +1,5 @@
 import React from 'react'
+import RadioSelection from '../components/layout/RadioSelection'
 import Select from '../components/layout/Select'
 
 function CreateUserPage() {
@@ -13,6 +14,7 @@ function CreateUserPage() {
                     <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
                     <label class="label text-sm">Account Type</label>
                     <Select options={["admin","user"]}/>
+                    <RadioSelection radioType="accountTypeRadio" id="accountType"/>
                     <label class="label text-sm">Reporting Officer 主管</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
                     <label class="label text-sm">Reporting Officer Email 主管邮箱</label>
