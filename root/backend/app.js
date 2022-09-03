@@ -30,7 +30,7 @@ app.use('/*', (req,res) => {
 })
 
 mongoose
-    .connect('mongodb+srv://mfachengdu:iamsingaporean@cluster0.rbiadah.mongodb.net/?retryWrites=true&w=majority')
+    .connect('mongodb+srv://mfachengdu:iamsingaporean@cluster0.rbiadah.mongodb.net/leave-management?retryWrites=true&w=majority')
     .then(client => {
         console.log("MongoDB connection via mongoose successful".green)
         app.listen(8008)

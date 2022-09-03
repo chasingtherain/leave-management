@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 function CreateUserPage() {
-    const {baseBackEndUrl, isAdmin, setIsAdmin} = useMainContext()
+    const {baseBackEndUrl,fetchUserList, isAdmin, setIsAdmin} = useMainContext()
     const [name, setName] = useState()
     const [email, setEmail] = useState()
     const [ro, setRo] = useState()
@@ -28,8 +28,11 @@ function CreateUserPage() {
         )
         return toast.error("Fill in all blanks!")
         
+        // const emailExistInDb = db.collection('')
+
         const resp = await axios.post(url, formData)
         if(resp.status === 200) {
+            fetchUserList()
             toast.success("User Created!")
             navigate('/user-management')
         }
@@ -40,11 +43,10 @@ function CreateUserPage() {
         e.preventDefault()
         console.log("form data sending in progress")
         const url = `${baseBackEndUrl}/admin/create-user`
-        let adminChecker = (isAdmin === "admin") ? true : false
         const formData = 
         {
             name: name,
-            isAdmin: adminChecker,
+            isAdmin: isAdmin,
             email: email,
             createdOn: new Date(),
             lastUpdatedOn: new Date(),

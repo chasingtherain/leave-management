@@ -13,10 +13,6 @@ exports.postCreateUser = (req,res,next) => {
     const isActive = req.body.isActive
     const leaveLeft = req.body.leaveLeft
     
-    // console.log("req", req)
-    console.log("req.body", req.body)
-    console.log("req.body.isAdmin", req.body.isAdmin)
-
     const user = new User({
         name: name,
         isAdmin: isAdmin,
@@ -41,6 +37,5 @@ exports.postCreateUser = (req,res,next) => {
             console.log(err)
         })
 
-    res.status(200).send(user)
-        
+    res.status(200).send(user)   
 }

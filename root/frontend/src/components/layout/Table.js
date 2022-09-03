@@ -1,16 +1,19 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useMainContext } from '../../hooks/useMainContext'
 import CancelLeaveModal from '../modal/CancelLeaveModal'
 
 function Table({headerType}) {
+    const {userList} = useMainContext()
 
+    // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type", "Validity", "Entitlement", "Quota used", "Available"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Account type","RO","RO email", "CO","CO email","Status","Action"]
     
-
+    // table data
     const mockEntitlementData = [
         ["Vacation Leave", "05.05.2022 - 04.02.2023", "1 days", "1 days", "0 days"],
         ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "10 days", "0 days"],
@@ -100,13 +103,20 @@ function Table({headerType}) {
                         </tr>
                     ))
             case "user-management":
-                return mockUserData.map(list => 
+                return userList.map(list => 
                         (
-                            <tr>
-                                {list.map(listItem => <td>{listItem}</td>)}
-                                <td>
-                                    <Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link>
-                                </td>
+                            <tr>                                 
+                                <td>{list.name}</td>    
+                                <td>{list.email}</td>    
+                                <td>{list.createdOn}</td>    
+                                <td>{list.lastUpdatedOn}</td>    
+                                <td>{list.isAdmin}</td>    
+                                <td>{list.ro}</td>    
+                                <td>{list.reportingEmail}</td>    
+                                <td>{list.co}</td>    
+                                <td>{list.coveringEmail}</td>    
+                                <td>active</td>    
+                                <td><Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
                             </tr>
                         ))
             default:
@@ -125,7 +135,7 @@ function Table({headerType}) {
             </tr>
             </thead>
             <tbody>
-                {tableDataSelection(headerType)}
+                {userList.length > 0 && tableDataSelection(headerType)}
             </tbody>
         </table>
     </div>
