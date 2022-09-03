@@ -4,7 +4,7 @@ export const MainContext = createContext()
 
 export const MainContextProvider = ({ children }) => {
   const [active, setActive] = useState("Home") 
-  const [isAdmin, setIsAdmin] = useState(null)
+  const [isAdmin, setIsAdmin] = useState()
   const baseBackEndUrl = `http://localhost:8008`
     
   return (

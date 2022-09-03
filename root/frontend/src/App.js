@@ -10,6 +10,8 @@ import UpdateUserInfoPage from "./pages/UpdateUserInfoPage";
 import CreateUserPage from "./pages/CreateUserPage";
 import ChangeLogPage from "./pages/ChangeLogPage";
 import PrivateRoute from "./components/PrivateRoute";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -38,6 +40,7 @@ function App() {
             </Route>
           </Routes>
         </Router>
+        <ToastContainer/>
     </>
   );
 }

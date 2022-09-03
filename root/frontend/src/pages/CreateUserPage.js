@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import RadioSelection from '../components/layout/RadioSelection'
-import Select from '../components/layout/Select'
 import { useMainContext } from '../hooks/useMainContext'
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function CreateUserPage() {
     const {baseBackEndUrl, isAdmin} = useMainContext()
@@ -12,7 +12,22 @@ function CreateUserPage() {
     const [reportingEmail, setReportingEmail] = useState()
     const [co, setCo] = useState()
     const [coveringEmail, setCoveringEmail] = useState()
+    const [validationPassed, setValidationPassed] = useState(false)
 
+    const validateFormData = () => {
+        if(
+            name === undefined || name.length === 0 ||
+            email === undefined || email.length === 0 ||
+            ro === undefined || ro.length === 0 ||
+            reportingEmail === undefined || reportingEmail.length === 0 ||
+            co === undefined || co.length === 0 ||
+            coveringEmail === undefined || coveringEmail.length === 0 ||
+            isAdmin === undefined
+        )
+        return toast.error("Fill in all blanks!")
+        
+        setValidationPassed(true)
+    }
     const sendFormData = async (e) => {
         e.preventDefault()
         console.log("form data sending in progress")
@@ -31,13 +46,13 @@ function CreateUserPage() {
             coveringEmail: coveringEmail,
             isActive: true
         }
-        console.log(formData)
-        const resp = await axios.post(url, formData)
-        console.log(formData, resp)
-        // axios
-        //     .post(url, formData)
-        //     .then(res => console.log(res))
-        //     .catch(err => console.log(err))
+        validateFormData()
+        if (validationPassed) {
+            const resp = await axios.post(url, formData)
+            if(resp.status === 200) toast.success("User Created!")
+            else {toast.error("User creation was unsuccessful")}
+            console.log(resp)
+        }
     }
 
     return (
