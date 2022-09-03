@@ -5,7 +5,7 @@ import Table from '../components/layout/Table'
 import { useMainContext } from '../hooks/useMainContext'
 
 function Homepage() {
-    const {active} = useMainContext()
+    const {activeTab} = useMainContext()
     return (
     <div>
         <div className='flex justify-between'> 
@@ -15,7 +15,7 @@ function Homepage() {
             </Link>
         </div>
         {/* based on user action, display active tab in homepage */}
-        {active === "Home" ? 
+        {activeTab === "Home" ? 
             (
             <>
                 <h1 className='text-xl my-6 text-center'>Leave Requests and Upcoming Leaves 休假请求</h1>

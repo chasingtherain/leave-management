@@ -53,15 +53,14 @@ function CreateUserPage() {
             ro: ro,
             reportingEmail: reportingEmail,
             co: co,
-            coveringEmail: coveringEmail,
-            isActive: true
+            coveringEmail: coveringEmail
         }
         validateAndSubmitData(url, formData)
     }
 
     return (
         <div>
-            <div className='grid place-items-center mt-2 text-slate-600 text-3xl'>Create User</div>
+            <div className='grid place-items-center mt-8 text-slate-600 text-3xl'>Create User</div>
 
             <div className="grid place-items-center">
                 <form className="form-control w-full max-w-xs" onSubmit={sendFormData}>
@@ -79,7 +78,7 @@ function CreateUserPage() {
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCo(e.target.value)} value={co}/>
                     <label class="label text-sm">Covering Officer Email 代办邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
-                    <button type="submit" className='btn mt-4'>Create User</button>
+                    <button type="submit" className='btn mt-8 rounded-sm'>Create User</button>
                 </form>
             </div>
         </div>

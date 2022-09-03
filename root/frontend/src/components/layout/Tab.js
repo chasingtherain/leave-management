@@ -4,9 +4,9 @@ import {useMainContext} from '../../hooks/useMainContext'
 
 function Tab() {
     const tabNames = ["Home", "Leave Entitlement"]
-    const {active, setActive} = useMainContext()
+    const {activeTab, setActiveTab} = useMainContext()
     const handleActiveTabClick = (event) => {
-        setActive(event.target.id)
+        setActiveTab(event.target.id)
     }
     return (
     <div class="tabs">
@@ -14,7 +14,7 @@ function Tab() {
             to='' 
             key={tab} 
             id={tab} 
-            className={active === tab ? 'tab tab-lifted tab-active text-lg' : 'tab tab-lifted text-lg'} 
+            className={activeTab === tab ? 'tab tab-lifted tab-active text-lg' : 'tab tab-lifted text-lg'} 
             onClick={handleActiveTabClick}>{tab}</Link> )}
     </div>
     )

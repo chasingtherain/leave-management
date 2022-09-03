@@ -10,7 +10,6 @@ exports.postCreateUser = (req,res,next) => {
     const reportingEmail = req.body.reportingEmail
     const co = req.body.co
     const coveringEmail = req.body.coveringEmail
-    const isActive = req.body.isActive
     const leaveLeft = req.body.leaveLeft
     
     const user = new User({
@@ -23,7 +22,6 @@ exports.postCreateUser = (req,res,next) => {
         reportingEmail: reportingEmail,
         co: co,
         coveringEmail: coveringEmail,
-        isActive: isActive,
         leaveLeft: leaveLeft
     })
 

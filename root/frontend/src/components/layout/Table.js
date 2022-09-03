@@ -11,7 +11,7 @@ function Table({headerType}) {
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type", "Validity", "Entitlement", "Quota used", "Available"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
-    const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Account type","RO","RO email", "CO","CO email","Status","Action"]
+    const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
     // table data
     const mockEntitlementData = [
@@ -114,8 +114,7 @@ function Table({headerType}) {
                                 <td>{list.ro}</td>    
                                 <td>{list.reportingEmail}</td>    
                                 <td>{list.co}</td>    
-                                <td>{list.coveringEmail}</td>    
-                                <td>active</td>    
+                                <td>{list.coveringEmail}</td>     
                                 <td><Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
                             </tr>
                         ))

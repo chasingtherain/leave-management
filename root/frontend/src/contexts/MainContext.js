@@ -3,7 +3,7 @@ import axios from 'axios';
 export const MainContext = createContext()
 
 export const MainContextProvider = ({ children }) => {
-  const [active, setActive] = useState("Home") 
+  const [activeTab, setActiveTab] = useState("Home") 
   const [userList, setUserList] = useState([])
   const [isAdmin, setIsAdmin] = useState()
   const baseBackEndUrl = `http://localhost:8008`
@@ -19,12 +19,12 @@ export const MainContextProvider = ({ children }) => {
     
   return (
     <MainContext.Provider value={{
-      active, 
+      activeTab, 
       baseBackEndUrl,
       isAdmin,
       userList,
       fetchUserList,
-      setActive,
+      setActiveTab,
       setIsAdmin
 
      }}>

@@ -39,9 +39,6 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    isActive: {
-        type: Boolean,
-    },
     // leaveLeft: {
     //     type: Schema.Types,
     //     ref: 'User',
