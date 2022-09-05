@@ -18,9 +18,9 @@ function Homepage() {
         {activeTab === "Home" ? 
             (
             <>
-                <h1 className='text-xl my-6 text-center'>Leave Requests and Upcoming Leaves 休假请求</h1>
+                <h1 className='text-xl my-6 text-center'>Leave Request 休假请求</h1>
                 <Table headerType="request"/>
-                <h1 className='text-xl mt-20 mb-6 text-center'>Leave History 历史</h1>
+                <h1 className='text-xl mt-20 mb-6 text-center'>Leave History 休假历史</h1>
                 <Table headerType="history"/>
             </>
             )

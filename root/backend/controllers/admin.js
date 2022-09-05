@@ -28,7 +28,7 @@ exports.postCreateUser = (req,res,next) => {
     user
         .save()
         .then(result => {
-            console.log(result)
+            // console.log(result)
             console.log("user created")
         })
         .catch(err => {
