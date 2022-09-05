@@ -61,15 +61,15 @@ function Table({headerType}) {
     const tableHeaderSelection = (headerType) => {
         switch (headerType) {
             case "change-log":
-                return changeLogHeader.map(headerName => <th>{headerName}</th>)
+                return changeLogHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "entitlement":
-                return entitlementTableHeader.map(headerName => <th>{headerName}</th>)
+                return entitlementTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "request":
-                return requestTableHeader.map(headerName => <th>{headerName}</th>)
+                return requestTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "history":
-                return historyTableHeader.map(headerName => <th>{headerName}</th>)
+                return historyTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "user-management":
-                return userManagementTableHeader.map(headerName => <th>{headerName}</th>)
+                return userManagementTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             default:
                 console.log("invalid table header provided!")
                 break;
@@ -79,15 +79,15 @@ function Table({headerType}) {
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "change-log":
-                return changeLogData.map(list => <tr>{list.map(listItem => <td>{listItem}</td>)}</tr>)
+                return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "entitlement":
-                return mockEntitlementData.map(list => <tr>{list.map(listItem => <td>{listItem}</td>)}</tr>)
+                return mockEntitlementData.map((list,index) => <tr key={index}>{list.map((listItem,index) => <td key={index}>{listItem}</td>)}</tr>)
             case "request":
-                return mockRequestData.map(list => 
+                return mockRequestData.map((list,index) => 
                     (
-                        <tr>
-                            {list.map(listItem => <td>{listItem}</td>)}
-                            <td><div class="badge badge-neutral rounded-sm">Pending</div></td>
+                        <tr key={index}>
+                            {list.map((listItem,index) => <td key={index}>{listItem}</td>)}
+                            <td><div className="badge badge-neutral rounded-sm">Pending</div></td>
                             <td>
                                 {/* <button className='btn btn-sm btn-error' onClick={handleCancelLeaveClick}>cancel 取消</button> */}
                                 <CancelLeaveModal/>
@@ -95,17 +95,17 @@ function Table({headerType}) {
                         </tr>
                     ))
             case "history":
-                return mockHistoryData.map(list => 
+                return mockHistoryData.map((list,index) => 
                     (
-                        <tr>
-                            {list.map(listItem => <td>{listItem}</td>)}
-                            <td><div class="badge badge-success rounded-sm">Approved</div></td>
+                        <tr key={index}>
+                            {list.map((listItem, index) => <td key={index}>{listItem}</td>)}
+                            <td><div className="badge badge-success rounded-sm">Approved</div></td>
                         </tr>
                     ))
             case "user-management":
-                return userList.map(list => 
+                return userList.map((list, index) => 
                         (
-                            <tr>                                 
+                            <tr key={index}>                                 
                                 <td>{list.name}</td>    
                                 <td>{list.email}</td>    
                                 <td>{list.createdOn}</td>    
@@ -125,8 +125,8 @@ function Table({headerType}) {
     }
 
     return (
-    <div class="overflow-x-auto">
-        <table class="table hover w-full">
+    <div className="overflow-x-auto">
+        <table className="table hover w-full">
             {/* <!-- head --> */}
             <thead>
             <tr>

@@ -20,11 +20,11 @@ function RadioSelection({id, radioType}) {
     }
 
     return (
-    <div id={id} class="form-control">
+    <div id={id} className="form-control">
         {radioContent.map((content) => 
         (<div className='flex mt-1'>
-            <input type="radio" name={id} class="radio-sm required" value={content} onChange={(e) => setIsAdmin(content)}/>
-            <span class="label-text">{content}</span> 
+            <input type="radio" name={id} className="radio-sm required" value={content} onChange={(e) => setIsAdmin(content)}/>
+            <span className="label-text">{content}</span> 
         </div>)
         )}
     </div>

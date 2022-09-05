@@ -9,7 +9,7 @@ function Tab() {
         setActiveTab(event.target.id)
     }
     return (
-    <div class="tabs">
+    <div className="tabs">
         {tabNames.map(tab => <Link 
             to='' 
             key={tab} 

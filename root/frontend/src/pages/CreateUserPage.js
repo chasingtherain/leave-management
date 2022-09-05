@@ -76,23 +76,23 @@ function CreateUserPage() {
 
             <div className="grid place-items-center">
                 <form className="form-control w-full max-w-xs" onSubmit={sendFormData}>
-                    <label class="label text-sm">Name</label>
+                    <label className="label text-sm">Name</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="name" onChange={(e) => setName(e.target.value)} value={name}/>
-                    <label class="label text-sm">Email 邮箱</label>
+                    <label className="label text-sm">Email 邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="password" onChange={(e) => setEmail(e.target.value)} value={email}/>
-                    <label class="label text-sm">Password 密码</label>
+                    <label className="label text-sm">Password 密码</label>
                     <input type="password" className="input input-bordered w-full max-w-xs" name="confirmPassword" onChange={(e) => setPassword(e.target.value)} value={password}/>
-                    <label class="label text-sm">Confirm Password 二次确认密码</label>
+                    <label className="label text-sm">Confirm Password 二次确认密码</label>
                     <input type="password" className="input input-bordered w-full max-w-xs" name="email" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword}/>
-                    <label class="label text-sm">Account Type</label>
+                    <label className="label text-sm">Account Type</label>
                     <RadioSelection radioType="accountTypeRadio" id="accountType"/>
-                    <label class="label text-sm">Reporting Officer 主管</label>
+                    <label className="label text-sm">Reporting Officer 主管</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setRo(e.target.value)} value={ro}/>
-                    <label class="label text-sm">Reporting Officer Email 主管邮箱</label>
+                    <label className="label text-sm">Reporting Officer Email 主管邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setReportingEmail(e.target.value)} value={reportingEmail}/>
-                    <label class="label text-sm">Covering Officer 代办</label>
+                    <label className="label text-sm">Covering Officer 代办</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCo(e.target.value)} value={co}/>
-                    <label class="label text-sm">Covering Officer Email 代办邮箱</label>
+                    <label className="label text-sm">Covering Officer Email 代办邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
                     <button type="submit" className='btn mt-8 rounded-sm'>Create User</button>
                 </form>

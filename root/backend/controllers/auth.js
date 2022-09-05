@@ -49,5 +49,6 @@ exports.postLogout = (req,res,next) => {
     req.session.destroy((err) => {
         console.log("err: ", err)
     })
+    res.status(200).send("sign out successful")
     console.log("after destroying: ", req.session)
 }
