@@ -32,7 +32,9 @@ function CreateUserPage() {
         )
         return toast.error("Fill in all blanks!")
         
-        // const emailExistInDb = db.collection('')
+        if(password !== confirmPassword){
+            return toast.error("Passwords don't match!")
+        }
 
         const resp = await axios.post(url, formData)
         if(resp.status === 200) {
@@ -73,11 +75,11 @@ function CreateUserPage() {
                     <label class="label text-sm">Name</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="name" onChange={(e) => setName(e.target.value)} value={name}/>
                     <label class="label text-sm">Email 邮箱</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="password" onChange={(e) => setPassword(e.target.value)} value={name}/>
+                    <input type="text" className="input input-bordered w-full max-w-xs" name="password" onChange={(e) => setEmail(e.target.value)} value={email}/>
                     <label class="label text-sm">Password 密码</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="confirmPassword" onChange={(e) => setConfirmPassword(e.target.value)} value={name}/>
+                    <input type="password" className="input input-bordered w-full max-w-xs" name="confirmPassword" onChange={(e) => setPassword(e.target.value)} value={password}/>
                     <label class="label text-sm">Confirm Password 二次确认密码</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="email" onChange={(e) => setEmail(e.target.value)} value={email}/>
+                    <input type="password" className="input input-bordered w-full max-w-xs" name="email" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword}/>
                     <label class="label text-sm">Account Type</label>
                     <RadioSelection radioType="accountTypeRadio" id="accountType"/>
                     <label class="label text-sm">Reporting Officer 主管</label>
