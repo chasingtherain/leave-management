@@ -9,17 +9,21 @@ function CreateUserPage() {
     const {baseBackEndUrl,fetchUserList, isAdmin, setIsAdmin} = useMainContext()
     const [name, setName] = useState()
     const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
+    const [confirmPassword, setConfirmPassword] = useState()
     const [ro, setRo] = useState()
     const [reportingEmail, setReportingEmail] = useState()
     const [co, setCo] = useState()
     const [coveringEmail, setCoveringEmail] = useState()
-    const [validationPassed, setValidationPassed] = useState(false)
+
     const navigate = useNavigate()
 
     const validateAndSubmitData = async (url, formData) => {
         if(
             name === undefined || name.length === 0 ||
             email === undefined || email.length === 0 ||
+            password === undefined || password.length === 0 ||
+            confirmPassword === undefined || confirmPassword.length === 0 ||
             ro === undefined || ro.length === 0 ||
             reportingEmail === undefined || reportingEmail.length === 0 ||
             co === undefined || co.length === 0 ||
@@ -48,6 +52,8 @@ function CreateUserPage() {
             name: name,
             isAdmin: isAdmin,
             email: email,
+            password: password,
+            confirmPassword: confirmPassword,
             createdOn: new Date(),
             lastUpdatedOn: new Date(),
             ro: ro,
@@ -67,6 +73,10 @@ function CreateUserPage() {
                     <label class="label text-sm">Name</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="name" onChange={(e) => setName(e.target.value)} value={name}/>
                     <label class="label text-sm">Email 邮箱</label>
+                    <input type="text" className="input input-bordered w-full max-w-xs" name="password" onChange={(e) => setPassword(e.target.value)} value={name}/>
+                    <label class="label text-sm">Password 密码</label>
+                    <input type="text" className="input input-bordered w-full max-w-xs" name="confirmPassword" onChange={(e) => setConfirmPassword(e.target.value)} value={name}/>
+                    <label class="label text-sm">Confirm Password 二次确认密码</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="email" onChange={(e) => setEmail(e.target.value)} value={email}/>
                     <label class="label text-sm">Account Type</label>
                     <RadioSelection radioType="accountTypeRadio" id="accountType"/>

@@ -4,6 +4,8 @@ exports.postCreateUser = (req,res,next) => {
     const name = req.body.name
     const isAdmin = req.body.isAdmin
     const email = req.body.email
+    const password = req.body.password
+    const confirmPassword = req.body.confirmPassword
     const createdOn = req.body.createdOn
     const lastUpdatedOn = req.body.lastUpdatedOn
     const ro = req.body.ro
@@ -16,6 +18,8 @@ exports.postCreateUser = (req,res,next) => {
         name: name,
         isAdmin: isAdmin,
         email: email,
+        password: password,
+        confirmPassword: confirmPassword,
         createdOn: createdOn,
         lastUpdatedOn: lastUpdatedOn,
         ro: ro,
