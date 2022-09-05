@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 function CreateUserPage() {
-    const {baseBackEndUrl,fetchUserList, isAdmin, setIsAdmin} = useMainContext()
+    const {baseBackEndUrl,fetchUserList, isAdmin, validateEmail} = useMainContext()
     const [name, setName] = useState()
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
@@ -19,6 +19,15 @@ function CreateUserPage() {
     const navigate = useNavigate()
 
     const validateAndSubmitData = async (url, formData) => {
+        
+        if(!validateEmail(email)){
+            return toast.error("Invalid email!")
+        }
+        
+        if(password !== confirmPassword){
+            return toast.error("Passwords don't match!")
+        }
+        
         if(
             name === undefined || name.length === 0 ||
             email === undefined || email.length === 0 ||
@@ -31,10 +40,6 @@ function CreateUserPage() {
             isAdmin === undefined
         )
         return toast.error("Fill in all blanks!")
-        
-        if(password !== confirmPassword){
-            return toast.error("Passwords don't match!")
-        }
 
         const resp = await axios.post(url, formData)
         if(resp.status === 200) {
@@ -55,7 +60,6 @@ function CreateUserPage() {
             isAdmin: isAdmin,
             email: email,
             password: password,
-            confirmPassword: confirmPassword,
             createdOn: new Date(),
             lastUpdatedOn: new Date(),
             ro: ro,

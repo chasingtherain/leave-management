@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useMainContext } from '../hooks/useMainContext'
 
 function ProfilePage() {
+    const {currentUser} = useMainContext()
     return (
         <div>
             <div className="flex flex-col w-full border-opacity-50">
@@ -12,17 +14,17 @@ function ProfilePage() {
                 <div className="grid h-58 card rounded-box place-items-center my-1">
                     <div className="form-control w-full max-w-xs">
                         <label class="label text-sm">Email 邮箱</label>
-                        <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
+                        <input type="text" className="input input-bordered w-full max-w-xs" disabled value={currentUser.email}/>
                         <label class="label text-sm">Role 角色</label>
-                        <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
+                        <input type="text" className="input input-bordered w-full max-w-xs" disabled value={currentUser.isAdmin}/>
                         <label class="label text-sm">Reporting Officer 主管</label>
-                        <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
+                        <input type="text" className="input input-bordered w-full max-w-xs" disabled value={currentUser.ro}/>
                         <label class="label text-sm">Reporting Officer Email 主管邮箱</label>
-                        <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
+                        <input type="text" className="input input-bordered w-full max-w-xs" disabled value={currentUser.reportingEmail}/>
                         <label class="label text-sm">Covering Officer 代办</label>
-                        <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
+                        <input type="text" className="input input-bordered w-full max-w-xs" disabled value={currentUser.co}/>
                         <label class="label text-sm">Covering Officer Email 代办邮箱</label>
-                        <input type="text" className="input input-bordered w-full max-w-xs" value=""/>
+                        <input type="text" className="input input-bordered w-full max-w-xs" disabled value={currentUser.coveringEmail}/>
                     </div>
                 </div>
             </div>

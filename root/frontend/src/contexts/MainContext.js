@@ -4,6 +4,7 @@ export const MainContext = createContext()
 
 export const MainContextProvider = ({ children }) => {
   const [activeTab, setActiveTab] = useState("Home") 
+  const [currentUser, setCurrentUser] = useState()
   const [userList, setUserList] = useState([])
   const [isAdmin, setIsAdmin] = useState()
   const baseBackEndUrl = `http://localhost:8008`
@@ -16,16 +17,24 @@ export const MainContextProvider = ({ children }) => {
   useEffect(()=>{
     fetchUserList()
   }, [])
-    
+
+  const validateEmail = (email) => {
+    let regex = /\S+@\S+\.\S+/;
+    return regex.test(email); // returns true if email is valid
+  }
+
   return (
     <MainContext.Provider value={{
       activeTab, 
       baseBackEndUrl,
+      currentUser,
       isAdmin,
       userList,
       fetchUserList,
       setActiveTab,
-      setIsAdmin
+      setCurrentUser,
+      setIsAdmin,
+      validateEmail
 
      }}>
       { children }

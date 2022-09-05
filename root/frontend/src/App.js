@@ -12,8 +12,10 @@ import ChangeLogPage from "./pages/ChangeLogPage";
 import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useMainContext } from "./hooks/useMainContext";
 
 function App() {
+  const {currentUser} = useMainContext()
   return (
     <>
         <Router>
@@ -22,7 +24,7 @@ function App() {
             <Route exact path = '/' element={<Homepage/>}/>
             <Route path = '/entitlement' element={<LeaveEntitlementPage/>}/>
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
-            <Route path = '/sign-in' element={<SigninPage/>}/>
+            <Route path = '/login' element={<SigninPage/>}/>
             <Route path = '/profile' element={<ProfilePage/>}/>
 
             {/* private routes */}

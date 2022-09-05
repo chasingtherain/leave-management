@@ -1,15 +1,47 @@
 const User = require('../models/user')
+const bcrypt = require('bcryptjs')
 
 exports.postLogin = (req,res,next) => {
+    const email = req.body.email
+    const password = req.body.password
+    console.log(req.body)
     User
-        .findById('6312ce766fd1f8454eed6156')
+        .findOne({email: email})
         .then(user => {
-            req.session.user = user
-            req.session.isLoggedIn = true
-            res.redirect('http://localhost:3000/')
-            console.log(req.session)
+            if(!user){
+                return res.status(400).send("email is not registered")
+            }
+            bcrypt
+                .compare(password, user.password)
+                .then(passwordMatch => {
+                    if(passwordMatch){
+                        console.log("password match!")
+                        req.session.isLoggedIn = true;
+                        req.session.user = user;
+                        return req.session.save(err => {
+                            console.log("err: ", err)
+                            console.log(user)
+                            res.status(200).send(
+                                {
+                                    _id: user._id,
+                                    name: user.name,
+                                    isAdmin: user.isAdmin,
+                                    email: user.email,
+                                    password: user.password,
+                                    createdOn: user.createdOn,
+                                    lastUpdatedOn: user.lastUpdatedOn,
+                                    ro: user.ro,
+                                    reportingEmail: user.reportingEmail,
+                                    co: user.co,
+                                    coveringEmail: user.coveringEmail,
+
+                                })
+                        })
+                    }
+                    console.log("password does not match")
+                })
+                .catch( err =>console.log(err))
         })
-        .catch(err => console.log(err))
 }
 
 exports.postLogout = (req,res,next) => {
