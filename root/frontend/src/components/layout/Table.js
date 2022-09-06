@@ -9,19 +9,19 @@ function Table({headerType}) {
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type", "Validity", "Entitlement", "Quota used", "Available"]
+    const entitlementTableHeader = ["Leave Type", "Expires On", "Entitlement", "Quota used", "Available"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
     // table data
     const mockEntitlementData = [
-        ["Vacation Leave", "05.05.2022 - 04.02.2023", "1 days", "1 days", "0 days"],
-        ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "10 days", "0 days"],
-        ["Hospitalisation Leave", "05.05.2022 - 31.12.2022", "46 days", "0 days", "46 days"],
-        ["Maternity Leave", "05.05.2022 - 31.12.2022", "160 days", "days", "160 days"],
-        ["No Pay Leave", "05.05.2022 - 31.12.2022", "1 days", "10 days", "0 days"],
-        ["Childcare Leave", "05.05.2022 - 31.12.2022", "3 days", "2 days", "1 days"],
-        ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "14 days", "13 days"],
+        ["Vacation Leave", "31.12.2022", "1 days", "1 days", "0 days"],
+        ["Medical Leave", "31.12.2022", "1 days", "10 days", "0 days"],
+        ["Hospitalisation Leave", "31.12.2022", "46 days", "0 days", "46 days"],
+        ["Maternity Leave", "31.12.2022", "160 days", "days", "160 days"],
+        ["No Pay Leave", "31.12.2022", "1 days", "10 days", "0 days"],
+        ["Childcare Leave", "31.12.2022", "3 days", "2 days", "1 days"],
+        ["Medical Leave", "31.12.2022", "1 days", "14 days", "13 days"],
     ]
 
     const mockRequestData = [

@@ -6,6 +6,7 @@ import { useMainContext } from '../hooks/useMainContext'
 
 function Homepage() {
     const {activeTab} = useMainContext()
+    const childCareYear = new Date().getFullYear() - 2
     return (
     <div>
         <div className='flex justify-between'> 
@@ -29,6 +30,9 @@ function Homepage() {
             <>
                 <h1 className='text-xl my-6'>Leave Entitlement</h1>
                 <Table headerType="entitlement"/>
+                <p className='mt-2 ml-2'>Note / 温馨提示: </p>
+                <p className='mt-2 ml-2'>Staff with child 3 years old or younger are eligible for childcare leave / 带3岁或3岁以下儿童的员工可申请育儿假</p>
+                <p className='mt-2 ml-2'>Female staff are entitled to 0.5 days of International Women's Day / 女性员工可申请 0.5 天妇女节假</p>
             </>
             )
         }

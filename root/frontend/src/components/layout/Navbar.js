@@ -24,7 +24,9 @@ function Navbar() {
                 <div className="navbar-start">
                     {
                         <button className="btn btn-ghost normal-case text-xl">
-                            <Link to="" className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </Link>
+                            {/* icon only links to homepage if user is logged in */}
+                            {!currentUser && <div className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </div>}
+                            {currentUser && <Link to="" className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </Link>}
                         </button>
                     }
 
