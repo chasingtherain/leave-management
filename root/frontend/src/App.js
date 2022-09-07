@@ -1,6 +1,5 @@
 import Homepage from "./pages/Homepage";
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import LeaveEntitlementPage from "./pages/LeaveEntitlementPage";
 import Navbar from "./components/layout/Navbar";
 import ApplyLeavePage from "./pages/ApplyLeavePage";
 import LoginPage from "./pages/LoginPage";
@@ -23,8 +22,8 @@ function App() {
         <Router>
           <Navbar/>
           <Routes>
-            <Route exact path = '/' element={<Homepage/>}/>
-            <Route path = '/entitlement' element={<LeaveEntitlementPage/>}/>
+            {currentUser && <Route exact path = '/' element={<Homepage/>}/>}
+            {<Route exact path = '/' element={<LoginPage/>}/>} {/* if user is not logged in, '/' will display login page */}
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
             <Route path = '/login' element={<LoginPage/>}/>
             <Route path = '/profile' element={<ProfilePage/>}/>

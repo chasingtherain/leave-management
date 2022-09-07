@@ -4,25 +4,19 @@ import { useMainContext } from '../../hooks/useMainContext'
 import CancelLeaveModal from '../modal/CancelLeaveModal'
 
 function Table({headerType}) {
-    const {userList} = useMainContext()
+    const {currentUser, userList} = useMainContext()
+
+    const currentUserLeave = currentUser.leave
+    console.log(currentUserLeave)
 
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type", "Expires On", "Entitlement", "Quota used", "Available"]
+    const entitlementTableHeader = ["Leave Type", "Entitlement", "Quota used", "Available", "Note"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
-    // table data
-    const mockEntitlementData = [
-        ["Vacation Leave", "31.12.2022", "1 days", "1 days", "0 days"],
-        ["Medical Leave", "31.12.2022", "1 days", "10 days", "0 days"],
-        ["Hospitalisation Leave", "31.12.2022", "46 days", "0 days", "46 days"],
-        ["Maternity Leave", "31.12.2022", "160 days", "days", "160 days"],
-        ["No Pay Leave", "31.12.2022", "1 days", "10 days", "0 days"],
-        ["Childcare Leave", "31.12.2022", "3 days", "2 days", "1 days"],
-        ["Medical Leave", "31.12.2022", "1 days", "14 days", "13 days"],
-    ]
+    // mock table data
 
     const mockRequestData = [
         ["Medical Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
@@ -81,7 +75,15 @@ function Table({headerType}) {
             case "change-log":
                 return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "entitlement":
-                return mockEntitlementData.map((list,index) => <tr key={index}>{list.map((listItem,index) => <td key={index}>{listItem}</td>)}</tr>)
+                return currentUserLeave.map((leave,index) => 
+                    <tr key={index}>
+                        <td key={index}>{leave.name}</td>
+                        <td key={index}>{leave.entitlement}</td>
+                        <td key={index}>{leave.used}</td>
+                        <td key={index}>{leave.entitlement - leave.used}</td>
+                        <td key={index}>{leave.note}</td>
+                        )
+                    </tr>)
             case "request":
                 return mockRequestData.map((list,index) => 
                     (

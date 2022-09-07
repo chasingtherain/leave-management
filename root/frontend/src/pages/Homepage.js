@@ -7,6 +7,7 @@ import { useMainContext } from '../hooks/useMainContext'
 function Homepage() {
     const {activeTab} = useMainContext()
     const childCareYear = new Date().getFullYear() - 2
+
     return (
     <div>
         <div className='flex justify-between'> 

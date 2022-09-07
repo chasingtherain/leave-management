@@ -1,14 +1,15 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
+import { useMainContext } from '../hooks/useMainContext'
 
 export default function PrivateRoute() {
-    // const {user} = useAuthContext()
-    const user = true
+    const {currentUser} = useMainContext()
+
 
     return (
     <div>
         {/* if user is not logged in, direct them to sign up / sign in page; if logged in, direct to homepage */}
-        {(user) ? <Outlet/> : <Navigate to = "/"/>}
+        {(currentUser) ? <Outlet/> : <Navigate to = "/"/>}
     </div>
     )
 }
