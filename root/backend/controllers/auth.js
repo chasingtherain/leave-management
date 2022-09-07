@@ -1,15 +1,7 @@
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
-// const nodemailer = require('nodemailer')
-// const sendgridTransport = require('nodemailer-sendgrid-transport')
 
-// const transporter = nodemailer.createTransport(sendgridTransport(
-//     auth: {
-//         api_user:
-//         api_key:
-//     }
-// ))
 const sendgridMail = require('@sendgrid/mail')
 
 
@@ -50,6 +42,7 @@ exports.postLogin = (req,res,next) => {
                                 })
                         })
                     }
+                    res.status(401).send("password does not match")
                     console.log("password does not match")
                 })
                 .catch( err =>console.log(err))

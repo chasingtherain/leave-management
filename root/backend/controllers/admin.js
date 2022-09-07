@@ -2,6 +2,9 @@ const User = require('../models/user')
 
 const bcrypt = require('bcryptjs')
 
+const sendgridMail = require('@sendgrid/mail')
+
+
 exports.postCreateUser = (req,res,next) => {
     const name = req.body.name
     const isAdmin = req.body.isAdmin
@@ -39,17 +42,39 @@ exports.postCreateUser = (req,res,next) => {
                         leaveLeft: leaveLeft
                     })
                 
-                    user
+                user
                     .save()
                     .then(result => {
-                        // console.log(result)
+                        sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+                        const msg = {
+                        to: email, 
+                        from: 'mfachengdu@gmail.com', // Change to your verified sender
+                        subject: 'Welcome to LeavePlan 休划欢迎您加入',
+                        html: `
+                            <div>
+                                <p>Welcome to LeavePlan </p> 
+                                <p> Click <a href="${process.env.FRONTENDURL}/login"> here </a> to start making leave plans!</p>
+                            </div>
+                            <div>
+                                <p>Welcome to LeavePlan </p> 
+                                <p> 点击 <a href="${process.env.FRONTENDURL}/login"> 此链接 </a> 开始申请休假</p>
+                            </div>
+                        `
+                        }
+                        sendgridMail
+                            .send(msg)
+                            .then(() => {
+                                console.log('acc creation email sent to user')
+                            })
+                            .catch((error) => {
+                                console.error("sendgrid error: ", error)
+                            })
                         console.log("user created")
                     })
                     .catch(err => {
                         console.log(err)
                     })
                     res.status(200).send(user)   
-        
                 })
         })
         .catch(err => {

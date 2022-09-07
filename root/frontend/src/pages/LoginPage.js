@@ -39,6 +39,7 @@ function LoginPage() {
                     console.log(resp)
                 })
                 .catch(err => {
+                    console.log(err)
                     if(err.response.status === 400) toast.error("email is not registered!")
                     if(err.response.status === 401) toast.error("Incorrect email or password")
                     console.log(err.message, ": ", err.response.data)

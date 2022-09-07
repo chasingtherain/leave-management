@@ -42,6 +42,7 @@ function CreateUserPage() {
         return toast.error("Fill in all blanks!")
 
         const resp = await axios.post(url, formData)
+        console.log(resp)
         if(resp.status === 200) {
             fetchUserList()
             toast.success("User Created!")
