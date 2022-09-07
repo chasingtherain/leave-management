@@ -43,6 +43,8 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    resetToken: String,
+    resetTokenExpiration: Date,
     // leaveLeft: {
     //     type: Schema.Types,
     //     ref: 'User',

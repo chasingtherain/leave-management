@@ -2,12 +2,13 @@ const express = require('express')
 const colors = require('colors')
 const cors = require('cors')
 const path = require('path')
-
 const mongoose = require('mongoose')
 const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session)
 
 const MONGODB_URI = 'mongodb+srv://mfachengdu:iamsingaporean@cluster0.rbiadah.mongodb.net/leave-management?retryWrites=true&w=majority'
+
+require('dotenv').config()
 
 const app = express()
 const store = new MongoDBStore({
@@ -37,9 +38,6 @@ app.use(authRoutes)
     
 app.get('/', (req,res)=> {
     res.send("<h1>homepage</h1>")
-})
-app.use('/*', (req,res) => {
-    res.status(404).sendFile(path.join(rootDir, 'views', 'PageNotFound.html'))
 })
 
 mongoose

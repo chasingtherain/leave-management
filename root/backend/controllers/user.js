@@ -9,6 +9,4 @@ exports.getAllUser = (req,res,next) => {
             console.log('Failed to retrieve the Course List: ' + err);
         }
     });
-
-    
 }

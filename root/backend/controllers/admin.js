@@ -20,7 +20,7 @@ exports.postCreateUser = (req,res,next) => {
             if(userDoc){
                 console.log(userDoc)
                 return res.status(499).send("email already exist")
-                // return res.redirect('http://localhost:3000/create-user')
+                // return res.redirect(`${process.env.FRONTENDURL}/create-user`)
             }
             return bcrypt
                 .hash(password, 12)

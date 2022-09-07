@@ -37,7 +37,8 @@ function Navbar() {
                     {currentUser && <Link to="/profile" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Profile</Link>}
                     
                     {/* manage user is only visible by admin user */}
-                    {currentUser && (currentUser.isAdmin !== "user") && <Link to="/user-management" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Manage User</Link>}
+                    {/* {currentUser && (currentUser.isAdmin !== "user") && <Link to="/user-management" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Manage User</Link>} */}
+                    {<Link to="/user-management" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400">Manage User</Link>}
                     
                     {/* if user is not signed in, log out will be hidden */}
                     {currentUser && <Link to="/login" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400" onClick={signOutCurrentUser}>Log Out</Link>}

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import LeaveEntitlementPage from "./pages/LeaveEntitlementPage";
 import Navbar from "./components/layout/Navbar";
 import ApplyLeavePage from "./pages/ApplyLeavePage";
-import SigninPage from "./pages/SigninPage";
+import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import UserManagementPage from "./pages/UserManagementPage";
 import UpdateUserInfoPage from "./pages/UpdateUserInfoPage";
@@ -13,6 +13,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useMainContext } from "./hooks/useMainContext";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+import SetNewPasswordPage from "./pages/SetNewPasswordPage";
 
 function App() {
   const {currentUser} = useMainContext()
@@ -24,8 +26,10 @@ function App() {
             <Route exact path = '/' element={<Homepage/>}/>
             <Route path = '/entitlement' element={<LeaveEntitlementPage/>}/>
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
-            <Route path = '/login' element={<SigninPage/>}/>
+            <Route path = '/login' element={<LoginPage/>}/>
             <Route path = '/profile' element={<ProfilePage/>}/>
+            <Route path = '/change-password' element={<ChangePasswordPage/>}/>
+            <Route path = '/set-new-password/:token' element={<SetNewPasswordPage/>}/>
 
             {/* private routes */}
             <Route path = '/create-user' element={<PrivateRoute/>}>

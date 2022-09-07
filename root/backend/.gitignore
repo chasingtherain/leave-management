@@ -1,0 +1,5 @@
+sendgrid.env
+
+# dotenv environment variables file
+.env
+.env.test
