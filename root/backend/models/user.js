@@ -45,10 +45,10 @@ const userSchema = new Schema({
     },
     resetToken: String,
     resetTokenExpiration: Date,
-    // leaveLeft: {
-    //     type: Schema.Types,
-    //     ref: 'User',
-    // }
+    leave: {
+        type: Object,
+        required: true
+    }
 })
 
 module.exports = mongoose.model('User', userSchema)

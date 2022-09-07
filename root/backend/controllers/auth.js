@@ -4,7 +4,6 @@ const crypto = require('crypto')
 
 const sendgridMail = require('@sendgrid/mail')
 
-
 exports.postLogin = (req,res,next) => {
     const email = req.body.email
     const password = req.body.password
@@ -24,7 +23,7 @@ exports.postLogin = (req,res,next) => {
                         req.session.user = user;
                         return req.session.save(err => {
                             console.log("err: ", err)
-                            console.log(user)
+                            // console.log(user)
                             res.status(200).send(
                                 {
                                     _id: user._id,
@@ -38,7 +37,7 @@ exports.postLogin = (req,res,next) => {
                                     reportingEmail: user.reportingEmail,
                                     co: user.co,
                                     coveringEmail: user.coveringEmail,
-
+                                    leave: user.leave
                                 })
                         })
                     }

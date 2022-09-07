@@ -44,15 +44,6 @@ function LoginPage() {
                     if(err.response.status === 401) toast.error("Incorrect email or password")
                     console.log(err.message, ": ", err.response.data)
                 })
-            // console.log(resp.status)
-            // if(resp.status === 200) {
-            //     toast.success("Login Successful!")
-            //     navigate('/')
-            // }
-            // else {
-            //     toast.error("Incorrect email or password")
-            //     // console.log(resp.status)
-            // }
         }
         
 

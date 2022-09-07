@@ -11,6 +11,7 @@ export const MainContextProvider = ({ children }) => {
 
   const fetchUserList = async () => {
     const resp = await axios.get(`${baseBackEndUrl}/user/getAllUsers`)
+    // console.log(resp)
     setUserList(resp.data)
   }
 

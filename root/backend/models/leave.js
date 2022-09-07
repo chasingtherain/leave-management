@@ -3,36 +3,53 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const leaveSchema = new Schema({
-    annualLeave: {
-        type: Number,
+    annual: {
+        type: Object,
         required: true
     },
-    sickLeave: {
-        type: Number,
+    compassionate: {
+        type: Object,
         required: true
     },
-    hospitalisationLeave: {
-        type: Number,
+    medical: {
+        type: Object,
         required: true
     },
-    maternityLeave: {
-        type: Number,
+    hospitalisation: {
+        type: Object,
         required: true
     },
-    marriageLeave: {
-        type: Number,
+    marriage: {
+        type: Object,
         required: true
     },
-    noPayLeave: {
-        type: Number,
+    maternity: {
+        type: Object,
         required: true
     },
-    childcareLeave: {
-        type: Number,
+    miscarriage: {
+        type: Object,
         required: true
     },
-    others: {
-        type: Number,
+    natal: {
+        type: Object,
+        required: true
+    },
+    paternity: {
+        type: Object,
+        required: true
+    },
+    unpaid: {
+        type: Object,
+        required: true
+    },
+    childcare: {
+        type: Object,
+        required: true
+    },
+    womenDay: {
+        type: Object,
+        required: true
     },
    
 })
