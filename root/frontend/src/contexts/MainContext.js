@@ -9,6 +9,8 @@ export const MainContextProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState()
   const baseBackEndUrl = `http://localhost:8008`
 
+  const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
+
   const fetchUserList = async () => {
     const resp = await axios.get(`${baseBackEndUrl}/user/getAllUsers`)
     // console.log(resp)
@@ -28,11 +30,13 @@ export const MainContextProvider = ({ children }) => {
     <MainContext.Provider value={{
       activeTab, 
       baseBackEndUrl,
+      currentLeaveSelection,
       currentUser,
       isAdmin,
       userList,
       fetchUserList,
       setActiveTab,
+      setCurrentLeaveSelection,
       setCurrentUser,
       setIsAdmin,
       validateEmail

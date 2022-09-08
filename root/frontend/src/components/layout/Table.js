@@ -19,11 +19,6 @@ function Table({headerType}) {
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
     // mock table data
-
-    const mockRequestData = [
-        ["Medical Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
-        ["Vacation Leave", "05.05.2022 - 06.05.2022", "1 days", "03.05.2022", "1 days"],
-    ]
     
     const mockHistoryData = [
         ["Vacation Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
@@ -86,18 +81,18 @@ function Table({headerType}) {
                         <td key={index}><InfoBubble info={leave.note}/></td>
                         <td key={index}>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
-            case "request":
-                return mockRequestData.map((list,index) => 
-                    (
-                        <tr key={index}>
-                            {list.map((listItem,index) => <td key={index}>{listItem}</td>)}
-                            <td><div className="badge badge-neutral rounded-sm">Pending</div></td>
-                            <td>
-                                {/* <button className='btn btn-sm btn-error' onClick={handleCancelLeaveClick}>cancel 取消</button> */}
-                                <CancelLeaveModal/>
-                            </td>
-                        </tr>
-                    ))
+            // case "request":
+            //     return mockRequestData.map((list,index) => 
+            //         (
+            //             <tr key={index}>
+            //                 {list.map((listItem,index) => <td key={index}>{listItem}</td>)}
+            //                 <td><div className="badge badge-neutral rounded-sm">Pending</div></td>
+            //                 <td>
+            //                     {/* <button className='btn btn-sm btn-error' onClick={handleCancelLeaveClick}>cancel 取消</button> */}
+            //                     <CancelLeaveModal/>
+            //                 </td>
+            //             </tr>
+            //         ))
             case "history":
                 return mockHistoryData.map((list,index) => 
                     (

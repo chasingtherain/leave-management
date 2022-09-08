@@ -6,15 +6,9 @@ import RadioSelection from '../components/layout/RadioSelection';
 import { useMainContext } from '../hooks/useMainContext';
 
 function ApplyLeavePage() {
-    const leaveOptions = [
-    "Annual Vacation Leave 年假", 
-    "Sick leave 病假",
-    "Childcare leave 育儿假",
-    "Maternity leave 产假",
-    "No pay leave 无薪假",
-    "Hospitalisation leave 住院假",
-    ]
-    const {baseBackEndUrl} = useMainContext()
+
+    const {baseBackEndUrl, currentUser} = useMainContext()
+    const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name))
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
