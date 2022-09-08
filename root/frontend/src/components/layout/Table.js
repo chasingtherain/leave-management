@@ -2,17 +2,19 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
 import CancelLeaveModal from '../modal/CancelLeaveModal'
+import InfoBubble from './InfoBubble'
 
 function Table({headerType}) {
     const {currentUser, userList} = useMainContext()
 
     const currentUserLeave = currentUser.leave
     console.log(currentUserLeave)
+    console.log(currentUserLeave.rollover)
 
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type", "Entitlement", "Quota used", "Available", "Note"]
+    const entitlementTableHeader = ["Leave Type", "Entitlement ", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
@@ -81,8 +83,8 @@ function Table({headerType}) {
                         <td key={index}>{leave.entitlement}</td>
                         <td key={index}>{leave.used}</td>
                         <td key={index}>{leave.entitlement - leave.used}</td>
-                        <td key={index}>{leave.note}</td>
-                        )
+                        <td key={index}><InfoBubble info={leave.note}/></td>
+                        <td key={index}>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
             case "request":
                 return mockRequestData.map((list,index) => 
