@@ -50,6 +50,8 @@ function ApplyLeavePage() {
         console.log(numOfSelectedLeave)
         // user must have enough leave 
 
+        // start date must be smaller than end date
+
         const formData = {
             userId: currentUser._id,
             userEmail:currentUser.email,
@@ -99,7 +101,7 @@ function ApplyLeavePage() {
                             className='border-[1px] border-primary w-48 h-10 rounded-sm' 
                             selected={(startDateRadioSelection === "Full Day") ? endDate : startDate} 
                             readOnly= {startDateRadioSelection !== "Full Day"}
-                            minDate={moment().toDate()}
+                            minDate={startDate}
                             onChange={(date) => setEndDate(date)} />
                     </div>
                 </div>
