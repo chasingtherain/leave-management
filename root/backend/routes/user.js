@@ -14,6 +14,8 @@ router.use('/get_userinfo:id', (req,res)=> {
 
 router.get('/getAllUsers', userController.getAllUser)
 
+router.get('/numOfDays', userController.getNumOfDaysApplied)
+
 // router.use('/update_userinfo', )
 
 router.use('/delete', (req,res)=> {

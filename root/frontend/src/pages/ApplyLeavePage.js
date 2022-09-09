@@ -4,14 +4,36 @@ import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import RadioSelection from '../components/layout/RadioSelection';
 import { useMainContext } from '../hooks/useMainContext';
+import moment from 'moment';
 
 function ApplyLeavePage() {
+    const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
 
-    const {baseBackEndUrl, currentUser} = useMainContext()
-    const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name))
-    const [startDate, setStartDate] = useState(new Date())
-    const [endDate, setEndDate] = useState(new Date())
+    const {baseBackEndUrl, currentUser, currentLeaveSelection} = useMainContext()
+    // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
+    const date = new Date()
+    const [startDate, setStartDate] = useState(date.getTime())
+    const [startDateRadioSelection, setStartDateRadioSelection] = useState("Full Day")
+    const [endDate, setEndDate] = useState(date.getTime())
+    const [endDateRadioSelection, setEndDateRadioSelection] = useState("Full Day")
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
+
+    // var diff = moment('2017-05-15', 'YYYY-MM-DD').businessDiff(moment('2017-05-08', 'YYYY-MM-DD'));
+    // console.log(diff)
+
+    // console.log(moment().weekdayCalc('1 Jan 2015','31 Dec 2015',[1,2,3,4,5]))
+    // const calculateNumOfLeaveTaken = () => {
+    //     if(startDate === endDate) {
+    //         if (startDateRadioSelection === "Full Day" || endDateRadioSelection === "Full Day")
+    //             console.log(1)
+    //     }
+    //     else {
+    //         console.log(((endDate-startDate)/ 1000 / 86399) + 1)
+    //     }
+    // }
+    // calculateNumOfLeaveTaken()
+    // console.log(parseInt((startDate.getTime() / 1000).toFixed(0)))
+    // console.log(((endDate.getTime() / 1000) - (startDate.getTime() / 1000) + 1)/86400)
 
   return (
     <form className="" onSubmit="">
@@ -28,17 +50,34 @@ function ApplyLeavePage() {
                 <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Dates</label>
                 <div className='flex'>
                     <div>
-                        <label htmlFor="start date" className="text-sm">Start Date</label>
-                        <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={startDate} onChange={(date) => setStartDate(date)} />
-                        <RadioSelection radioType="leaveDateRadio" id="startDateRadio"/>
+                        <label htmlFor="startDate" className="text-sm">Start Date</label>
+                        <ReactDatePicker 
+                            className='border-[1px] border-primary w-2/3 h-10 rounded-sm' 
+                            selected={startDate} 
+                            minDate={moment().toDate()}
+                            onChange={(date) => setStartDate(date)} 
+                        />
+                        <div className='mt-2' onChange={(e) => setStartDateRadioSelection(e.target.value)}>
+                            <input type="radio" id="fullDay" name="startDateRadio" className="radio-sm required" value="fullDay" defaultChecked/> Full Day <br/>
+                            <input type="radio" id="AM" name="startDateRadio" className="radio-sm required" value="AM"/> AM <br/>
+                            <input type="radio" id="PM" name="startDateRadio" className="radio-sm required" value="PM"/> PM
+                        </div>
                     </div>
                     <div className='mx-8'>
-                        <label htmlFor="remarks" className="text-sm">End Date</label>
-                        <ReactDatePicker className='border-[1px] border-primary w-2/3 h-10 rounded-sm' selected={endDate} onChange={(date) => setEndDate(date)} />
-                        <RadioSelection radioType="leaveDateRadio" id="endDateRadio"/>
+                        <label htmlFor="endDate" className="text-sm">End Date</label>
+                        <ReactDatePicker 
+                            className='border-[1px] border-primary w-2/3 h-10 rounded-sm' 
+                            selected={endDate} 
+                            minDate={moment().toDate()}
+                            onChange={(date) => setEndDate(date)} />
+                        <div className='mt-2' onChange={(e) => setEndDateRadioSelection(e.target.value)}>
+                            <input type="radio" id="fullDay" name="endDateRadio" className="radio-sm required" value="fullDay" defaultChecked/> Full Day <br/>
+                            <input type="radio" id="AM" name="endDateRadio" className="radio-sm required" value="AM"/> AM <br/>
+                            <input type="radio" id="PM" name="endDateRadio" className="radio-sm required" value="PM"/> PM
+                        </div>
                     </div>
                 </div>
-                <p className='text-sm mt-3'>You have selected X number of days of leaveType.</p>
+                <p className='text-sm mt-3'>{`You have selected X days of ${currentLeaveSelection}.`}</p>
                 <p className='text-sm'>Balance of: X days for leaveType</p>
             </div>
 
