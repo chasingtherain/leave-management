@@ -6,52 +6,41 @@ import RadioSelection from '../components/layout/RadioSelection';
 import { useMainContext } from '../hooks/useMainContext';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function ApplyLeavePage() {
     const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
 
     const {baseBackEndUrl, currentUser, currentLeaveSelection} = useMainContext()
     // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
-    const date = new Date()
-    const [startDate, setStartDate] = useState(date.getTime())
+
+    const [startDate, setStartDate] = useState()
     const [startDateRadioSelection, setStartDateRadioSelection] = useState("Full Day")
-    const [endDate, setEndDate] = useState(date.getTime())
+    const [endDate, setEndDate] = useState()
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
     const [remarks, setRemarks] = useState("")
+    const [numOfDaysApplied, setNumOfDaysApplied] = useState()
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeave = userSelectedLeave[0].entitlement
-    // var diff = moment('2017-05-15', 'YYYY-MM-DD').businessDiff(moment('2017-05-08', 'YYYY-MM-DD'));
-    // console.log(diff)
-
-    // console.log(moment().weekdayCalc('1 Jan 2015','31 Dec 2015',[1,2,3,4,5]))
-    // const calculateNumOfLeaveTaken = () => {
-    //     if(startDate === endDate) {
-    //         if (startDateRadioSelection === "Full Day" || endDateRadioSelection === "Full Day")
-    //             console.log(1)
-    //     }
-    //     else {
-    //         console.log(((endDate-startDate)/ 1000 / 86399) + 1)
-    //     }
-    // }
-    // calculateNumOfLeaveTaken()
-    // console.log(parseInt((startDate.getTime() / 1000).toFixed(0)))
-    // console.log(((endDate.getTime() / 1000) - (startDate.getTime() / 1000) + 1)/86400)
-
     const validateAndSubmitLeaveApplication = (e) => {
         e.preventDefault()
-        if(currentLeaveSelection)
-            toast.error("leave type not selected")
-        if(!checkBoxStatus)
-            toast.error("Checkbox not checked!")
+        
+        if(!currentLeaveSelection)
+            return toast.error("leave type not selected")
+        if(startDate === undefined || endDate === undefined)
+            return toast.error("start and end date must be selected!")
         if(!startDateRadioSelection)
-            toast.error("Please select AM, PM Leave or Full Day")
-        const numOfSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
-        console.log(numOfSelectedLeave)
+            return toast.error("Please select AM, PM Leave or Full Day")
+
         // user must have enough leave 
-
-        // start date must be smaller than end date
-
+            
+        // start date must be earlier or equal to end date
+        if (startDate > endDate) 
+        return toast.error("start date cannot be later than end date!")
+        
+        if(!checkBoxStatus)
+            return toast.error("Checkbox not checked!")
         const formData = {
             userId: currentUser._id,
             userEmail:currentUser.email,
@@ -63,7 +52,45 @@ function ApplyLeavePage() {
         }
     }
 
-    const enable = false
+    const handleStartDateSelection = (date) => {
+        setStartDate(date.getTime())
+        if (endDate) { // if end date is already selected, call date calculation function
+            console.log("day calculation triggered!")
+            if(startDateRadioSelection !== "Full Day"){
+                calculateNumOfBizDays(startDate, date.getTime())
+            }
+        }
+    }
+    const handleEndDateSelection = (date) => {
+        setEndDate(date.getTime())
+        if (startDate) { // if start date is already selected, call date calculation function
+            console.log("day calculation triggered!")
+            calculateNumOfBizDays(date.getTime(), endDate)
+        }
+    }
+
+    const calculateNumOfBizDays = (start, end) => {
+        const data = {
+            startDate: start,
+            endDate: end
+        }
+
+        axios
+            .post(`${baseBackEndUrl}/user/numOfDays`, data)
+            .then(res => {
+                console.log(res)
+                setNumOfDaysApplied(res.data.numOfDaysApplied)
+            })
+    }
+
+    const handleRadioSelection = (e) => {
+        setStartDateRadioSelection(e.target.value)
+        if(e.target.value !== "Full Day"){
+            setNumOfDaysApplied(0.5)
+        }
+        else setNumOfDaysApplied()
+    }
+
 
   return (
     <form className="" onSubmit={validateAndSubmitLeaveApplication}>
@@ -87,9 +114,9 @@ function ApplyLeavePage() {
                             className='border-[1px] border-primary w-48 h-10 rounded-sm' 
                             selected={startDate} 
                             minDate={moment().toDate()}
-                            onChange={(date) => setStartDate(date)} 
+                            onChange={(date) => handleStartDateSelection(date)} 
                         />
-                        <div className='mt-2 flex gap-1 justify-start' onChange={(e) => setStartDateRadioSelection(e.target.value)}>
+                        <div className='mt-2 flex gap-1 justify-start' onChange={(e) => handleRadioSelection(e)}>
                             <input type="radio" id="fullDay" name="dateRangeRadio" className="radio-sm required" value="Full Day" defaultChecked/> Full Day
                             <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
                             <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
@@ -102,11 +129,15 @@ function ApplyLeavePage() {
                             selected={(startDateRadioSelection === "Full Day") ? endDate : startDate} 
                             readOnly= {startDateRadioSelection !== "Full Day"}
                             minDate={startDate}
-                            onChange={(date) => setEndDate(date)} />
+                            onChange={(date) => handleEndDateSelection(date)} />
                     </div>
                 </div>
-                <p className='text-sm mt-3'>{`You have selected X days of ${currentLeaveSelection}.`}</p>
-                <p className='text-sm'>Balance of: X days for leaveType</p>
+                {numOfDaysApplied &&
+                <>
+                    <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
+                    <p className='text-sm'>Balance of: {numOfSelectedLeave - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>
+                </>
+                }
             </div>
 
             <div className="my-4">

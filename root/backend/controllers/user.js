@@ -14,18 +14,17 @@ exports.getAllUsers = (req,res,next) => {
 }
 
 exports.getNumOfDaysApplied = (req,res,next) => {
-    const startDate = moment.unix(1318781876).format("DD-MMM-YYYY");
-    const endDate = moment.unix(1319781876).format("DD-MMM-YYYY");
+    const startDate = req.body.startDate
+    const endDate = req.body.endDate
 
-    console.log("day: ", day)
+    console.log(moment(startDate).format("DD MMM YYYY"), moment(endDate).format("DD MMM YYYY"))
 
     const numOfDays = moment().weekdayCalc({  
-        rangeStart: startDate,  
-        rangeEnd: endDate,  
+        rangeStart: moment(startDate).format("DD MMM YYYY"),  
+        rangeEnd: moment(endDate).format("DD MMM YYYY"),  
         weekdays: [1,2,3,4,5],  
-        exclusions: ['6 Apr 2015','7 Apr 2015'],
+        exclusions: ['12 Sep 2022','7 Apr 2015'],
         inclusions: ['10 Apr 2015']
       })
-    console.log(numOfDays);
-    res.status(200).send({numOfDays: numOfDays})
+    res.status(200).send({numOfDaysApplied: numOfDays})
 }
