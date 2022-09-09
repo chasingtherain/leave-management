@@ -16,7 +16,6 @@ function ApplyLeavePage() {
     const [startDate, setStartDate] = useState(date.getTime())
     const [startDateRadioSelection, setStartDateRadioSelection] = useState("Full Day")
     const [endDate, setEndDate] = useState(date.getTime())
-    const [endDateRadioSelection, setEndDateRadioSelection] = useState("Full Day")
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
     const [remarks, setRemarks] = useState("")
 
@@ -45,12 +44,24 @@ function ApplyLeavePage() {
             toast.error("leave type not selected")
         if(!checkBoxStatus)
             toast.error("Checkbox not checked!")
-        if(!startDateRadioSelection || !endDateRadioSelection)
+        if(!startDateRadioSelection)
             toast.error("Please select AM, PM Leave or Full Day")
         const numOfSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
         console.log(numOfSelectedLeave)
         // user must have enough leave 
+
+        const formData = {
+            userId: currentUser._id,
+            userEmail:currentUser.email,
+            coveringEmail: currentUser.coveringEmail,
+            reportingEmail: currentUser.reportingEmail,
+            remarks: remarks,
+            leaveType: currentLeaveSelection,
+            numOfDaysTaken: 1
+        }
     }
+
+    const enable = false
 
   return (
     <form className="" onSubmit={validateAndSubmitLeaveApplication}>
@@ -67,33 +78,29 @@ function ApplyLeavePage() {
             </div>
             <div className="my-4">
                 <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Dates</label>
-                <div className='flex'>
+                <div className='flex w-1/3'>
                     <div>
                         <label htmlFor="startDate" className="text-sm">Start Date</label>
                         <ReactDatePicker 
-                            className='border-[1px] border-primary w-2/3 h-10 rounded-sm' 
+                            className='border-[1px] border-primary w-48 h-10 rounded-sm' 
                             selected={startDate} 
                             minDate={moment().toDate()}
                             onChange={(date) => setStartDate(date)} 
                         />
-                        <div className='mt-2' onChange={(e) => setStartDateRadioSelection(e.target.value)}>
-                            <input type="radio" id="fullDay" name="startDateRadio" className="radio-sm required" value="fullDay" defaultChecked/> Full Day <br/>
-                            <input type="radio" id="AM" name="startDateRadio" className="radio-sm required" value="AM"/> AM <br/>
-                            <input type="radio" id="PM" name="startDateRadio" className="radio-sm required" value="PM"/> PM
+                        <div className='mt-2 flex gap-1 justify-start' onChange={(e) => setStartDateRadioSelection(e.target.value)}>
+                            <input type="radio" id="fullDay" name="dateRangeRadio" className="radio-sm required" value="Full Day" defaultChecked/> Full Day
+                            <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
+                            <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
                         </div>
                     </div>
-                    <div className='mx-8'>
+                    <div className='mr-28'>
                         <label htmlFor="endDate" className="text-sm">End Date</label>
                         <ReactDatePicker 
-                            className='border-[1px] border-primary w-2/3 h-10 rounded-sm' 
-                            selected={endDate} 
+                            className='border-[1px] border-primary w-48 h-10 rounded-sm' 
+                            selected={(startDateRadioSelection === "Full Day") ? endDate : startDate} 
+                            readOnly= {startDateRadioSelection !== "Full Day"}
                             minDate={moment().toDate()}
                             onChange={(date) => setEndDate(date)} />
-                        <div className='mt-2' onChange={(e) => setEndDateRadioSelection(e.target.value)}>
-                            <input type="radio" id="fullDay" name="endDateRadio" className="radio-sm required" value="fullDay" defaultChecked/> Full Day <br/>
-                            <input type="radio" id="AM" name="endDateRadio" className="radio-sm required" value="AM"/> AM <br/>
-                            <input type="radio" id="PM" name="endDateRadio" className="radio-sm required" value="PM"/> PM
-                        </div>
                     </div>
                 </div>
                 <p className='text-sm mt-3'>{`You have selected X days of ${currentLeaveSelection}.`}</p>
