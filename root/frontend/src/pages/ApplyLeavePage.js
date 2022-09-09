@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import RadioSelection from '../components/layout/RadioSelection';
 import { useMainContext } from '../hooks/useMainContext';
 import moment from 'moment';
+import { toast } from 'react-toastify';
 
 function ApplyLeavePage() {
     const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
@@ -17,7 +18,10 @@ function ApplyLeavePage() {
     const [endDate, setEndDate] = useState(date.getTime())
     const [endDateRadioSelection, setEndDateRadioSelection] = useState("Full Day")
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
+    const [remarks, setRemarks] = useState("")
 
+    const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
+    const numOfSelectedLeave = userSelectedLeave[0].entitlement
     // var diff = moment('2017-05-15', 'YYYY-MM-DD').businessDiff(moment('2017-05-08', 'YYYY-MM-DD'));
     // console.log(diff)
 
@@ -35,8 +39,21 @@ function ApplyLeavePage() {
     // console.log(parseInt((startDate.getTime() / 1000).toFixed(0)))
     // console.log(((endDate.getTime() / 1000) - (startDate.getTime() / 1000) + 1)/86400)
 
+    const validateAndSubmitLeaveApplication = (e) => {
+        e.preventDefault()
+        if(currentLeaveSelection)
+            toast.error("leave type not selected")
+        if(!checkBoxStatus)
+            toast.error("Checkbox not checked!")
+        if(!startDateRadioSelection || !endDateRadioSelection)
+            toast.error("Please select AM, PM Leave or Full Day")
+        const numOfSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
+        console.log(numOfSelectedLeave)
+        // user must have enough leave 
+    }
+
   return (
-    <form className="" onSubmit="">
+    <form className="" onSubmit={validateAndSubmitLeaveApplication}>
         <div className='grid place-items-center mt-8 mb-6'>
             <p className='text-slate-600 text-3xl'>Apple <span className="text-sky-500">Leave</span> </p>
             <p className='text-slate-600 text-3xl'>请<span className="text-sky-500">假</span> </p>
@@ -45,6 +62,8 @@ function ApplyLeavePage() {
             <div className="my-4">
                 <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Type</label>
                 <Select options={leaveOptions}/>
+                {numOfSelectedLeave && <p className='mt-4'>You have {numOfSelectedLeave} days of: {currentLeaveSelection}</p>}
+                {numOfSelectedLeave && <p>您有{numOfSelectedLeave}天的: {currentLeaveSelection}</p>}
             </div>
             <div className="my-4">
                 <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Dates</label>
@@ -83,7 +102,14 @@ function ApplyLeavePage() {
 
             <div className="my-4">
                 <label htmlFor="remarks" className="text-lg font-weight-900 mr-6 label">Remarks</label>
-                <textarea id="remarks" className="w-1/3 py-2 px-4 placeholder-gray-400 rounded-lg border-2" placeholder="Reason for leave application (optional) / 请假原因 (选填）" name="comment" rows="2"></textarea>
+                <textarea 
+                    id="remarks" 
+                    className="w-1/3 py-2 px-4 placeholder-gray-400 rounded-lg border-2" 
+                    placeholder="Reason for leave application (optional) / 请假原因 (选填）" 
+                    name="comment" 
+                    rows="2"
+                    onChange={(e) => setRemarks(e.target.value)}
+                    ></textarea>
                 {/* <textarea required onChange={(e)=> setFeedbackContent(e.target.value)} value={feedbackContent} minLength="15" className=" w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent" id="comment" placeholder="How can we improve and serve you better?" name="comment" rows="5" cols="40">
                 </textarea> */}
             </div>
@@ -95,12 +121,12 @@ function ApplyLeavePage() {
                 </button>
             </div>
             <div className="my-4">
-                <label htmlFor="RO" className="text-lg font-weight-900 -ml-1 label">Reporting Officer</label>
-                <input id="RO" type="text" disabled className="input input-bordered input-primary w-full max-w-xs" value="Shen Yun Xi"/>
+                <label htmlFor="reportingEmail" className="text-lg font-weight-900 -ml-1 label">RO email 主管邮件</label>
+                <input id="reportingEmail" type="text" disabled className="input input-bordered input-primary w-full max-w-xs" value={currentUser.reportingEmail}/>
             </div>
             <div className="my-4">
-                <label htmlFor="CO" className="text-lg font-weight-900 -ml-1 label">Covering Officer</label>
-                <input id="CO" type="text" disabled className="input input-bordered input-primary w-full max-w-xs" value="He Hua"/>
+                <label htmlFor="coveringEmail" className="text-lg font-weight-900 -ml-1 label">CO email 代办邮件</label>
+                <input id="coveringEmail" type="text" disabled className="input input-bordered input-primary w-full max-w-xs" value={currentUser.coveringEmail}/>
             </div>
             <div className="flex items-center">
                 <label className="cursor-pointer label -ml-1">
@@ -108,7 +134,7 @@ function ApplyLeavePage() {
                 </label>
                 <div>   
                     <p className="label-text">I declare that my covering officer has agreed to cover my duties during my leave period. </p>
-                    <p className="label-text">代班人员已答应能在我休假的期间代班。</p>
+                    <p className="label-text">代办已答应在我休假的期间代班。</p>
                 </div>
 
             </div>

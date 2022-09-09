@@ -2,7 +2,7 @@ const User = require('../models/user')
 var moment = require('moment')
 require('moment-weekday-calc');
 
-exports.getAllUser = (req,res,next) => {
+exports.getAllUsers = (req,res,next) => {
     User.find((err, docs) => {
         if (!err) {
             // console.log(docs)
