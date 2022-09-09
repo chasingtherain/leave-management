@@ -7,12 +7,15 @@ import { useMainContext } from '../hooks/useMainContext';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function ApplyLeavePage() {
-    const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
-
+    
     const {baseBackEndUrl, currentUser, currentLeaveSelection} = useMainContext()
+    const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
     // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
+
+    const navigate = useNavigate()
 
     const [startDate, setStartDate] = useState()
     const [startDateRadioSelection, setStartDateRadioSelection] = useState("Full Day")
@@ -22,8 +25,10 @@ function ApplyLeavePage() {
     const [numOfDaysApplied, setNumOfDaysApplied] = useState()
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
-    const numOfSelectedLeave = userSelectedLeave[0].entitlement
+    const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
+    
     const validateAndSubmitLeaveApplication = (e) => {
+        const url = `${baseBackEndUrl}/user/applyLeave`
         e.preventDefault()
         
         if(!currentLeaveSelection)
@@ -34,38 +39,51 @@ function ApplyLeavePage() {
             return toast.error("Please select AM, PM Leave or Full Day")
 
         // user must have enough leave 
-            
-        // start date must be earlier or equal to end date
-        if (startDate > endDate) 
-        return toast.error("start date cannot be later than end date!")
+        if(numOfDaysApplied > numOfSelectedLeaveEntitlement)
+            return toast.error("Insufficient leave!")
         
         if(!checkBoxStatus)
             return toast.error("Checkbox not checked!")
-        const formData = {
+        const applyLeaveFormData = {
             userId: currentUser._id,
             userEmail:currentUser.email,
             coveringEmail: currentUser.coveringEmail,
             reportingEmail: currentUser.reportingEmail,
             remarks: remarks,
             leaveType: currentLeaveSelection,
-            numOfDaysTaken: 1
+            numOfDaysTaken: numOfDaysApplied
+            // fileUpload: TBC
         }
+        axios
+            .post(url,applyLeaveFormData)
+            .then((res) =>{
+                console.log(res)
+                if(res.status === 200) {
+                    toast.success("Leave application successful!")
+                    // call user API to get most updated info
+                    navigate('/')
+                }
+            })
+            .catch(err => console.log(err))
     }
 
     const handleStartDateSelection = (date) => {
+        if(date.getTime() > endDate) {
+            console.log(date.getTime(),endDate)
+            setEndDate()
+            setNumOfDaysApplied()
+        }
         setStartDate(date.getTime())
         if (endDate) { // if end date is already selected, call date calculation function
             console.log("day calculation triggered!")
-            if(startDateRadioSelection !== "Full Day"){
-                calculateNumOfBizDays(startDate, date.getTime())
-            }
+            calculateNumOfBizDays(date.getTime(), endDate)
         }
     }
     const handleEndDateSelection = (date) => {
         setEndDate(date.getTime())
         if (startDate) { // if start date is already selected, call date calculation function
             console.log("day calculation triggered!")
-            calculateNumOfBizDays(date.getTime(), endDate)
+            calculateNumOfBizDays(startDate, date.getTime())
         }
     }
 
@@ -81,6 +99,9 @@ function ApplyLeavePage() {
                 console.log(res)
                 setNumOfDaysApplied(res.data.numOfDaysApplied)
             })
+            .catch(err =>{
+                console.log(err)
+            })
     }
 
     const handleRadioSelection = (e) => {
@@ -88,54 +109,61 @@ function ApplyLeavePage() {
         if(e.target.value !== "Full Day"){
             setNumOfDaysApplied(0.5)
         }
-        else setNumOfDaysApplied()
+        else {
+            // reset start and end date when user selects full day after selecting AM/PM prior
+            setStartDate()
+            setEndDate()
+            // hide helping text by setting days applied to 0
+            setNumOfDaysApplied()
+        }
     }
 
 
   return (
     <form className="" onSubmit={validateAndSubmitLeaveApplication}>
-        <div className='grid place-items-center mt-8 mb-6'>
-            <p className='text-slate-600 text-3xl'>Apple <span className="text-sky-500">Leave</span> </p>
+        <div className='grid place-items-center mt-8 mb-3'>
+            <p className='text-slate-600 text-3xl'>Apply <span className="text-sky-500">Leave</span> </p>
             <p className='text-slate-600 text-3xl'>请<span className="text-sky-500">假</span> </p>
         </div>
-        <div className="w-full px-5 py-8 ml-[35%]">
+        <div className="w-full px-5 ml-[40%]">
             <div className="my-4">
                 <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Type</label>
                 <Select options={leaveOptions}/>
-                {numOfSelectedLeave && <p className='mt-4'>You have {numOfSelectedLeave} days of: {currentLeaveSelection}</p>}
-                {numOfSelectedLeave && <p>您有{numOfSelectedLeave}天的: {currentLeaveSelection}</p>}
+                {numOfSelectedLeaveEntitlement && <p className='mt-4 text-sm'>You have {numOfSelectedLeaveEntitlement} days of: {currentLeaveSelection}</p>}
+                {numOfSelectedLeaveEntitlement && <p className='text-sm'>您有{numOfSelectedLeaveEntitlement}天的: {currentLeaveSelection}</p>}
             </div>
             <div className="my-4">
-                <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Dates</label>
-                <div className='flex w-1/3'>
+                <div className='flex'>
                     <div>
                         <label htmlFor="startDate" className="text-sm">Start Date</label>
-                        <ReactDatePicker 
-                            className='border-[1px] border-primary w-48 h-10 rounded-sm' 
+                        <ReactDatePicker
+                            dateFormat='dd MMM yyyy'
+                            className='border-[1px] border-secondary w-32 h-10 rounded-sm' 
                             selected={startDate} 
                             minDate={moment().toDate()}
                             onChange={(date) => handleStartDateSelection(date)} 
                         />
-                        <div className='mt-2 flex gap-1 justify-start' onChange={(e) => handleRadioSelection(e)}>
-                            <input type="radio" id="fullDay" name="dateRangeRadio" className="radio-sm required" value="Full Day" defaultChecked/> Full Day
-                            <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
-                            <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
-                        </div>
                     </div>
                     <div className='mr-28'>
                         <label htmlFor="endDate" className="text-sm">End Date</label>
                         <ReactDatePicker 
-                            className='border-[1px] border-primary w-48 h-10 rounded-sm' 
+                            dateFormat='dd MMM yyyy' 
+                            className='border-[1px] border-secondary w-32 h-10 rounded-sm' 
                             selected={(startDateRadioSelection === "Full Day") ? endDate : startDate} 
                             readOnly= {startDateRadioSelection !== "Full Day"}
                             minDate={startDate}
                             onChange={(date) => handleEndDateSelection(date)} />
                     </div>
                 </div>
+                <div className='mt-4 flex gap-2' onChange={(e) => handleRadioSelection(e)}>
+                    <input type="radio" id="fullDay" name="dateRangeRadio" className="radio-sm required" value="Full Day" defaultChecked/> Full Day
+                    <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
+                    <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
+                </div>
                 {numOfDaysApplied &&
                 <>
                     <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
-                    <p className='text-sm'>Balance of: {numOfSelectedLeave - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>
+                    <p className='text-sm'>Balance of: {numOfSelectedLeaveEntitlement - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>
                 </>
                 }
             </div>
@@ -144,10 +172,10 @@ function ApplyLeavePage() {
                 <label htmlFor="remarks" className="text-lg font-weight-900 mr-6 label">Remarks</label>
                 <textarea 
                     id="remarks" 
-                    className="w-1/3 py-2 px-4 placeholder-gray-400 rounded-lg border-2" 
-                    placeholder="Reason for leave application (optional) / 请假原因 (选填）" 
+                    className="w-80 py-2 px-4 placeholder-gray-400 rounded-lg border-2" 
+                    placeholder="Reason (optional) / 请假原因(选填)" 
                     name="comment" 
-                    rows="2"
+                    rows="3"
                     onChange={(e) => setRemarks(e.target.value)}
                     ></textarea>
                 {/* <textarea required onChange={(e)=> setFeedbackContent(e.target.value)} value={feedbackContent} minLength="15" className=" w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent" id="comment" placeholder="How can we improve and serve you better?" name="comment" rows="5" cols="40">
@@ -156,7 +184,7 @@ function ApplyLeavePage() {
             <div>
                 <label htmlFor="RO" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
                 <p className='text-xs'> MC is compulsory / 病假单必上传</p>
-                <button className="btn btn-xs text-white text-center text-sm mt-2">
+                <button type="button" className="btn btn-xs text-white text-center text-sm mt-2">
                     Upload
                 </button>
             </div>
@@ -170,10 +198,10 @@ function ApplyLeavePage() {
             </div>
             <div className="flex items-center">
                 <label className="cursor-pointer label -ml-1">
-                    <input type="checkbox" checked={checkBoxStatus} onClick={() => setCheckBoxStatus(!checkBoxStatus)} className="checkbox checkbox-secondary mr-2" />
+                    <input type="checkbox" checked={checkBoxStatus} onClick={() => setCheckBoxStatus(!checkBoxStatus)} className="checkbox checkbox-primary mr-2" />
                 </label>
                 <div>   
-                    <p className="label-text">I declare that my covering officer has agreed to cover my duties during my leave period. </p>
+                    <p className="label-text whitespace-pre-line mb-2">{`I declare that my covering officer has agreed\nto cover my duties during my leave period.`}</p>
                     <p className="label-text">代办已答应在我休假的期间代班。</p>
                 </div>
 
