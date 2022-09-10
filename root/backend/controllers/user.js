@@ -37,14 +37,6 @@ exports.getNumOfDaysApplied = (req,res,next) => {
 }
 
 exports.postLeaveApplicationForm = (req,res,next) => {
-    // data sent:
-
-        // userEmail:currentUser.email,
-        // coveringEmail: currentUser.coveringEmail,
-        // reportingEmail: currentUser.reportingEmail,
-        // remarks: remarks,
-        // leaveType: currentLeaveSelection,
-        // numOfDaysTaken: numOfDaysApplied
         const userId = req.body.userId
         const userEmail = req.body.userEmail
         const coveringEmail = req.body.coveringEmail
@@ -56,7 +48,6 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         const endDate = moment(req.body.endDate).format("DD MMM YYYY")
 
     // find userid from mongodb
-
     User
         .findOne({_id: userId})
         .then(user => {
@@ -122,7 +113,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                     .catch((error) => {
                         console.error("sendgrid error when sending to reporting: ", error)
                     })
-
+                
+                // create leave history details and push into User
 
             })
             .catch(err => console.log("postLeaveApplicationForm err: ", err))

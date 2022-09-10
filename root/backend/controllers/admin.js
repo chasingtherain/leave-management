@@ -1,5 +1,4 @@
 const User = require('../models/user')
-const Leave = require('../models/leave')
 
 
 const bcrypt = require('bcryptjs')
