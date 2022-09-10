@@ -46,6 +46,8 @@ function ApplyLeavePage() {
             return toast.error("Checkbox not checked!")
         const applyLeaveFormData = {
             userId: currentUser._id,
+            startDate: startDate,
+            endDate: endDate,
             userEmail:currentUser.email,
             coveringEmail: currentUser.coveringEmail,
             reportingEmail: currentUser.reportingEmail,
@@ -53,6 +55,7 @@ function ApplyLeavePage() {
             leaveType: currentLeaveSelection,
             numOfDaysTaken: numOfDaysApplied
             // fileUpload: TBC
+            // status: pending, TBC
         }
         axios
             .post(url,applyLeaveFormData)

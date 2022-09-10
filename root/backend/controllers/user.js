@@ -2,6 +2,9 @@ const User = require('../models/user')
 var moment = require('moment');
 require('moment-weekday-calc');
 
+
+const sendgridMail = require('@sendgrid/mail')
+
 exports.getAllUsers = (req,res,next) => {
     User.find((err, docs) => {
         if (!err) {
@@ -35,38 +38,98 @@ exports.getNumOfDaysApplied = (req,res,next) => {
 
 exports.postLeaveApplicationForm = (req,res,next) => {
     // data sent:
-        // userId: currentUser._id,
+
         // userEmail:currentUser.email,
         // coveringEmail: currentUser.coveringEmail,
         // reportingEmail: currentUser.reportingEmail,
         // remarks: remarks,
         // leaveType: currentLeaveSelection,
         // numOfDaysTaken: numOfDaysApplied
+        const userId = req.body.userId
+        const userEmail = req.body.userEmail
+        const coveringEmail = req.body.coveringEmail
+        const reportingEmail = req.body.reportingEmail
+        const remarks = req.body.remarks
+        const leaveType = req.body.leaveType
+        const numOfDaysTaken = req.body.numOfDaysTaken
+        const startDate = moment(req.body.startDate).format("DD MMM YYYY")
+        const endDate = moment(req.body.endDate).format("DD MMM YYYY")
 
     // find userid from mongodb
 
     User
-        .findOne({_id: req.body.userId})
+        .findOne({_id: userId})
         .then(user => {
             if (!user) return res.status(400).send("user ID did not match db")
 
-            // const leaveCount = -req.body.numOfDaysTaken
-            const filterTargetLeaveType = user.leave.filter(leave => req.body.leaveType === leave.name)
+            const filterTargetLeaveType = user.leave.filter(leave => leaveType === leave.name)
             const targetLeaveName = filterTargetLeaveType[0].name
 
             User
             .updateOne(
-                {_id: req.body.userId, "leave.name": targetLeaveName}, 
-                {$inc: {"leave.$.entitlement": -req.body.numOfDaysTaken}})
+                {_id: userId, "leave.name": targetLeaveName}, 
+                {$inc: {"leave.$.entitlement": -numOfDaysTaken}})
             .then((result) => {
                 // console.log(result)
                 res.status(200).send("leave application successful")
+
+                // send email to user, covering
+                sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+                const emailToUserAndCovering = {
+                to: userEmail,
+                from: 'mfachengdu@gmail.com', // Change to your verified sender
+                cc: coveringEmail,
+                subject: `Leave Application from ${startDate} to ${endDate}`,
+                html: `
+                    <div>
+                        <p>Hi ${userEmail}, you applied ${numOfDaysTaken} days of <strong>${leaveType}</strong> from ${startDate} to ${endDate}</p> 
+                        <p>You will receive an email confirmation once your reporting officer reviews the request, thank you.</p>
+                    </div>
+                    <div>
+                        <p>您好 ${userEmail}，您在${startDate}至${endDate}申请了${numOfDaysTaken}天<strong>${leaveType}</strong></p> 
+                        <p>一旦您的主管审核，您将收到一封邮件，谢谢。</p>
+                    </div>
+                `
+                }
+                sendgridMail
+                    .send(emailToUserAndCovering) // email to inform user and covering of leave request
+                    .then(() => {
+                        res.status(200).send("email sent to user and covering")
+                        console.log('email sent to user and covering')
+                    })
+                    .catch((error) => {
+                        console.error("sendgrid error when sending to user/covering: ", error)
+                    })
+
+                    const emailToReporting = {
+                    to: reportingEmail,
+                    from: 'mfachengdu@gmail.com', // Change to your verified sender
+                    subject: `Leave Application by ${userEmail} - ${startDate} to ${endDate} `,
+                    html: `
+                        <div>
+                            <p>Hi ${reportingEmail}, </p> 
+                            <p>${userEmail} would like to apply for ${numOfDaysTaken} days of <strong>${leaveType}</strong> from ${startDate} to ${endDate}</p>
+                            <p>Log in to XXX to approve or reject this request. Thank you. </p>
+                        </div>
+                    `
+                    }
+                    sendgridMail
+                    .send(emailToReporting) // email to inform reporting of user's leave request
+                    .then(() => {
+                        res.status(200).send("email sent to reporting")
+                        console.log('email sent to reporting')
+                    })
+                    .catch((error) => {
+                        console.error("sendgrid error when sending to reporting: ", error)
+                    })
+
+
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log("postLeaveApplicationForm err: ", err))
             
             console.log("leave application form data received")
         })
-    // update mongodb with latest leave
-    // send email to user, covering and reporting
-    // send status back to FE
+
+
+
 }

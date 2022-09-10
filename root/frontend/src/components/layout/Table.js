@@ -74,18 +74,18 @@ function Table({headerType}) {
             case "entitlement":
                 return currentUserLeave.map((leave,index) => 
                     <tr key={index}>
-                        <td key={index}>{leave.name}</td>
-                        <td key={index}>{leave.entitlement}</td>
-                        <td key={index}>{leave.used}</td>
-                        <td key={index}>{leave.entitlement - leave.used}</td>
-                        <td key={index}><InfoBubble info={leave.note}/></td>
-                        <td key={index}>{(leave.rollover) ? "Yes" : "No"}</td>
+                        <td>{leave.name}</td>
+                        <td>{leave.entitlement}</td>
+                        <td>{leave.used}</td>
+                        <td>{leave.entitlement - leave.used}</td>
+                        <td><InfoBubble info={leave.note}/></td>
+                        <td>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
             // case "request":
             //     return mockRequestData.map((list,index) => 
             //         (
             //             <tr key={index}>
-            //                 {list.map((listItem,index) => <td key={index}>{listItem}</td>)}
+            //                 {list.map((listItem,index) => <td {ikey=ndex}>{listItem}</td>)}
             //                 <td><div className="badge badge-neutral rounded-sm">Pending</div></td>
             //                 <td>
             //                     {/* <button className='btn btn-sm btn-error' onClick={handleCancelLeaveClick}>cancel 取消</button> */}
