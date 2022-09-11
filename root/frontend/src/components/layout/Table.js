@@ -8,6 +8,7 @@ function Table({headerType}) {
     const {currentUser, userList} = useMainContext()
 
     const currentUserLeave = currentUser.leave
+    const currentUserLeaveHistory = currentUser.leaveHistory
     console.log(currentUserLeave)
     console.log(currentUserLeave.rollover)
 
@@ -82,18 +83,22 @@ function Table({headerType}) {
                         <td><InfoBubble info={leave.note}/></td>
                         <td>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
-            // case "request":
-            //     return mockRequestData.map((list,index) => 
-            //         (
-            //             <tr key={index}>
-            //                 {list.map((listItem,index) => <td {ikey=ndex}>{listItem}</td>)}
-            //                 <td><div className="badge badge-neutral rounded-sm">Pending</div></td>
-            //                 <td>
-            //                     {/* <button className='btn btn-sm btn-error' onClick={handleCancelLeaveClick}>cancel 取消</button> */}
-            //                     <CancelLeaveModal/>
-            //                 </td>
-            //             </tr>
-            //         ))
+            case "request":
+                return currentUserLeaveHistory.map((leave,index)=>
+                    (currentUserLeaveHistory) ?
+                        <tr key={index}>
+                            <td>{leave.leaveType}</td>
+                            <td>{leave.timePeriod}</td>
+                            <td>{leave.quotaUsed}</td>
+                            <td>{leave.submittedOn}</td>
+                            <td>{leave.quotaUsed}</td>
+                            <td>{leave.status}</td>
+                            <td><button className='btn-primary'>edit</button></td>
+                        </tr>
+                    : 
+                    <p>No upcoming leave request!</p>
+                )
+
             case "history":
                 return mockHistoryData.map((list,index) => 
                     (

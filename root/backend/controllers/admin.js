@@ -67,7 +67,8 @@ exports.postCreateUser = (req,res,next) => {
                         reportingEmail: reportingEmail,
                         co: co,
                         coveringEmail: coveringEmail,
-                        leave: chengduLrsLeaveScheme
+                        leave: chengduLrsLeaveScheme,
+                        leaveHistory: [],
                     })
                 
                 user

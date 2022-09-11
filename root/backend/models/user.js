@@ -48,6 +48,10 @@ const userSchema = new Schema({
     leave: {
         type: Object,
         required: true
+    },
+    leaveHistory: {
+        type: Object,
+        required: true
     }
 })
 

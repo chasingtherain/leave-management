@@ -37,7 +37,8 @@ exports.postLogin = (req,res,next) => {
                                     reportingEmail: user.reportingEmail,
                                     co: user.co,
                                     coveringEmail: user.coveringEmail,
-                                    leave: user.leave
+                                    leave: user.leave,
+                                    leaveHistory: user.leaveHistory
                                 })
                         })
                     }

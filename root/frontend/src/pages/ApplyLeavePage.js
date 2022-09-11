@@ -29,6 +29,7 @@ function ApplyLeavePage() {
     
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${baseBackEndUrl}/user/applyLeave`
+        const currentDate = new Date()
         e.preventDefault()
         
         if(!currentLeaveSelection)
@@ -48,6 +49,7 @@ function ApplyLeavePage() {
             userId: currentUser._id,
             startDate: startDate,
             endDate: endDate,
+            dateOfApplication: currentDate.getTime(),
             userEmail:currentUser.email,
             coveringEmail: currentUser.coveringEmail,
             reportingEmail: currentUser.reportingEmail,
