@@ -8,9 +8,7 @@ router.use('/login', (req,res)=> {
     res.send("<h1>server doing auth check</h1>")
 })
 
-router.use('/get_userinfo:id', (req,res)=> {
-    res.send("<h1>specific user info sent back by server</h1>")
-})
+router.get('/getUser/:id', userController.getUser)
 
 router.get('/getAllUsers', userController.getAllUsers)
 

@@ -9,8 +9,6 @@ function Table({headerType}) {
 
     const currentUserLeave = currentUser.leave
     const currentUserLeaveHistory = currentUser.leaveHistory
-    console.log(currentUserLeave)
-    console.log(currentUserLeave.rollover)
 
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]

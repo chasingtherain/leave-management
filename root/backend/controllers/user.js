@@ -2,9 +2,37 @@ const User = require('../models/user')
 var moment = require('moment');
 require('moment-weekday-calc');
 
-
 const sendgridMail = require('@sendgrid/mail');
 const leaveHistory = require('../models/leaveHistory');
+
+exports.getUser = (req,res,next) => {
+    const userId = req.params
+    console.log("req.params: ", req.params)
+    User
+        .findOne({_id: userId})
+        .then(user => {
+            if(!user){
+                return res.status(400).send("user not found")
+            }
+            res.status(200).send(
+                {
+                    _id: user._id,
+                    name: user.name,
+                    isAdmin: user.isAdmin,
+                    email: user.email,
+                    password: user.password,
+                    createdOn: user.createdOn,
+                    lastUpdatedOn: user.lastUpdatedOn,
+                    ro: user.ro,
+                    reportingEmail: user.reportingEmail,
+                    co: user.co,
+                    coveringEmail: user.coveringEmail,
+                    leave: user.leave,
+                    leaveHistory: user.leaveHistory
+                })
+        })
+        .catch( err =>console.log("getUser err:", err))
+}
 
 exports.getAllUsers = (req,res,next) => {
     User.find((err, docs) => {

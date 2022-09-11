@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 function ApplyLeavePage() {
     
-    const {baseBackEndUrl, currentUser, currentLeaveSelection} = useMainContext()
+    const {baseBackEndUrl, currentUser, currentLeaveSelection, setCurrentUser} = useMainContext()
     const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
     // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
 
@@ -66,10 +66,19 @@ function ApplyLeavePage() {
                 if(res.status === 200) {
                     toast.success("Leave application successful!")
                     // call user API to get most updated info
+                    const userIdData = {
+                        userId: currentUser._id
+                    }
+                    axios
+                        .get(`${baseBackEndUrl}/user/getUser/${currentUser._id}`)
+                        .then(resp => {
+                            console.log(resp.data)
+                            setCurrentUser(resp.data)})
                     navigate('/')
                 }
             })
             .catch(err => console.log(err))
+        
     }
 
     const handleStartDateSelection = (date) => {
