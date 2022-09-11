@@ -59,7 +59,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             User
             .updateOne(
                 {_id: userId, "leave.name": targetLeaveName}, 
-                {$inc: {"leave.$.entitlement": -numOfDaysTaken}})
+                {$inc: {"leave.$.entitlement": -numOfDaysTaken, "leave.$.pending": numOfDaysTaken}})
             .then((result) => {
                 // console.log(result)
                 res.status(200).send("leave application successful")

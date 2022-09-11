@@ -14,7 +14,7 @@ function Table({headerType}) {
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type", "Entitlement ", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
+    const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
@@ -76,6 +76,7 @@ function Table({headerType}) {
                     <tr key={index}>
                         <td>{leave.name}</td>
                         <td>{leave.entitlement}</td>
+                        <td>{leave.pending}</td>
                         <td>{leave.used}</td>
                         <td>{leave.entitlement - leave.used}</td>
                         <td><InfoBubble info={leave.note}/></td>
