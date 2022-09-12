@@ -6,9 +6,14 @@ import InfoBubble from './InfoBubble'
 
 function Table({headerType}) {
     const {currentUser, userList} = useMainContext()
-
+    const currentDate = new Date()
+    const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
-    const currentUserLeaveHistory = currentUser.leaveHistory
+    const currentUserLeaveRequest = currentUser.leaveHistory.filter(entry => entry.startDateUnix > currentDateUnix)
+    const currentUserLeaveHistory = currentUser.leaveHistory.filter(entry => entry.startDateUnix <= currentDateUnix)
+    console.log(currentUserLeaveRequest)
+    console.log("currentUserLeaveHistory: ", currentUserLeaveHistory)
+
 
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
@@ -23,13 +28,6 @@ function Table({headerType}) {
         ["Vacation Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
         ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "04.04.2022", "1 days"],
         ["Vacation Leave", "05.05.2022 - 31.12.2022", "1 days", "05.04.2022", "1 days"],
-    ]
-
-    const mockUserData = [
-        ["He Hua", "hehua@163.com", "03.04.2022", "03.04.2022", "admin", "Shen Yun Xi", "yunxi@mfa.sg", "Mao Se", "maose@mail.com", "Active"],
-        ["Yan Fang", "yanfang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Yan Fang", "huangxi@163.com", "Active"],
-        ["Huang Xi", "huangxi@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Huang Xi", "yanfang@163.com", "Active"],
-        ["Fang", "fang@163.com", "03.04.2022", "03.04.2022", "user", "Shen Yun Xi", "yunxi@mfa.sg", "Zhang", "zhang@163.com", "Active"],
     ]
 
     const changeLogData = [
@@ -96,8 +94,8 @@ function Table({headerType}) {
                         <td>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
             case "request":
-                return currentUserLeaveHistory.map((leave,index)=>
-                    (currentUserLeaveHistory) ?
+                return currentUserLeaveRequest.map((leave,index)=>
+                    (currentUserLeaveRequest) ?
                         <tr key={index}>
                             <td>{leave.leaveType}</td>
                             <td>{leave.timePeriod}</td>
@@ -114,13 +112,21 @@ function Table({headerType}) {
                 )
 
             case "history":
-                return mockHistoryData.map((list,index) => 
-                    (
+                return currentUserLeaveHistory.map((leave,index)=>
+                    (currentUserLeaveHistory) ?
                         <tr key={index}>
-                            {list.map((listItem, index) => <td key={index}>{listItem}</td>)}
-                            <td><div className="badge badge-success rounded-sm">Approved</div></td>
+                            <td>{leave.leaveType}</td>
+                            <td>{leave.timePeriod}</td>
+                            <td>{leave.quotaUsed}</td>
+                            <td>{leave.submittedOn}</td>
+                            <td>{leave.quotaUsed}</td>
+                            <td>
+                                {statusBadgeSelection(leave.status)}
+                            </td>
                         </tr>
-                    ))
+                    : 
+                    <p>No leave history at the moment</p>
+                )
             case "user-management":
                 return userList.map((list, index) => 
                         (
