@@ -142,7 +142,21 @@ function ApplyLeavePage() {
         }
     }
 
+    const leaveTypeMessage = () => {
+        if(numOfSelectedLeaveEntitlement === 0){
+            return (<>
+                <p className='mt-4 text-sm'>You have 0 days of: {currentLeaveSelection}</p>
+                <p className='text-sm'>您已用完: {currentLeaveSelection}</p>
+            </>)    
+        }
+        if(numOfSelectedLeaveEntitlement){
+            return (<>
+                <p className='mt-4 text-sm'>You have {numOfSelectedLeaveEntitlement} days of: {currentLeaveSelection}</p>
+                <p className='text-sm'>您有{numOfSelectedLeaveEntitlement}天的: {currentLeaveSelection}</p>
+            </>)
+        }
 
+    }
 
 
   return (
@@ -155,8 +169,7 @@ function ApplyLeavePage() {
             <div className="my-4">
                 <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Type</label>
                 <Select options={leaveOptions}/>
-                {numOfSelectedLeaveEntitlement && <p className='mt-4 text-sm'>You have {numOfSelectedLeaveEntitlement} days of: {currentLeaveSelection}</p>}
-                {numOfSelectedLeaveEntitlement && <p className='text-sm'>您有{numOfSelectedLeaveEntitlement}天的: {currentLeaveSelection}</p>}
+                {leaveTypeMessage()}
             </div>
             <div className="my-4">
                 <div className='flex'>
