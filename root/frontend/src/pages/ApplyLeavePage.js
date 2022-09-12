@@ -18,8 +18,8 @@ function ApplyLeavePage() {
     const navigate = useNavigate()
 
     const [startDate, setStartDate] = useState()
-    const [startDateRadioSelection, setStartDateRadioSelection] = useState("Full Day")
     const [endDate, setEndDate] = useState()
+    const [startDateRadioSelection, setStartDateRadioSelection] = useState("Full Day")
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
     const [remarks, setRemarks] = useState("")
     const [numOfDaysApplied, setNumOfDaysApplied] = useState()
@@ -83,6 +83,9 @@ function ApplyLeavePage() {
     }
 
     const handleStartDateSelection = (date) => {
+        if(startDateRadioSelection !== "Full Day"){
+            setEndDate(date.getTime()) // if user selects AM or PM as radio selection before date, end date will automatically be equal to start date
+        }
         if(date.getTime() > endDate) {
             console.log(date.getTime(),endDate)
             setEndDate()
@@ -128,6 +131,7 @@ function ApplyLeavePage() {
         setStartDateRadioSelection(e.target.value)
         if(e.target.value !== "Full Day"){
             setNumOfDaysApplied(0.5)
+            setEndDate(startDate)
         }
         else {
             // reset start and end date when user selects full day after selecting AM/PM prior
@@ -185,7 +189,8 @@ function ApplyLeavePage() {
                 {numOfDaysApplied &&
                 <>
                     <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
-                    <p className='text-sm'>Balance of: {numOfSelectedLeaveEntitlement - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>
+                    {(numOfDaysApplied <= numOfSelectedLeaveEntitlement) && <p className='text-sm'>Balance of: {numOfSelectedLeaveEntitlement - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>}
+                    {(numOfDaysApplied > numOfSelectedLeaveEntitlement) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
                 </>
                 }
             </div>
@@ -200,8 +205,6 @@ function ApplyLeavePage() {
                     rows="3"
                     onChange={(e) => setRemarks(e.target.value)}
                     ></textarea>
-                {/* <textarea required onChange={(e)=> setFeedbackContent(e.target.value)} value={feedbackContent} minLength="15" className=" w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent" id="comment" placeholder="How can we improve and serve you better?" name="comment" rows="5" cols="40">
-                </textarea> */}
             </div>
             <div>
                 <label htmlFor="RO" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
