@@ -9,11 +9,6 @@ function Table({headerType}) {
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
-    const currentUserLeaveRequest = currentUser.leaveHistory.filter(entry => entry.startDateUnix > currentDateUnix)
-    const currentUserLeaveHistory = currentUser.leaveHistory.filter(entry => entry.startDateUnix <= currentDateUnix)
-    console.log(currentUserLeaveRequest)
-    console.log("currentUserLeaveHistory: ", currentUserLeaveHistory)
-
 
     // table headers
     const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
@@ -94,54 +89,57 @@ function Table({headerType}) {
                         <td>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
             case "request":
-                return currentUserLeaveRequest.map((leave,index)=>
-                    (currentUserLeaveRequest) ?
-                        <tr key={index}>
-                            <td>{leave.leaveType}</td>
-                            <td>{leave.timePeriod}</td>
-                            <td>{leave.quotaUsed}</td>
-                            <td>{leave.submittedOn}</td>
-                            <td>{leave.quotaUsed}</td>
-                            <td>
-                                {statusBadgeSelection(leave.status)}
-                            </td>
-                            <td><button className='btn-primary'>edit</button></td>
-                        </tr>
-                    : 
-                    <p>No upcoming leave request!</p>
-                )
+                return (currentUser.leaveHistory) ?
+                currentUser.leaveHistory
+                    .filter(entry => entry.startDateUnix > currentDateUnix)
+                    .map((leave,index)=>
+                            <tr key={index}>
+                                <td>{leave.leaveType}</td>
+                                <td>{leave.timePeriod}</td>
+                                <td>{leave.quotaUsed}</td>
+                                <td>{leave.submittedOn}</td>
+                                <td>{leave.quotaUsed}</td>
+                                <td>
+                                    {statusBadgeSelection(leave.status)}
+                                </td>
+                                <td><button className='btn-primary'>edit</button></td>
+                            </tr>
+                        )
+                    : <p className='text-center w-screen mt-8'>No upcoming leave request / 暂时无请求</p>
 
             case "history":
-                return currentUserLeaveHistory.map((leave,index)=>
-                    (currentUserLeaveHistory) ?
-                        <tr key={index}>
-                            <td>{leave.leaveType}</td>
-                            <td>{leave.timePeriod}</td>
-                            <td>{leave.quotaUsed}</td>
-                            <td>{leave.submittedOn}</td>
-                            <td>{leave.quotaUsed}</td>
-                            <td>
-                                {statusBadgeSelection(leave.status)}
-                            </td>
-                        </tr>
-                    : 
-                    <p>No leave history at the moment</p>
-                )
+                return (currentUser.leaveHistory) ?
+                    currentUser.leaveHistory
+                        .filter(entry => entry.startDateUnix > currentDateUnix)
+                        .map((leave,index)=>
+                                <tr key={index}>
+                                    <td>{leave.leaveType}</td>
+                                    <td>{leave.timePeriod}</td>
+                                    <td>{leave.quotaUsed}</td>
+                                    <td>{leave.submittedOn}</td>
+                                    <td>{leave.quotaUsed}</td>
+                                    <td>
+                                        {statusBadgeSelection(leave.status)}
+                                    </td>
+                                </tr>
+                        )
+                : 
+                <p className="w-screen text-center text-slate-800 mt-8">No leave history yet / 暂时无历史</p>
             case "user-management":
                 return userList.map((list, index) => 
                         (
-                            <tr key={index}>                                 
-                                <td>{list.name}</td>    
-                                <td>{list.email}</td>    
-                                <td>{list.createdOn}</td>    
-                                <td>{list.lastUpdatedOn}</td>    
-                                <td>{list.isAdmin}</td>    
-                                <td>{list.ro}</td>    
-                                <td>{list.reportingEmail}</td>    
-                                <td>{list.co}</td>    
-                                <td>{list.coveringEmail}</td>     
-                                <td><Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
-                            </tr>
+                                <tr key={index}>
+                                    <td>{list.name}</td>
+                                    <td>{list.email}</td>
+                                    <td>{list.createdOn}</td>
+                                    <td>{list.lastUpdatedOn}</td>
+                                    <td>{list.isAdmin}</td>
+                                    <td>{list.ro}</td>
+                                    <td>{list.reportingEmail}</td>
+                                    <td>{list.co}</td>
+                                    <td>{list.coveringEmail}</td>
+                                    <td><Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
+                                </tr>
                         ))
             default:
                 console.log("invalid table header provided!")
