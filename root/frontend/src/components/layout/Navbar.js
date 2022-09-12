@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { useMainContext } from '../../hooks/useMainContext'
 
 function Navbar() {
-    const {baseBackEndUrl, currentUser, setCurrentUser} = useMainContext()
+    const {baseBackEndUrl, currentUser, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
     const url = `${baseBackEndUrl}/logout`
     const navigate = useNavigate()
 
@@ -19,6 +19,10 @@ function Navbar() {
         }
         else {toast.error("failed to log out")}
     }
+
+    const clearState = () => {
+        setCurrentLeaveSelection("Annual Leave 年假")
+    }
     return (
         <div className='flex justify-between navbar bg-slate-800'>
                 <div className="navbar-start">
@@ -26,7 +30,7 @@ function Navbar() {
                         <button className="btn btn-ghost normal-case text-xl">
                             {/* icon only links to homepage if user is logged in */}
                             {!currentUser && <div className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </div>}
-                            {currentUser && <Link to="" className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </Link>}
+                            {currentUser && <Link onClick={clearState} to="" className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </Link>}
                         </button>
                     }
 

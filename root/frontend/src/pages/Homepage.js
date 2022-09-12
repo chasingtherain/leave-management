@@ -29,7 +29,7 @@ function Homepage() {
         : 
             (
             <>
-                <h1 className='text-xl my-6'>Leave Entitlement</h1>
+                <h1 className='text-xl my-6 text-center'>Leave Entitlement 休假数</h1>
                 <Table headerType="entitlement"/>
                 <p className='mt-2 ml-2'>Note / 温馨提示: </p>
                 <p className='mt-2 ml-2'>Staff with child 3 years old or younger are eligible for childcare leave / 带3岁或3岁以下儿童的员工可申请育儿假</p>

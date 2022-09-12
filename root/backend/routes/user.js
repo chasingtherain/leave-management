@@ -4,10 +4,6 @@ const router = express.Router()
 
 const userController = require('../controllers/user')
 
-router.use('/login', (req,res)=> {
-    res.send("<h1>server doing auth check</h1>")
-})
-
 router.get('/getUser/:id', userController.getUser)
 
 router.get('/getAllUsers', userController.getAllUsers)

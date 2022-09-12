@@ -26,7 +26,8 @@ function ApplyLeavePage() {
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
-    
+    console.log("numOfDaysApplied: ", numOfDaysApplied, "numOfSelectedLeaveEntitlement: ", numOfSelectedLeaveEntitlement)
+
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${baseBackEndUrl}/user/applyLeave`
         const currentDate = new Date()
@@ -102,20 +103,25 @@ function ApplyLeavePage() {
     }
 
     const calculateNumOfBizDays = (start, end) => {
-        const data = {
-            startDate: start,
-            endDate: end
+        if ((start === end ) && startDateRadioSelection){
+            setNumOfDaysApplied(1)
         }
-
-        axios
-            .post(`${baseBackEndUrl}/user/numOfDays`, data)
-            .then(res => {
-                console.log(res)
-                setNumOfDaysApplied(res.data.numOfDaysApplied)
-            })
-            .catch(err =>{
-                console.log(err)
-            })
+        else {
+            const data = {
+                startDate: start,
+                endDate: end
+            }
+    
+            axios
+                .post(`${baseBackEndUrl}/user/numOfDays`, data)
+                .then(res => {
+                    console.log(res)
+                    setNumOfDaysApplied(res.data.numOfDaysApplied)
+                })
+                .catch(err =>{
+                    console.log(err)
+                })
+        }
     }
 
     const handleRadioSelection = (e) => {
@@ -131,6 +137,8 @@ function ApplyLeavePage() {
             setNumOfDaysApplied()
         }
     }
+
+
 
 
   return (
