@@ -54,11 +54,11 @@ function Table({headerType}) {
     const statusBadgeSelection = (status) => {
         switch (status) {
             case "pending":
-                return <span className='badge badge-info'>{status}</span>
+                return <span className='badge badge-info py-3 text-slate-50'>{status}</span>
             case "approved":
-                return <span className='badge badge-success'>{status}</span>
+                return <span className='badge badge-success py-3 text-slate-50'>{status}</span>
             case "cancelled":
-                return <span className='badge badge-warning'>{status}</span>
+                return <span className='badge badge-warning py-3 text-slate-50'>{status}</span>
             default:
                 console.log("invalid status header provided!")
                 break;
@@ -94,7 +94,7 @@ function Table({headerType}) {
                                 <td>
                                     {statusBadgeSelection(leave.status)}
                                 </td>
-                                <td><button className='btn-primary'>edit</button></td>
+                                <td><button className='btn-error px-2 rounded-md text-white'>Cancel 取消</button></td>
                             </tr>
                         )
                     : <p className='text-center w-screen mt-8'>No upcoming leave request / 暂时无请求</p>
