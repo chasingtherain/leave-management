@@ -6,7 +6,7 @@ const sendgridMail = require('@sendgrid/mail');
 const leaveHistory = require('../models/leaveHistory');
 
 exports.getUser = (req,res,next) => {
-    const userId = req.params
+    const userId = req.params.id
     console.log("req.params: ", req.params)
     User
         .findOne({_id: userId})
@@ -20,7 +20,6 @@ exports.getUser = (req,res,next) => {
                     name: user.name,
                     isAdmin: user.isAdmin,
                     email: user.email,
-                    password: user.password,
                     createdOn: user.createdOn,
                     lastUpdatedOn: user.lastUpdatedOn,
                     ro: user.ro,

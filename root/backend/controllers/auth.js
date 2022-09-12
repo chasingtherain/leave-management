@@ -30,7 +30,6 @@ exports.postLogin = (req,res,next) => {
                                     name: user.name,
                                     isAdmin: user.isAdmin,
                                     email: user.email,
-                                    password: user.password,
                                     createdOn: user.createdOn,
                                     lastUpdatedOn: user.lastUpdatedOn,
                                     ro: user.ro,

@@ -17,14 +17,6 @@ function Table({headerType}) {
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
-    // mock table data
-    
-    const mockHistoryData = [
-        ["Vacation Leave", "05.04.2022 - 06.04.2022", "1 days", "03.04.2022", "1 days"],
-        ["Medical Leave", "05.05.2022 - 31.12.2022", "1 days", "04.04.2022", "1 days"],
-        ["Vacation Leave", "05.05.2022 - 31.12.2022", "1 days", "05.04.2022", "1 days"],
-    ]
-
     const changeLogData = [
         ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
         ["01.04.2022", "Add", ["new account added"] , "yunxi@mfa.sg"],
@@ -110,7 +102,7 @@ function Table({headerType}) {
             case "history":
                 return (currentUser.leaveHistory) ?
                     currentUser.leaveHistory
-                        .filter(entry => entry.startDateUnix > currentDateUnix)
+                        .filter(entry => entry.startDateUnix <= currentDateUnix)
                         .map((leave,index)=>
                                 <tr key={index}>
                                     <td>{leave.leaveType}</td>

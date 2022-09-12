@@ -26,7 +26,6 @@ function ApplyLeavePage() {
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
-    console.log("numOfDaysApplied: ", numOfDaysApplied, "numOfSelectedLeaveEntitlement: ", numOfSelectedLeaveEntitlement)
 
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${baseBackEndUrl}/user/applyLeave`
@@ -65,17 +64,15 @@ function ApplyLeavePage() {
             .then((res) =>{
                 console.log(res)
                 if(res.status === 200) {
-                    toast.success("Leave application successful!")
                     // call user API to get most updated info
-                    const userIdData = {
-                        userId: currentUser._id
-                    }
                     axios
                         .get(`${baseBackEndUrl}/user/getUser/${currentUser._id}`)
                         .then(resp => {
                             console.log(resp.data)
-                            setCurrentUser(resp.data)})
-                    navigate('/')
+                            setCurrentUser(resp.data)
+                            toast.success("Leave application successful!")
+                            navigate('/')
+                        })
                 }
             })
             .catch(err => console.log(err))
