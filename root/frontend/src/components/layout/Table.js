@@ -66,6 +66,20 @@ function Table({headerType}) {
         }
     }
 
+    const statusBadgeSelection = (status) => {
+        switch (status) {
+            case "pending":
+                return <span className='badge badge-info'>{status}</span>
+            case "approved":
+                return <span className='badge badge-success'>{status}</span>
+            case "cancelled":
+                return <span className='badge badge-warning'>{status}</span>
+            default:
+                console.log("invalid status header provided!")
+                break;
+        }
+    }
+
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "change-log":
@@ -90,7 +104,9 @@ function Table({headerType}) {
                             <td>{leave.quotaUsed}</td>
                             <td>{leave.submittedOn}</td>
                             <td>{leave.quotaUsed}</td>
-                            <td>{leave.status}</td>
+                            <td>
+                                {statusBadgeSelection(leave.status)}
+                            </td>
                             <td><button className='btn-primary'>edit</button></td>
                         </tr>
                     : 
