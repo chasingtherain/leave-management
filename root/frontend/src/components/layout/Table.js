@@ -1,3 +1,4 @@
+import axios from 'axios'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
@@ -5,7 +6,7 @@ import CancelLeaveModal from '../modal/CancelLeaveModal'
 import InfoBubble from './InfoBubble'
 
 function Table({headerType}) {
-    const {currentUser, userList} = useMainContext()
+    const {baseBackEndUrl, currentUser, userList} = useMainContext()
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
@@ -28,9 +29,16 @@ function Table({headerType}) {
         console.log(event.target.id)
     }
 
-    const handleCancelLeaveClick = (event) => {
-        // identify user's id, send user's data to update user info form
-        console.log(event.target.id)
+    const handleCancelClick = (e, leaveId) => {
+        e.preventDefault()
+        const url = `${baseBackEndUrl}/user/cancelLeave`
+        console.log("leaveId in handlecick", e.target.id)
+        axios
+            .post(url, {userId: currentUser._id,leaveRequestId: leaveId})
+            .then(resp => {
+                console.log(resp)
+            })
+            .catch(err => console.log(err))
     }
 
     const tableHeaderSelection = (headerType) => {
@@ -94,7 +102,30 @@ function Table({headerType}) {
                                 <td>
                                     {statusBadgeSelection(leave.status)}
                                 </td>
-                                <td><button className='btn-error px-2 rounded-md text-white'>Cancel 取消</button></td>
+                                <td>
+                                    <div>        
+                                        <label
+                                            htmlFor="my-modal-3" 
+                                            className="btn btn-sm modal-button btn-error px-2 rounded-md text-white"
+                                        >
+                                            cancel 取消
+                                        </label>
+                                        <input type="checkbox" id="my-modal-3" className="modal-toggle" />
+                                        <div className="modal">
+                                            <div className="modal-box w-88 relative">
+                                                <label htmlFor="my-modal-3" className="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+                                                <h3 className="text-lg font-bold text-center">Cancel Leave?</h3>
+                                                <h3 className="text-lg font-bold text-center">确定取消？</h3>
+
+                                                <form className='flex justify-center gap-8 mt-4' onSubmit={(e) => handleCancelClick(e, leave._id)}>
+                                                    <button type="submit" className='btn btn-error px-8 py-2 text-white'>Yes, 取消</button>
+                                                    <button type="button" className='btn btn-outline btn-error'>No, 不取消</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                {/* <td><button className='btn-error px-2 rounded-md text-white'>Cancel 取消</button></td> */}
                             </tr>
                         )
                     : <p className='text-center w-screen mt-8'>No upcoming leave request / 暂时无请求</p>

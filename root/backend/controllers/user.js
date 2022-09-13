@@ -163,3 +163,21 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             })
         .catch(err => console.log("postLeaveApplicationForm err: ", err))
 }
+
+exports.cancelLeaveRequest = (req,res) => {
+    const userId = req.body.userId
+    const leaveRequestId = req.body.leaveRequestId
+    console.log(req.body)
+    
+    User
+        .updateOne(
+            {_id: userId},
+            {$pull: {leaveHistory: {_id: leaveRequestId} } }
+            )
+        .then(res => {console.log(res)})
+
+        .catch(err => console.log(err))
+
+
+    res.send("delete successful")
+}

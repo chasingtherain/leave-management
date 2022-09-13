@@ -14,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useMainContext } from "./hooks/useMainContext";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import SetNewPasswordPage from "./pages/SetNewPasswordPage";
+import CreateNewLeave from "./pages/CreateNewLeave";
 
 function App() {
   const {currentUser} = useMainContext()
@@ -43,6 +44,10 @@ function App() {
             <Route path = '/user-management' element={<PrivateRoute/>}>
               <Route path = '/user-management' element={<UserManagementPage/>}/>
             </Route>
+            <Route path = '/create-new-leave' element={<PrivateRoute/>}>
+              <Route path = '/create-new-leave' element={<CreateNewLeave/>}/>
+            </Route>
+
           </Routes>
         </Router>
         <ToastContainer/>
