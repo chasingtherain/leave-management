@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 function CreateUserPage() {
-    const {baseBackEndUrl,fetchUserList, isAdmin, validateEmail} = useMainContext()
+    const {fetchUserList, isAdmin, validateEmail} = useMainContext()
     const [name, setName] = useState()
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
@@ -54,7 +54,7 @@ function CreateUserPage() {
     const sendFormData = (e) => {
         e.preventDefault()
         console.log("form data sending in progress")
-        const url = `${baseBackEndUrl}/admin/create-user`
+        const url = `${process.env.REACT_APP_BACKENDURL}/admin/create-user`
         const formData = 
         {
             name: name,

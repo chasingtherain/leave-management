@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { useMainContext } from '../hooks/useMainContext'
 
 function SetNewPasswordPage() {
-    const {baseBackEndUrl, validateEmail} = useMainContext()
+    const {validateEmail} = useMainContext()
     const [userPassword, setUserPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
 
@@ -15,7 +15,7 @@ function SetNewPasswordPage() {
     
     const validateAndSubmitNewPassword = async (e) => {
         e.preventDefault()
-        const url = `${baseBackEndUrl}/set-new-password`
+        const url = `${process.env.REACT_APP_BACKENDURL}/set-new-password`
         
         if(!userToken) return toast.error("Missing token!")
 

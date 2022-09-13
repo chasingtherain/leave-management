@@ -5,13 +5,13 @@ import { toast } from 'react-toastify'
 import { useMainContext } from '../hooks/useMainContext'
 
 function ChangePasswordPage() {
-    const {baseBackEndUrl, validateEmail} = useMainContext()
+    const {validateEmail} = useMainContext()
     const [userEmail, setUserEmail] = useState("")
     
     const navigate = useNavigate('/')
     const validateAndSubmitData = async (e) => {
         e.preventDefault()
-        const url = `${baseBackEndUrl}/change-password`
+        const url = `${process.env.REACT_APP_BACKENDURL}/change-password`
 
         if(!validateEmail(userEmail))
             return toast.error("Invalid email!")

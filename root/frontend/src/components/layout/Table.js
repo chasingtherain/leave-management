@@ -6,7 +6,7 @@ import CancelLeaveModal from '../modal/CancelLeaveModal'
 import InfoBubble from './InfoBubble'
 
 function Table({headerType}) {
-    const {baseBackEndUrl, currentUser, userList} = useMainContext()
+    const {currentUser, userList} = useMainContext()
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
@@ -31,7 +31,7 @@ function Table({headerType}) {
 
     const handleCancelClick = (e, leaveId) => {
         e.preventDefault()
-        const url = `${baseBackEndUrl}/user/cancelLeave`
+        const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
         console.log("leaveId in handlecick", e.target.id)
         axios
             .post(url, {userId: currentUser._id,leaveRequestId: leaveId})

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 function ApplyLeavePage() {
     
-    const {baseBackEndUrl, currentUser, currentLeaveSelection, setCurrentUser} = useMainContext()
+    const {currentUser, currentLeaveSelection, setCurrentUser} = useMainContext()
     const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
     // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
 
@@ -28,7 +28,7 @@ function ApplyLeavePage() {
     const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
 
     const validateAndSubmitLeaveApplication = (e) => {
-        const url = `${baseBackEndUrl}/user/applyLeave`
+        const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
         const currentDate = new Date()
         e.preventDefault()
         
@@ -66,7 +66,7 @@ function ApplyLeavePage() {
                 if(res.status === 200) {
                     // call user API to get most updated info
                     axios
-                        .get(`${baseBackEndUrl}/user/getUser/${currentUser._id}`)
+                        .get(`${process.env.REACT_APP_BACKENDURL}/user/getUser/${currentUser._id}`)
                         .then(resp => {
                             console.log(resp.data)
                             setCurrentUser(resp.data)
@@ -113,7 +113,7 @@ function ApplyLeavePage() {
             }
     
             axios
-                .post(`${baseBackEndUrl}/user/numOfDays`, data)
+                .post(`${process.env.REACT_APP_BACKENDURL}/user/numOfDays`, data)
                 .then(res => {
                     console.log(res)
                     setNumOfDaysApplied(res.data.numOfDaysApplied)

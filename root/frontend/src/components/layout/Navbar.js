@@ -5,8 +5,8 @@ import { toast } from 'react-toastify'
 import { useMainContext } from '../../hooks/useMainContext'
 
 function Navbar() {
-    const {baseBackEndUrl, currentUser, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
-    const url = `${baseBackEndUrl}/logout`
+    const {currentUser, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
+    const url = `${process.env.REACT_APP_BACKENDURL}/logout`
     const navigate = useNavigate()
 
     const signOutCurrentUser = async () => {

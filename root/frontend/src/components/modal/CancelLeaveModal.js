@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useMainContext } from '../../hooks/useMainContext'
 
 function CancelLeaveModal({handleCancelClick}) {
-    const {baseBackEndUrl, currentUser} = useMainContext()
+    const {currentUser} = useMainContext()
     
     // console.log("leaveId: ", leaveId)
 

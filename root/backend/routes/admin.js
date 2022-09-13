@@ -7,4 +7,7 @@ const router = express.Router()
 // route is /admin/create-user
 router.post('/create-user', adminController.postCreateUser)
 
+// route is /admin/create-new-leave
+router.post('/create-new-leave', adminController.postCreateLeaveType)
+
 module.exports = router

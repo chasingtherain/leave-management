@@ -5,14 +5,14 @@ import { toast } from 'react-toastify';
 import { useMainContext } from '../hooks/useMainContext';
 
 function LoginPage() {    
-        const {baseBackEndUrl, setCurrentUser, validateEmail} = useMainContext()
+        const {setCurrentUser, validateEmail} = useMainContext()
         const navigate = useNavigate()
         const [userEmail, setUserEmail] = useState("")
         const [userPassword, setUserPassword] = useState("")
         const [error, setError] = useState("")
         const [loginBtnLoading, setLoginBtnLoading] = useState("")
 
-        const url = `${baseBackEndUrl}/login`
+        const url = `${process.env.REACT_APP_BACKENDURL}/login`
         
         const validateFormAndSignIn = (e) => {
             e.preventDefault()

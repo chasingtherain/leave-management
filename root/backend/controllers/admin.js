@@ -112,3 +112,9 @@ exports.postCreateUser = (req,res,next) => {
 
 
 }
+
+exports.postCreateLeaveType = (req,res,next) => {
+    console.log(req.body)
+
+    res.send("controller connected")
+}

@@ -7,14 +7,18 @@ export const MainContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState()
   const [userList, setUserList] = useState([])
   const [isAdmin, setIsAdmin] = useState()
-  const baseBackEndUrl = `http://localhost:8008`
 
   const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
-
+  console.log("process.env: ", process.env)
+  console.log(process.env.FRONTENDURL)
   const fetchUserList = async () => {
-    const resp = await axios.get(`${baseBackEndUrl}/user/getAllUsers`)
-    // console.log(resp)
-    setUserList(resp.data)
+    axios
+      .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
+      .then(resp =>{ 
+        setUserList(resp.data)
+        console.log(resp)}
+      )
+      .catch(err => console.log(err))
   }
 
   useEffect(()=>{
@@ -29,7 +33,6 @@ export const MainContextProvider = ({ children }) => {
   return (
     <MainContext.Provider value={{
       activeTab, 
-      baseBackEndUrl,
       currentLeaveSelection,
       currentUser,
       isAdmin,
