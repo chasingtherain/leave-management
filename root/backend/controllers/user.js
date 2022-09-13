@@ -4,6 +4,7 @@ require('moment-weekday-calc');
 
 const sendgridMail = require('@sendgrid/mail');
 const leaveHistory = require('../models/leaveHistory');
+const { default: mongoose } = require('mongoose');
 
 exports.getUser = (req,res,next) => {
     const userId = req.params.id
@@ -168,16 +169,17 @@ exports.cancelLeaveRequest = (req,res) => {
     const userId = req.body.userId
     const leaveRequestId = req.body.leaveRequestId
     console.log(req.body)
-    
+
     User
-        .updateOne(
+        .findOneAndUpdate(
             {_id: userId},
-            {$pull: {leaveHistory: {_id: leaveRequestId} } }
-            )
-        .then(res => {console.log(res)})
+            {$pull: {leaveHistory: {_id: mongoose.Types.ObjectId("631f04aa7c409de1e50c3e7c")} } },
+            {new: true}
+        )
+        .then(res => {
+            console.log(res.leaveHistory.length)
+            res.send("delete successful")
+        })
+        .catch(err => console.log("findOneAndUpdate err: ", err))
 
-        .catch(err => console.log(err))
-
-
-    res.send("delete successful")
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
 import CancelLeaveModal from '../modal/CancelLeaveModal'
 import InfoBubble from './InfoBubble'
+import { toast } from 'react-toastify'
 
 function Table({headerType}) {
     const {currentUser, userList} = useMainContext()
@@ -33,19 +34,22 @@ function Table({headerType}) {
         e.preventDefault()
         console.log(e.target.id)
         console.log(e.target.name)
-        window.confirm(`
-        Cancel leave? 
-        确认取消？ 
 
-        ${e.target.id}`)
-        // const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
-        // console.log("leaveId in handlecick", e.target.id)
-        // axios
-        //     .post(url, {userId: currentUser._id,leaveRequestId: leaveId})
-        //     .then(resp => {
-        //         console.log(resp)
-        //     })
-        //     .catch(err => console.log(err))
+        if(window.confirm(`
+        leave id: ${e.target.id}
+
+        Cancel leave? 
+        确认取消以上的休假？ `)){
+            const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
+            axios
+                .post(url, {userId: currentUser._id,leaveRequestId: e.target.id})
+                .then(resp => {
+                    console.log(resp)
+                    toast.success("Leave Cancelled")
+                    
+                })
+                .catch(err => console.log(err))
+        }
     }
 
     const tableHeaderSelection = (headerType) => {
