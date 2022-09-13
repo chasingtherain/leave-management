@@ -12,9 +12,9 @@ function Table({headerType}) {
     const currentUserLeave = currentUser.leave
 
     // table headers
-    const requestTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
-    const historyTableHeader = ["Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
+    const requestTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
+    const historyTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
+    const entitlementTableHeader = ["ID", "Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
@@ -29,16 +29,23 @@ function Table({headerType}) {
         console.log(event.target.id)
     }
 
-    const handleCancelClick = (e, leaveId) => {
+    const handleCancelClick = (e) => {
         e.preventDefault()
-        const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
-        console.log("leaveId in handlecick", e.target.id)
-        axios
-            .post(url, {userId: currentUser._id,leaveRequestId: leaveId})
-            .then(resp => {
-                console.log(resp)
-            })
-            .catch(err => console.log(err))
+        console.log(e.target.id)
+        console.log(e.target.name)
+        window.confirm(`
+        Cancel leave? 
+        确认取消？ 
+
+        ${e.target.id}`)
+        // const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
+        // console.log("leaveId in handlecick", e.target.id)
+        // axios
+        //     .post(url, {userId: currentUser._id,leaveRequestId: leaveId})
+        //     .then(resp => {
+        //         console.log(resp)
+        //     })
+        //     .catch(err => console.log(err))
     }
 
     const tableHeaderSelection = (headerType) => {
@@ -94,6 +101,7 @@ function Table({headerType}) {
                     .filter(entry => entry.startDateUnix > currentDateUnix)
                     .map((leave,index)=>
                             <tr key={index}>
+                                <td className='text-sm'>{leave._id}</td>
                                 <td>{leave.leaveType}</td>
                                 <td>{leave.timePeriod}</td>
                                 <td>{leave.quotaUsed}</td>
@@ -103,27 +111,10 @@ function Table({headerType}) {
                                     {statusBadgeSelection(leave.status)}
                                 </td>
                                 <td>
-                                    <div>        
-                                        <label
-                                            htmlFor="my-modal-3" 
-                                            className="btn btn-sm modal-button btn-error px-2 rounded-md text-white"
-                                        >
-                                            cancel 取消
-                                        </label>
-                                        <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-                                        <div className="modal">
-                                            <div className="modal-box w-88 relative">
-                                                <label htmlFor="my-modal-3" className="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
-                                                <h3 className="text-lg font-bold text-center">Cancel Leave?</h3>
-                                                <h3 className="text-lg font-bold text-center">确定取消？</h3>
-
-                                                <form className='flex justify-center gap-8 mt-4' onSubmit={(e) => handleCancelClick(e, leave._id)}>
-                                                    <button type="submit" className='btn btn-error px-8 py-2 text-white'>Yes, 取消</button>
-                                                    <button type="button" className='btn btn-outline btn-error'>No, 不取消</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <button 
+                                        id={leave._id} 
+                                        onClick={(e) => handleCancelClick(e)} 
+                                        className="btn btn-sm btn-error px-2 rounded-md text-white">cancel 取消</button>
                                 </td>
                                 {/* <td><button className='btn-error px-2 rounded-md text-white'>Cancel 取消</button></td> */}
                             </tr>
@@ -136,6 +127,7 @@ function Table({headerType}) {
                         .filter(entry => entry.startDateUnix <= currentDateUnix)
                         .map((leave,index)=>
                                 <tr key={index}>
+                                    <td className='text-sm'>{leave._id}</td>
                                     <td>{leave.leaveType}</td>
                                     <td>{leave.timePeriod}</td>
                                     <td>{leave.quotaUsed}</td>

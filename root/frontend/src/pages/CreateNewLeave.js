@@ -69,7 +69,7 @@ function CreateNewLeave() {
                             Create
                         </button>
                     </form>
-                    <p className='mt-4 text-red-500'>Note: Input both english and chinese for Leave Name and Note</p>
+                    <p className='mt-4 text-red-500'>Note: Input both english and chinese for Leave Name and Note to staff</p>
                 </div>
             </div>
         </div>
