@@ -15,7 +15,8 @@ function Table({headerType}) {
     // table headers
     const requestTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const approvalTableHeader = ["ID", "Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
+    const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
+    const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
@@ -59,6 +60,8 @@ function Table({headerType}) {
         switch (headerType) {
             case "approval":
                 return approvalTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
+            case "approvalHistory":
+                return approvalHistoryTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "change-log":
                 return changeLogHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "entitlement":
@@ -92,32 +95,50 @@ function Table({headerType}) {
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "approval":
-                return (
+                return (currentUser.staffLeave.filter(entry => entry.status !== "approved").length) ?
+                    currentUser.staffLeave
+                        .filter(entry => entry.status !== "approved")
+                        .map((subLeave,index) => 
+                        <tr>
+                            <td>{subLeave.staffEmail}</td>
+                            <td>{subLeave.leaveType}</td>
+                            <td>{subLeave.timePeriod}</td>
+                            <td>{subLeave.quotaUsed}</td>
+                            <td>{subLeave.submittedOn}</td>
+                            <td>{subLeave.quotaUsed}</td>
+                            <td>{statusBadgeSelection(subLeave.status)}</td>
+                            <td>
+                                <button 
+                                    // id={leave._id} 
+                                    // name={leave.leaveType}
+                                    onClick={(e) => handleCancelClick(e)} 
+                                    className="btn btn-sm px-2 rounded-md text-white mr-4">Approve
+                                </button>
+                                <button 
+                                    // id={leave._id} 
+                                    // name={leave.leaveType}
+                                    onClick={(e) => handleCancelClick(e)} 
+                                    className="btn btn-sm btn-error px-2 rounded-md text-white">Reject
+                                </button>
+                            </td>
+                        </tr>
+                ) : <p className='text-center w-screen mt-8'>No pending leave applications</p>
+            case "approvalHistory":
+                return (currentUser.staffLeave.filter(entry => entry.status === "approved").length) ?
+                 currentUser.staffLeave
+                    .filter(entry => entry.status === "approved")
+                    .map((subLeave,index) => 
                     <tr>
-                        <td>12345</td>
-                        <td>hehua@mail.com</td>
-                        <td>bamboo leave</td>
-                        <td>15-18 Sep</td>
-                        <td>4</td>
-                        <td>10 Sep</td>
-                        <td>4</td>
-                        <td>Pending</td>
-                        <td>
-                            <button 
-                                // id={leave._id} 
-                                // name={leave.leaveType}
-                                onClick={(e) => handleCancelClick(e)} 
-                                className="btn btn-sm px-2 rounded-md text-white mr-4">Approve
-                            </button>
-                            <button 
-                                // id={leave._id} 
-                                // name={leave.leaveType}
-                                onClick={(e) => handleCancelClick(e)} 
-                                className="btn btn-sm btn-error px-2 rounded-md text-white">Reject
-                            </button>
-                        </td>
+                        <td>{subLeave.staffEmail}</td>
+                        <td>{subLeave.leaveType}</td>
+                        <td>{subLeave.timePeriod}</td>
+                        <td>{subLeave.quotaUsed}</td>
+                        <td>{subLeave.submittedOn}</td>
+                        <td>{subLeave.quotaUsed}</td>
+                        <td>{statusBadgeSelection(subLeave.status)}</td>
                     </tr>
                 )
+                : <p className='text-center w-screen mt-8'>No approval leave history yet</p>
             case "change-log":
                 return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "entitlement":

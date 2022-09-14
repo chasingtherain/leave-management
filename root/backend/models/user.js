@@ -52,7 +52,8 @@ const userSchema = new Schema({
     leaveHistory: {
         type: Object,
         required: true
-    }
+    },
+    staffLeave: Object
 })
 
 module.exports = mongoose.model('User', userSchema)

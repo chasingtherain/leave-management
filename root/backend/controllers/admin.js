@@ -55,6 +55,7 @@ exports.postCreateUser = (req,res,next) => {
                         coveringEmail: coveringEmail,
                         leave: chengduLrsLeaveScheme,
                         leaveHistory: [],
+                        staffLeave: []
                     })
                 
                 user

@@ -7,7 +7,7 @@ function ApproveLeavePage() {
             <h1 className='text-xl my-6 text-center'>Pending for Approval</h1>
             <Table headerType="approval"/>
             <h1 className='text-xl mt-32 mb-6 text-center'>Approval History</h1>
-            <Table headerType="approval"/>
+            <Table headerType="approvalHistory"/>
         </div>
   )
 }
