@@ -118,3 +118,18 @@ exports.postCreateLeaveType = (req,res,next) => {
 
     res.send("controller connected")
 }
+
+exports.approveLeave = (req,res,next) => {
+    const email = req.body.email
+    
+    User.deleteOne({email: email})
+        .then((result)=> {
+            console.log(result)
+            res.send("user deleted")
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
+
+}

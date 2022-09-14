@@ -15,6 +15,7 @@ import { useMainContext } from "./hooks/useMainContext";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import SetNewPasswordPage from "./pages/SetNewPasswordPage";
 import CreateNewLeave from "./pages/CreateNewLeave";
+import ApproveLeavePage from "./pages/ApproveLeavePage";
 
 function App() {
   const {currentUser} = useMainContext()
@@ -46,6 +47,9 @@ function App() {
             </Route>
             <Route path = '/create-new-leave' element={<PrivateRoute/>}>
               <Route path = '/create-new-leave' element={<CreateNewLeave/>}/>
+            </Route>
+            <Route path = '/approve-leave' element={<PrivateRoute/>}>
+              <Route path = '/approve-leave' element={<ApproveLeavePage/>}/>
             </Route>
 
           </Routes>
