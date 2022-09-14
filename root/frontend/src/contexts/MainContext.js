@@ -9,6 +9,7 @@ export const MainContextProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState()
 
   const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
+  const [currentEditUser, setCurrentEditUser] = useState()
 
   const fetchUserList = async () => {
     axios
@@ -32,6 +33,7 @@ export const MainContextProvider = ({ children }) => {
 
   useEffect(()=>{
     fetchUserList()
+    console.log("use effect triggered")
   }, [])
 
   const validateEmail = (email) => {
@@ -42,6 +44,7 @@ export const MainContextProvider = ({ children }) => {
   return (
     <MainContext.Provider value={{
       activeTab, 
+      currentEditUser,
       currentLeaveSelection,
       currentUser,
       isAdmin,
@@ -49,6 +52,7 @@ export const MainContextProvider = ({ children }) => {
       fetchCurrentUserInfo,
       fetchUserList,
       setActiveTab,
+      setCurrentEditUser,
       setCurrentLeaveSelection,
       setCurrentUser,
       setIsAdmin,

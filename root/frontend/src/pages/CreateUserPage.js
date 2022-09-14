@@ -41,14 +41,22 @@ function CreateUserPage() {
         )
         return toast.error("Fill in all blanks!")
 
-        const resp = await axios.post(url, formData)
-        console.log(resp)
-        if(resp.status === 200) {
-            fetchUserList()
-            toast.success("User Created!")
-            navigate('/user-management')
-        }
-        else {toast.error("User creation was unsuccessful")}
+        axios
+            .post(url, formData)
+            .then(result => {
+                if(result.status === 200) {
+                    fetchUserList()
+                    toast.success("User Created!")
+                    navigate('/user-management')
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                if (err.response.status === 499){
+                    toast.error("Email already exists on system!")
+                }
+            })
+
     }
 
     const sendFormData = (e) => {

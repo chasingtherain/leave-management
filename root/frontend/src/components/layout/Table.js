@@ -7,7 +7,7 @@ import InfoBubble from './InfoBubble'
 import { toast } from 'react-toastify'
 
 function Table({headerType}) {
-    const {currentUser, fetchCurrentUserInfo, userList} = useMainContext()
+    const {currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
@@ -17,7 +17,7 @@ function Table({headerType}) {
     const historyTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
-    const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
+    const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
     
     const changeLogData = [
         ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
@@ -27,7 +27,7 @@ function Table({headerType}) {
     
     const handleEditClick = (event) => {
         // identify user's id, send user's data to update user info form
-        console.log(event.target.id)
+        setCurrentEditUser(event.target.id)
     }
 
     const handleCancelClick = (e) => {
@@ -160,11 +160,9 @@ function Table({headerType}) {
                                     <td>{list.createdOn}</td>
                                     <td>{list.lastUpdatedOn}</td>
                                     <td>{list.isAdmin}</td>
-                                    <td>{list.ro}</td>
                                     <td>{list.reportingEmail}</td>
-                                    <td>{list.co}</td>
                                     <td>{list.coveringEmail}</td>
-                                    <td><Link to ="/update-user"><button id={list[0]} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
+                                    <td><Link to ="/update-user"><button id={list.email} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
                                 </tr>
                         ))
             default:

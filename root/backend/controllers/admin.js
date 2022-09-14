@@ -5,20 +5,6 @@ const bcrypt = require('bcryptjs')
 
 const sendgridMail = require('@sendgrid/mail')
 
-const chengduLrsLeaveScheme = {
-    "annual": 15,
-    "compassionate": 3,
-    "medical": 30,
-    "hospitalisation": 365,
-    "maternity": 158,
-    "miscarriage": 45,
-    "natal": 365,
-    "paternity": 30,
-    "unpaid": 365,
-    "childcare": 10,
-    "womenDay": 0.5
-}
-
 exports.postCreateUser = (req,res,next) => {
     const name = req.body.name
     const isAdmin = req.body.isAdmin
@@ -105,6 +91,20 @@ exports.postCreateUser = (req,res,next) => {
                     })
                     res.status(200).send(user)   
                 })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
+
+}
+exports.postDeleteUser = (req,res,next) => {
+    const email = req.body.email
+    
+    User.deleteOne({email: email})
+        .then((result)=> {
+            console.log(result)
+            res.send("user deleted")
         })
         .catch(err => {
             console.log(err)

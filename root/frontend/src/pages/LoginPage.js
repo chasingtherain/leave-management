@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { useMainContext } from '../hooks/useMainContext';
 
 function LoginPage() {    
-        const {setCurrentUser, validateEmail} = useMainContext()
+        const {fetchUserList, setCurrentUser, validateEmail} = useMainContext()
         const navigate = useNavigate()
         const [userEmail, setUserEmail] = useState("")
         const [userPassword, setUserPassword] = useState("")
@@ -35,6 +35,7 @@ function LoginPage() {
                 .then(resp => {
                     if(resp.status === 200) toast.success("Login Successful!")
                     setCurrentUser(resp.data)
+                    fetchUserList()
                     navigate('/')
                     console.log(resp)
                 })
