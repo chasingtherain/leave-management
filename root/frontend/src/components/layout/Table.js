@@ -7,7 +7,7 @@ import InfoBubble from './InfoBubble'
 import { toast } from 'react-toastify'
 
 function Table({headerType}) {
-    const {currentUser, userList} = useMainContext()
+    const {currentUser, fetchCurrentUserInfo, userList} = useMainContext()
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
@@ -15,7 +15,7 @@ function Table({headerType}) {
     // table headers
     const requestTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["ID", "Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
+    const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO","RO email", "CO","CO email","Action"]
     
@@ -32,8 +32,8 @@ function Table({headerType}) {
 
     const handleCancelClick = (e) => {
         e.preventDefault()
-        console.log(e.target.id)
-        console.log(e.target.name)
+
+        const targetLeaveHistory = currentUser.leaveHistory.filter(leaveRecord => leaveRecord._id === e.target.id)
 
         if(window.confirm(`
         leave id: ${e.target.id}
@@ -41,12 +41,14 @@ function Table({headerType}) {
         Cancel leave? 
         确认取消以上的休假？ `)){
             const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
+            
             axios
-                .post(url, {userId: currentUser._id,leaveRequestId: e.target.id})
+                .post(url, {userId: currentUser._id, targetLeaveHistory: targetLeaveHistory})
                 .then(resp => {
+                    fetchCurrentUserInfo(currentUser)
                     console.log(resp)
                     toast.success("Leave Cancelled")
-                    
+                    // window.location.reload();
                 })
                 .catch(err => console.log(err))
         }
@@ -115,10 +117,15 @@ function Table({headerType}) {
                                     {statusBadgeSelection(leave.status)}
                                 </td>
                                 <td>
+                                    {(leave.status !== "cancelled") ?
                                     <button 
                                         id={leave._id} 
+                                        name={leave.leaveType}
                                         onClick={(e) => handleCancelClick(e)} 
-                                        className="btn btn-sm btn-error px-2 rounded-md text-white">cancel 取消</button>
+                                        className="btn btn-sm btn-error px-2 rounded-md text-white">cancel 取消
+                                    </button>
+                                    : <></>
+                                    }
                                 </td>
                                 {/* <td><button className='btn-error px-2 rounded-md text-white'>Cancel 取消</button></td> */}
                             </tr>

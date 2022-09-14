@@ -15,6 +15,10 @@ const leaveHistorySchema = new Schema({
         type: String,
         required: true
     },
+    timestamp:{
+        type: Date,
+        default: Date.now
+    },
     numOfDaysTaken: {
         type: String,
         required: true

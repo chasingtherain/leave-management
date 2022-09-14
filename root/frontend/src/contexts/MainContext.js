@@ -9,8 +9,7 @@ export const MainContextProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState()
 
   const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
-  console.log("process.env: ", process.env)
-  console.log(process.env.FRONTENDURL)
+
   const fetchUserList = async () => {
     axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
@@ -19,6 +18,16 @@ export const MainContextProvider = ({ children }) => {
         console.log(resp)}
       )
       .catch(err => console.log(err))
+  }
+
+  const fetchCurrentUserInfo = async (currentUser) =>{
+      console.log("fetchCurrentUserInfo triggered")
+      axios
+      .get(`${process.env.REACT_APP_BACKENDURL}/user/getUser/${currentUser._id}`)
+      .then(resp => {
+          console.log(resp.data)
+          setCurrentUser(resp.data)
+      })
   }
 
   useEffect(()=>{
@@ -37,6 +46,7 @@ export const MainContextProvider = ({ children }) => {
       currentUser,
       isAdmin,
       userList,
+      fetchCurrentUserInfo,
       fetchUserList,
       setActiveTab,
       setCurrentLeaveSelection,

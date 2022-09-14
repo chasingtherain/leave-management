@@ -8,7 +8,7 @@ const { default: mongoose } = require('mongoose');
 
 exports.getUser = (req,res,next) => {
     const userId = req.params.id
-    console.log("req.params: ", req.params)
+    // console.log("req.params: ", req.params)
     User
         .findOne({_id: userId})
         .then(user => {
@@ -167,19 +167,47 @@ exports.postLeaveApplicationForm = (req,res,next) => {
 
 exports.cancelLeaveRequest = (req,res) => {
     const userId = req.body.userId
-    const leaveRequestId = req.body.leaveRequestId
-    console.log(req.body)
+    const leaveHistory = req.body.targetLeaveHistory
+    const leaveType = leaveHistory[0].leaveType
+    const quotaUsed = leaveHistory[0].quotaUsed
+    const timePeriod = leaveHistory[0].timePeriod
+    const startDateUnix = leaveHistory[0].startDateUnix
+    const submittedOn = leaveHistory[0].submittedOn
+    const status = leaveHistory[0].status
+    // const leaveRequestId = leaveHistory[0]._id
+    // const leaveRequestTimestamp = leaveHistory[0].timestamp
+    // console.log(req.body)
 
     User
-        .findOneAndUpdate(
-            {_id: userId},
-            {$pull: {leaveHistory: {_id: mongoose.Types.ObjectId("631f04aa7c409de1e50c3e7c")} } },
-            {new: true}
+        .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
+            { // update pending and entitlement count after cancellation
+                $inc: {"leave.$.entitlement": quotaUsed, "leave.$.pending": -quotaUsed},
+                
+            }
         )
-        .then(res => {
-            console.log(res.leaveHistory.length)
-            res.send("delete successful")
+        .then(result => {
+            console.log(result.leave[0])
         })
-        .catch(err => console.log("findOneAndUpdate err: ", err))
+        .catch(err => console.log("pending and entitlement count rollback err:", err))
+
+    User
+        .findOneAndUpdate( // update leave status
+            {
+                _id: userId, 
+                "leaveHistory.startDateUnix": startDateUnix,
+                "leaveHistory.leaveType": leaveType,
+                "leaveHistory.timePeriod": timePeriod,
+                "leaveHistory.quotaUsed": quotaUsed,
+                "leaveHistory.status": status,
+                "leaveHistory.submittedOn": submittedOn,
+            },
+            {
+                $set: {"leaveHistory.$.status": "cancelled" }
+            }
+        )
+        .then(() => {
+            res.send("cancellation successful")
+        })
+        .catch(err => console.log("update leaveHistory status err: ", err))
 
 }
