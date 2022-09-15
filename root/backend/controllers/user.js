@@ -194,6 +194,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
 
 exports.cancelLeaveRequest = (req,res) => {
     const userId = req.body.userId
+    const reportingEmail = req.body.reportingEmail
     const leaveHistory = req.body.targetLeaveHistory
     const leaveType = leaveHistory[0].leaveType
     const quotaUsed = leaveHistory[0].quotaUsed
@@ -201,9 +202,9 @@ exports.cancelLeaveRequest = (req,res) => {
     const startDateUnix = leaveHistory[0].startDateUnix
     const submittedOn = leaveHistory[0].submittedOn
     const status = leaveHistory[0].status
-    // const leaveRequestId = leaveHistory[0]._id
-    // const leaveRequestTimestamp = leaveHistory[0].timestamp
-    // console.log(req.body)
+
+    const leaveRequestId = leaveHistory[0]._id
+    const leaveRequestTimestamp = leaveHistory[0].timestamp
 
     User
         .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
@@ -218,7 +219,7 @@ exports.cancelLeaveRequest = (req,res) => {
         .catch(err => console.log("pending and entitlement count rollback err:", err))
 
     User
-        .findOneAndUpdate( // update leave status
+        .findOneAndUpdate( // update user's leave status
             {
                 _id: userId, 
                 "leaveHistory.startDateUnix": startDateUnix,
@@ -233,8 +234,29 @@ exports.cancelLeaveRequest = (req,res) => {
             }
         )
         .then(() => {
-            res.send("cancellation successful")
+            console.log("updated user's leave status to cancelled")
         })
         .catch(err => console.log("update leaveHistory status err: ", err))
+
+    User
+        .findOneAndUpdate( // update reporting's leave status
+            {
+                email: reportingEmail, 
+                "staffLeave.leaveType": leaveType,
+                "staffLeave.timePeriod": timePeriod,
+                "staffLeave.startDateUnix": +startDateUnix,
+                "staffLeave.submittedOn": submittedOn,
+                "staffLeave.quotaUsed": quotaUsed,
+                "staffLeave.status": status,
+            },
+            {
+                $set: {"staffLeave.$.status": "cancelled" }
+            }
+        )
+        .then((result) => {
+            // console.log(result)
+            res.send("updated reporting's leave status to cancelled")
+        })
+        .catch(err => console.log("update staffLeave status err: ", err))
 
 }

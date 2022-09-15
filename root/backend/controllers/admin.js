@@ -133,23 +133,24 @@ exports.approveLeave = (req,res,next) => {
     const numOfDaysTaken = req.body.numOfDaysTaken
     const submittedOn = req.body.submittedOn
     console.log(req.body)
+    
     // update reporting's staffLeave
-    // User.findOneAndUpdate(
-    //     {
-    //         email: reportingEmail,
-    //         "staffLeave.staffEmail": staffEmail,
-    //         "staffLeave.timePeriod": dateRange,
-    //         "staffLeave.quotaUsed": numOfDaysTaken,
-    //         "staffLeave.leaveType": leaveType,
-    //         "staffLeave.submittedOn": submittedOn,
-    //         "staffLeave.status": leaveStatus,
-    //     },
-    //     {$set: {"staffLeave.$.status": "approved" }}
-    //     )
-    // .then((result)=>{
-    //     console.log(result.staffLeave)
-    // })
-    // .catch((err)=> console.log(err))
+    User.findOneAndUpdate(
+        {
+            email: reportingEmail,
+            "staffLeave.staffEmail": staffEmail,
+            "staffLeave.timePeriod": dateRange,
+            "staffLeave.quotaUsed": numOfDaysTaken,
+            "staffLeave.leaveType": leaveType,
+            "staffLeave.submittedOn": submittedOn,
+            "staffLeave.status": leaveStatus,
+        },
+        {$set: {"staffLeave.$.status": "approved" }}
+        )
+    .then((result)=>{
+        console.log(result.staffLeave)
+    })
+    .catch((err)=> console.log(err))
 
     User.findOneAndUpdate( // update user's leave status to approved
         {
@@ -169,23 +170,6 @@ exports.approveLeave = (req,res,next) => {
         .catch((err)=> console.log(err))
 
     res.send("status updated to approved on user and reporting officer's table")
-
-    // User
-    // .findOneAndUpdate( // update leave status
-    //     {
-    //         _id: userId, 
-    //         "leaveHistory.startDateUnix": startDateUnix,
-    //         "leaveHistory.leaveType": leaveType,
-    //         "leaveHistory.timePeriod": timePeriod,
-    //         "leaveHistory.quotaUsed": quotaUsed,
-    //         "leaveHistory.status": status,
-    //         "leaveHistory.submittedOn": submittedOn,
-    //     },
-    //     {
-    //         $set: {"leaveHistory.$.status": "cancelled" }
-    //     }
-    // )
-
 
     // send approval email
     // User.findOne({email: email}) // not needed

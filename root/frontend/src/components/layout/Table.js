@@ -46,12 +46,11 @@ function Table({headerType}) {
             const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
             
             axios
-                .post(url, {userId: currentUser._id, targetLeaveHistory: targetLeaveHistory})
+                .post(url, {userId: currentUser._id, targetLeaveHistory: targetLeaveHistory, reportingEmail: currentUser.reportingEmail})
                 .then(resp => {
                     fetchCurrentUserInfo(currentUser)
                     console.log(resp)
                     toast.success("Leave Cancelled")
-                    // window.location.reload();
                 })
                 .catch(err => console.log(err))
         }
@@ -158,9 +157,9 @@ function Table({headerType}) {
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "approval":
-                return (currentUser.staffLeave.filter(entry => entry.status !== "approved")) ?
+                return (currentUser.staffLeave.filter(entry => entry.status === "pending")) ?
                     currentUser.staffLeave
-                        .filter(entry => entry.status !== "approved")
+                        .filter(entry => entry.status === "pending")
                         .map((subLeave,index) => 
                         <tr>
                             <td>{subLeave.staffEmail}</td>
@@ -187,9 +186,9 @@ function Table({headerType}) {
                         </tr>
                 ) : <p className='text-center w-screen mt-8'>No pending leave applications</p>
             case "approvalHistory":
-                return (currentUser.staffLeave.filter(entry => entry.status === "approved")) ?
+                return (currentUser.staffLeave.filter(entry => entry.status === "approved" || entry.status === "rejected")) ?
                  currentUser.staffLeave
-                    .filter(entry => entry.status === "approved")
+                    .filter(entry => entry.status === "approved" || entry.status === "rejected")
                     .map((subLeave,index) => 
                     <tr>
                         <td>{subLeave.staffEmail}</td>
