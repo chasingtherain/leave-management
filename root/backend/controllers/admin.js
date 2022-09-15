@@ -1,6 +1,5 @@
 const User = require('../models/user')
 
-
 const bcrypt = require('bcryptjs')
 
 const sendgridMail = require('@sendgrid/mail')
@@ -121,12 +120,145 @@ exports.postCreateLeaveType = (req,res,next) => {
 }
 
 exports.approveLeave = (req,res,next) => {
+    // update reporting's staffLeave
+    // update staff's leaveHistory
+    // send approval email
+
+    const staffEmail = req.body.staffEmail
+    const coveringEmail = req.body.coveringEmail
+    const reportingEmail = req.body.reportingEmail
+    const dateRange = req.body.dateRange
+    const leaveType = req.body.leaveType
+    const leaveStatus = req.body.leaveStatus
+    const numOfDaysTaken = req.body.numOfDaysTaken
+    const submittedOn = req.body.submittedOn
+
+    // update reporting's staffLeave
+    User.findOneAndUpdate(
+        {
+            email: reportingEmail,
+            "staffLeave.staffEmail": staffEmail,
+            "staffLeave.timePeriod": dateRange,
+            "staffLeave.quotaUsed": numOfDaysTaken,
+            "staffLeave.leaveType": leaveType,
+            "staffLeave.submittedOn": submittedOn,
+            "staffLeave.status": leaveStatus,
+        },
+        {$set: {"staffLeave.$.status": "approved" }}
+        )
+    .then((result)=>{
+        console.log(result.staffLeave)
+        res.send("status updated to approved")
+    })
+    .catch((err)=> console.log(err))
+
+    // User
+    // .findOneAndUpdate( // update leave status
+    //     {
+    //         _id: userId, 
+    //         "leaveHistory.startDateUnix": startDateUnix,
+    //         "leaveHistory.leaveType": leaveType,
+    //         "leaveHistory.timePeriod": timePeriod,
+    //         "leaveHistory.quotaUsed": quotaUsed,
+    //         "leaveHistory.status": status,
+    //         "leaveHistory.submittedOn": submittedOn,
+    //     },
+    //     {
+    //         $set: {"leaveHistory.$.status": "cancelled" }
+    //     }
+    // )
+
+
+    // send approval email
+    // User.findOne({email: email}) // not needed
+    //     .then((result)=> {
+    //         console.log(result)
+
+    //         sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+    //         const approvalEmail = {
+    //         to: staffEmail, //leave applier's email
+    //         from: 'mfachengdu@gmail.com', // Change to your verified sender
+    //         cc: coveringEmail, reportingEmail, // covering and reporting's email
+    //         subject: `Leave Application Approved 休假请求已获批准 - ${dateRange}`,
+    //         html: `
+    //             <div>
+    //                 <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been approved.</p> 
+    //                 <p>Leave Details: </p>
+    //                 <p>Type: ${leaveType}</p>
+    //                 <p>Number of days: ${numOfDaysTaken} days</p>
+    //                 <p>Period: <strong>${dateRange}</strong></p>
+    //             </div>
+    //             <div>
+    //                 <p>您好 ${staffEmail}，您从${dateRange}的休假请求已获批准</p> 
+    //                 <p>信息：</p>
+    //                 <p>休假类型: ${leaveType}</p>
+    //                 <p>天数: ${numOfDaysTaken} days</p>
+    //                 <p>何时: <strong>${dateRange}</strong></p>
+    //             </div>
+    //         `
+    //         }
+    //         sendgridMail
+    //             .send(approvalEmail) // email to inform user and covering of leave request
+    //             .then(() => {
+    //                 // res.status(200).send("approval email sent to user and covering")
+    //                 console.log('approval email sent to user and covering')
+    //             })
+    //             .catch((error) => {
+    //                 console.error("sendgrid error during approval email: ", error)
+    //                 console.log("err: ", error.response.body)
+    //             })
+            
+    //     })
+    //     .catch(err => {
+    //         console.log(err)
+    //     })
+
+
+}
+
+exports.rejectLeave = (req,res,next) => {
     const email = req.body.email
     
-    User.deleteOne({email: email})
+    User.findOne({email: email}) // leave applier's email
         .then((result)=> {
             console.log(result)
-            res.send("user deleted")
+
+            sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+            const approvalEmail = {
+            to: userEmail, //leave applier's email
+            from: 'mfachengdu@gmail.com', // Change to your verified sender
+            cc: coveringEmail, // covering and reporting's email
+            subject: `Leave Application Approved 休假请求已获批准 - ${dateRange}`,
+            html: `
+                <div>
+                    <p>Hi ${userEmail}, your leave from <strong>${dateRange}</strong> has been approved.</p> 
+                    <p>Leave Details: </p>
+                    <p>Type: ${leaveType}</p>
+                    <p>Number of days: ${numOfDaysTaken} days</p>
+                    <p>Period: <strong>${dateRange}</strong></p>
+                </div>
+                <div>
+                    <p>您好 ${userEmail}，您从${startDate}至${endDate}的休假请求已获批准</p> 
+                    <p>信息：</p>
+                    <p>休假类型: ${leaveType}</p>
+                    <p>天数: ${numOfDaysTaken} days</p>
+                    <p>何时: <strong>${dateRange}</strong></p>
+                </div>
+            `
+            }
+            sendgridMail
+                .send(emailToUserAndCovering) // email to inform user and covering of leave request
+                .then(() => {
+                    // res.status(200).send("email sent to user and covering")
+                    console.log('email sent to user and covering')
+                })
+                .catch((error) => {
+                    console.error("sendgrid error when sending to user/covering: ", error)
+                    console.log("err: ", error.response.body)
+                })
+            
         })
         .catch(err => {
             console.log(err)

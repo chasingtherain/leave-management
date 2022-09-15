@@ -16,7 +16,7 @@ function Table({headerType}) {
     const requestTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const historyTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
-    const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
+    const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
@@ -53,6 +53,68 @@ function Table({headerType}) {
                     // window.location.reload();
                 })
                 .catch(err => console.log(err))
+        }
+    }
+    const handleApproveClick = (e) => {
+        e.preventDefault()
+
+        const staffEmail= e.target.id
+        const dateRange = e.target.name
+
+        if(window.confirm(`Approve leave? `))
+        {
+            const url = `${process.env.REACT_APP_BACKENDURL}/admin/approve-leave`
+            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
+            console.log(targetStaffLeave)
+            const approveLeaveData = {
+                staffEmail: targetStaffLeave[0].staffEmail,
+                reportingEmail: currentUser.email,
+                dateRange: targetStaffLeave[0].timePeriod,
+                leaveType: targetStaffLeave[0].leaveType,
+                leaveStatus: targetStaffLeave[0].status,
+                numOfDaysTaken: targetStaffLeave[0].quotaUsed,
+                submittedOn: targetStaffLeave[0].submittedOn
+            }
+            console.log(approveLeaveData)
+
+            axios
+                .post(url, approveLeaveData)
+                .then(resp => {
+                    console.log(resp)
+                    fetchCurrentUserInfo(currentUser)
+                    toast.success("Leave Approved")
+                })
+                .catch(err => console.log(err))
+        }
+    }
+    const handleRejectClick = (e) => {
+        e.preventDefault()
+
+        const staffEmail= e.target.id
+        const dateRange = e.target.name
+
+        if(window.confirm(`Approve leave? `))
+        {
+            const url = `${process.env.REACT_APP_BACKENDURL}/admin/approve-leave`
+            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
+            console.log(targetStaffLeave)
+            const approveLeaveData = {
+                staffEmail: targetStaffLeave.staffEmail,
+                reportingEmail: currentUser.email,
+                dateRange: targetStaffLeave.timePeriod,
+                leaveType: targetStaffLeave.leaveType,
+                leaveStatus: targetStaffLeave.status,
+                numofDaysTaken: targetStaffLeave.quotaUsed
+            }
+
+            // axios
+            //     .post(url, approveLeaveData)
+            //     .then(resp => {
+            //         console.log(resp)
+            //         fetchCurrentUserInfo(currentUser)
+            //         toast.success("Leave Approved")
+            //     })
+            //     .catch(err => console.log(err))
         }
     }
 
@@ -109,15 +171,15 @@ function Table({headerType}) {
                             <td>{statusBadgeSelection(subLeave.status)}</td>
                             <td>
                                 <button 
-                                    // id={leave._id} 
-                                    // name={leave.leaveType}
-                                    onClick={(e) => handleCancelClick(e)} 
+                                    id={subLeave.staffEmail} 
+                                    name={subLeave.timePeriod}
+                                    onClick={(e) => handleApproveClick(e)} 
                                     className="btn btn-sm px-2 rounded-md text-white mr-4">Approve
                                 </button>
                                 <button 
                                     // id={leave._id} 
                                     // name={leave.leaveType}
-                                    onClick={(e) => handleCancelClick(e)} 
+                                    onClick={(e) => handleRejectClick(e)} 
                                     className="btn btn-sm btn-error px-2 rounded-md text-white">Reject
                                 </button>
                             </td>
