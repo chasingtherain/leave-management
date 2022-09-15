@@ -56,17 +56,19 @@ function Table({headerType}) {
         }
     }
 
-    const handleApproveClick = (e) => {
+    const handleActionClick = (e) => {
         e.preventDefault()
         const staffEmail= e.target.id
         const dateRange = e.target.name
+        const action = e.target.value
 
-        if(window.confirm(`Approve leave? `))
+        if(window.confirm(`${action} leave? `))
         {
-            const url = `${process.env.REACT_APP_BACKENDURL}/admin/approve-leave`
+            const url = `${process.env.REACT_APP_BACKENDURL}/admin/${action}-leave`
+
             const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange && entry.status === "pending"))
             console.log(targetStaffLeave)
-            const approveLeaveData = {
+            const leaveData = {
                 staffEmail: targetStaffLeave[0].staffEmail,
                 reportingEmail: currentUser.email,
                 dateRange: targetStaffLeave[0].timePeriod,
@@ -75,48 +77,21 @@ function Table({headerType}) {
                 numOfDaysTaken: targetStaffLeave[0].quotaUsed,
                 submittedOn: targetStaffLeave[0].submittedOn
             }
-            console.log(approveLeaveData)
+            console.log(leaveData)
 
             axios
-                .post(url, approveLeaveData)
+                .post(url, leaveData)
                 .then(resp => {
                     console.log(resp)
-                    toast.success("Leave Approved")
+                    if (action === "Approve") toast.success(`Leave approved`)
+                    else toast.success(`Leave rejected`)
+
                     fetchCurrentUserInfo(currentUser)
                 })
                 .catch(err => console.log(err))
         }
     }
-    const handleRejectClick = (e) => {
-        e.preventDefault()
 
-        const staffEmail= e.target.id
-        const dateRange = e.target.name
-
-        if(window.confirm(`Approve leave? `))
-        {
-            const url = `${process.env.REACT_APP_BACKENDURL}/admin/approve-leave`
-            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
-            console.log(targetStaffLeave)
-            const approveLeaveData = {
-                staffEmail: targetStaffLeave.staffEmail,
-                reportingEmail: currentUser.email,
-                dateRange: targetStaffLeave.timePeriod,
-                leaveType: targetStaffLeave.leaveType,
-                leaveStatus: targetStaffLeave.status,
-                numofDaysTaken: targetStaffLeave.quotaUsed
-            }
-
-            // axios
-            //     .post(url, approveLeaveData)
-            //     .then(resp => {
-            //         console.log(resp)
-            //         fetchCurrentUserInfo(currentUser)
-            //         toast.success("Leave Approved")
-            //     })
-            //     .catch(err => console.log(err))
-        }
-    }
 
     const tableHeaderSelection = (headerType) => {
         switch (headerType) {
@@ -142,12 +117,14 @@ function Table({headerType}) {
 
     const statusBadgeSelection = (status) => {
         switch (status) {
-            case "pending":
-                return <span className='badge badge-info py-3 text-slate-50'>{status}</span>
             case "approved":
                 return <span className='badge badge-success py-3 text-slate-50'>{status}</span>
             case "cancelled":
                 return <span className='badge badge-warning py-3 text-slate-50'>{status}</span>
+            case "pending":
+                return <span className='badge badge-info py-3 text-slate-50'>{status}</span>
+            case "rejected":
+                return <span className='badge badge-error py-3 text-slate-50'>{status}</span>
             default:
                 console.log("invalid status header provided!")
                 break;
@@ -173,14 +150,16 @@ function Table({headerType}) {
                                 <button 
                                     id={subLeave.staffEmail} 
                                     name={subLeave.timePeriod}
-                                    onClick={(e) => handleApproveClick(e)} 
-                                    className="btn btn-sm px-2 rounded-md text-white mr-4">Approve
+                                    onClick={(e) => handleActionClick(e)} 
+                                    className="btn btn-sm px-2 rounded-md text-white mr-4"
+                                    value="Approve">Approve
                                 </button>
                                 <button 
-                                    // id={leave._id} 
-                                    // name={leave.leaveType}
-                                    onClick={(e) => handleRejectClick(e)} 
-                                    className="btn btn-sm btn-error px-2 rounded-md text-white">Reject
+                                    id={subLeave.staffEmail} 
+                                    name={subLeave.timePeriod}
+                                    onClick={(e) => handleActionClick(e)} 
+                                    className="btn btn-sm btn-error px-2 rounded-md text-white"
+                                    value="Reject">Reject
                                 </button>
                             </td>
                         </tr>
@@ -230,7 +209,7 @@ function Table({headerType}) {
                                     {statusBadgeSelection(leave.status)}
                                 </td>
                                 <td>
-                                    {(leave.status !== "cancelled") ?
+                                    {(leave.status !== "cancelled" && leave.status !== "rejected") ?
                                     <button 
                                         id={leave._id} 
                                         name={leave.leaveType}

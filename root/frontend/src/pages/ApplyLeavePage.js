@@ -26,7 +26,7 @@ function ApplyLeavePage() {
     const [currentUserAppliedDates, setCurrentUserAppliedDates] = useState(
         // filters non-cancelled, non-rejected leave dates already applied by user
         currentUser.leaveHistory
-            .filter(entry => entry.status !== "cancelled")
+            .filter(entry => entry.status === "pending" || entry.status === "approved")
             .map(entry => +(entry.startDateUnix)))
     console.log(currentUserAppliedDates)
 

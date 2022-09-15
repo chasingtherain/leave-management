@@ -13,6 +13,9 @@ router.post('/delete-user', adminController.postDeleteUser)
 // route is /admin/approve-leave
 router.post('/approve-leave', adminController.approveLeave)
 
+// route is /admin/reject-leave
+router.post('/reject-leave', adminController.rejectLeave)
+
 // route is /admin/create-new-leave
 router.post('/create-new-leave', adminController.postCreateLeaveType)
 

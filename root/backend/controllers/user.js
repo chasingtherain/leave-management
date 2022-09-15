@@ -98,7 +98,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
 
             return User.updateOne( 
                     {_id: userId, "leave.name": targetLeaveName}, 
-                    {$inc: {"leave.$.entitlement": -numOfDaysTaken, "leave.$.pending": numOfDaysTaken},})
+                    {$inc: {"leave.$.pending": numOfDaysTaken},})
             .then((result) => {
                 return User.updateOne(
                     {_id: userId}, 
@@ -201,22 +201,35 @@ exports.cancelLeaveRequest = (req,res) => {
     const timePeriod = leaveHistory[0].timePeriod
     const startDateUnix = leaveHistory[0].startDateUnix
     const submittedOn = leaveHistory[0].submittedOn
-    const status = leaveHistory[0].status
+    const leaveStatus = leaveHistory[0].status
 
     const leaveRequestId = leaveHistory[0]._id
     const leaveRequestTimestamp = leaveHistory[0].timestamp
 
-    User
-        .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
-            { // update pending and entitlement count after cancellation
-                $inc: {"leave.$.entitlement": quotaUsed, "leave.$.pending": -quotaUsed},
-                
-            }
-        )
-        .then(result => {
-            console.log(result.leave[0])
-        })
-        .catch(err => console.log("pending and entitlement count rollback err:", err))
+    if (leaveStatus === "approved"){
+        User
+            .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
+                { // update pending and entitlement count after cancellation
+                    $inc: {"leave.$.used": -quotaUsed},
+                }
+            )
+            .then(result => {
+                console.log(result.leave[0])
+            })
+            .catch(err => console.log("pending and entitlement count rollback err:", err))
+    }
+    else{
+        User
+            .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
+                { // update pending and entitlement count after cancellation
+                    $inc: {"leave.$.pending": -quotaUsed},
+                }
+            )
+            .then(result => {
+                console.log(result.leave[0])
+            })
+            .catch(err => console.log("pending and entitlement count rollback err:", err))
+    }
 
     User
         .findOneAndUpdate( // update user's leave status
@@ -226,7 +239,7 @@ exports.cancelLeaveRequest = (req,res) => {
                 "leaveHistory.leaveType": leaveType,
                 "leaveHistory.timePeriod": timePeriod,
                 "leaveHistory.quotaUsed": quotaUsed,
-                "leaveHistory.status": status,
+                "leaveHistory.status": leaveStatus,
                 "leaveHistory.submittedOn": submittedOn,
             },
             {
@@ -247,7 +260,7 @@ exports.cancelLeaveRequest = (req,res) => {
                 "staffLeave.startDateUnix": +startDateUnix,
                 "staffLeave.submittedOn": submittedOn,
                 "staffLeave.quotaUsed": quotaUsed,
-                "staffLeave.status": status,
+                "staffLeave.status": leaveStatus,
             },
             {
                 $set: {"staffLeave.$.status": "cancelled" }
