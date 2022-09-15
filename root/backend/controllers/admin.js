@@ -132,7 +132,7 @@ exports.approveLeave = (req,res,next) => {
     const leaveStatus = req.body.leaveStatus
     const numOfDaysTaken = req.body.numOfDaysTaken
     const submittedOn = req.body.submittedOn
-
+    console.log(req.body)
     // update reporting's staffLeave
     User.findOneAndUpdate(
         {

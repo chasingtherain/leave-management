@@ -23,6 +23,12 @@ function ApplyLeavePage() {
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
     const [remarks, setRemarks] = useState("")
     const [numOfDaysApplied, setNumOfDaysApplied] = useState()
+    const [currentUserAppliedDates, setCurrentUserAppliedDates] = useState(
+        // filters non-cancelled, non-rejected leave dates already applied by user
+        currentUser.leaveHistory
+            .filter(entry => entry.status !== "cancelled")
+            .map(entry => +(entry.startDateUnix)))
+    console.log(currentUserAppliedDates)
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
@@ -31,9 +37,11 @@ function ApplyLeavePage() {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
         const currentDate = new Date()
         e.preventDefault()
-        
+    
         if(!currentLeaveSelection)
             return toast.error("leave type not selected")
+        if(currentUserAppliedDates.includes(startDate))
+            return toast.error("You have already applied leave on this day!")
         if(startDate === undefined || endDate === undefined)
             return toast.error("start and end date must be selected!")
         if(!startDateRadioSelection)
@@ -77,13 +85,16 @@ function ApplyLeavePage() {
 
     const handleStartDateSelection = (date) => {
         if(startDateRadioSelection !== "Full Day"){
-            setEndDate(date.getTime()) // if user selects AM or PM as radio selection before date, end date will automatically be equal to start date
+           setTimeout(() => { // timeout is set because sometimes setEndDate method is called before start date is set in react
+               setEndDate(date.getTime()) // if user selects AM or PM as radio selection before date, end date will automatically be equal to start date
+           }, 500);
         }
         if(date.getTime() > endDate) {
             console.log(date.getTime(),endDate)
             setEndDate()
             setNumOfDaysApplied()
         }
+
         setStartDate(date.getTime())
         if (endDate) { // if end date is already selected, call date calculation function
             console.log("day calculation triggered!")

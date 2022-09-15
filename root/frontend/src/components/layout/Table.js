@@ -64,7 +64,7 @@ function Table({headerType}) {
         if(window.confirm(`Approve leave? `))
         {
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/approve-leave`
-            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
+            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange && entry.status === "pending"))
             console.log(targetStaffLeave)
             const approveLeaveData = {
                 staffEmail: targetStaffLeave[0].staffEmail,
@@ -81,7 +81,7 @@ function Table({headerType}) {
                 .post(url, approveLeaveData)
                 .then(resp => {
                     console.log(resp)
-                    fetchCurrentUserInfo(currentUser)
+                    // fetchCurrentUserInfo(currentUser)
                     toast.success("Leave Approved")
                 })
                 .catch(err => console.log(err))
