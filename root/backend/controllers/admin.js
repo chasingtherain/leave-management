@@ -134,23 +134,41 @@ exports.approveLeave = (req,res,next) => {
     const submittedOn = req.body.submittedOn
     console.log(req.body)
     // update reporting's staffLeave
-    User.findOneAndUpdate(
+    // User.findOneAndUpdate(
+    //     {
+    //         email: reportingEmail,
+    //         "staffLeave.staffEmail": staffEmail,
+    //         "staffLeave.timePeriod": dateRange,
+    //         "staffLeave.quotaUsed": numOfDaysTaken,
+    //         "staffLeave.leaveType": leaveType,
+    //         "staffLeave.submittedOn": submittedOn,
+    //         "staffLeave.status": leaveStatus,
+    //     },
+    //     {$set: {"staffLeave.$.status": "approved" }}
+    //     )
+    // .then((result)=>{
+    //     console.log(result.staffLeave)
+    // })
+    // .catch((err)=> console.log(err))
+
+    User.findOneAndUpdate( // update user's leave status to approved
         {
-            email: reportingEmail,
-            "staffLeave.staffEmail": staffEmail,
-            "staffLeave.timePeriod": dateRange,
-            "staffLeave.quotaUsed": numOfDaysTaken,
-            "staffLeave.leaveType": leaveType,
-            "staffLeave.submittedOn": submittedOn,
-            "staffLeave.status": leaveStatus,
+            email: staffEmail,
+            "leaveHistory.leaveType": leaveType,
+            "leaveHistory.timePeriod": dateRange,
+            "leaveHistory.quotaUsed": numOfDaysTaken,
+            "leaveHistory.submittedOn": submittedOn,
+            "leaveHistory.status": leaveStatus,
         },
-        {$set: {"staffLeave.$.status": "approved" }}
+        {$set: {"leaveHistory.$.status": "approved" }}
         )
-    .then((result)=>{
-        console.log(result.staffLeave)
-        res.send("status updated to approved")
-    })
-    .catch((err)=> console.log(err))
+        .then((result)=>{
+            console.log(result.leaveHistory)
+            console.log("status updated to approved on user's table")
+        })
+        .catch((err)=> console.log(err))
+
+    res.send("status updated to approved on user and reporting officer's table")
 
     // User
     // .findOneAndUpdate( // update leave status

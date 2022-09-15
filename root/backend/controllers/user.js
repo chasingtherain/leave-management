@@ -28,7 +28,8 @@ exports.getUser = (req,res,next) => {
                     co: user.co,
                     coveringEmail: user.coveringEmail,
                     leave: user.leave,
-                    leaveHistory: user.leaveHistory
+                    leaveHistory: user.leaveHistory,
+                    staffLeave: user.staffLeave
                 })
         })
         .catch( err =>console.log("getUser err:", err))

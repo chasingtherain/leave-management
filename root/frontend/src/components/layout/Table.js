@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
 import CancelLeaveModal from '../modal/CancelLeaveModal'
 import InfoBubble from './InfoBubble'
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 function Table({headerType}) {
     const {currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const currentDate = new Date()
+    const navigate = useNavigate()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
 
@@ -55,9 +56,9 @@ function Table({headerType}) {
                 .catch(err => console.log(err))
         }
     }
+
     const handleApproveClick = (e) => {
         e.preventDefault()
-
         const staffEmail= e.target.id
         const dateRange = e.target.name
 
@@ -81,8 +82,8 @@ function Table({headerType}) {
                 .post(url, approveLeaveData)
                 .then(resp => {
                     console.log(resp)
-                    // fetchCurrentUserInfo(currentUser)
                     toast.success("Leave Approved")
+                    fetchCurrentUserInfo(currentUser)
                 })
                 .catch(err => console.log(err))
         }
@@ -157,7 +158,7 @@ function Table({headerType}) {
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "approval":
-                return (currentUser.staffLeave.filter(entry => entry.status !== "approved").length) ?
+                return (currentUser.staffLeave.filter(entry => entry.status !== "approved")) ?
                     currentUser.staffLeave
                         .filter(entry => entry.status !== "approved")
                         .map((subLeave,index) => 
@@ -186,7 +187,7 @@ function Table({headerType}) {
                         </tr>
                 ) : <p className='text-center w-screen mt-8'>No pending leave applications</p>
             case "approvalHistory":
-                return (currentUser.staffLeave.filter(entry => entry.status === "approved").length) ?
+                return (currentUser.staffLeave.filter(entry => entry.status === "approved")) ?
                  currentUser.staffLeave
                     .filter(entry => entry.status === "approved")
                     .map((subLeave,index) => 
