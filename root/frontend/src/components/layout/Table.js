@@ -2,20 +2,18 @@ import axios from 'axios'
 import React from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
-import CancelLeaveModal from '../modal/CancelLeaveModal'
 import InfoBubble from './InfoBubble'
 import { toast } from 'react-toastify'
 
 function Table({headerType}) {
     const {currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const currentDate = new Date()
-    const navigate = useNavigate()
     const currentDateUnix = currentDate.getTime()
     const currentUserLeave = currentUser.leave
 
     // table headers
-    const requestTableHeader = ["ID", "Leave Type 假性", "Period", "No. of calendar days 时间段", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
-    const historyTableHeader = ["ID", "Leave Type 假性", "Period", "No. of calendar days 时间段", "Submitted on 提交日期", "Quota used 使用额", "Status 状态" ]
+    const requestTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
+    const historyTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态" ]
     const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
     const entitlementTableHeader = ["Leave Type 假性", "Entitlement 年额", "Pending 待批准", "Quota used 已用", "Available 可用", "Note 备注", "Bring Over to Next Year? 带到明年? "]
@@ -67,9 +65,10 @@ function Table({headerType}) {
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/${action}-leave`
 
             const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange && entry.status === "pending"))
-            console.log(targetStaffLeave)
+            console.log("targetStaffLeave: ",targetStaffLeave)
             const leaveData = {
                 staffEmail: targetStaffLeave[0].staffEmail,
+                coveringEmail: targetStaffLeave[0].coveringEmail,
                 reportingEmail: currentUser.email,
                 dateRange: targetStaffLeave[0].timePeriod,
                 leaveType: targetStaffLeave[0].leaveType,
@@ -77,7 +76,7 @@ function Table({headerType}) {
                 numOfDaysTaken: targetStaffLeave[0].quotaUsed,
                 submittedOn: targetStaffLeave[0].submittedOn
             }
-            console.log(leaveData)
+            console.log("leaveData: ", leaveData)
 
             axios
                 .post(url, leaveData)

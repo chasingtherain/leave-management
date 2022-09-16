@@ -31,11 +31,22 @@ const leaveHistorySchema = new Schema({
         type: Number,
         required: true
     },
+    coveringEmail: {
+        type: String,
+        required: true
+    },
+    reportingEmail: {
+        type: String,
+        required: true
+    },
+    remarks: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true
     }
-   
 })
 
 module.exports = mongoose.model('LeaveHistory', leaveHistorySchema)

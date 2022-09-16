@@ -28,7 +28,6 @@ function ApplyLeavePage() {
         currentUser.leaveHistory
             .filter(entry => entry.status === "pending" || entry.status === "approved")
             .map(entry => +(entry.startDateUnix)))
-    console.log(currentUserAppliedDates)
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
@@ -67,6 +66,7 @@ function ApplyLeavePage() {
             // fileUpload: TBC
             // status: pending, TBC
         }
+        console.log("applyLeaveFormData: ", applyLeaveFormData)
         axios
             .post(url,applyLeaveFormData)
             .then((res) =>{
@@ -84,21 +84,25 @@ function ApplyLeavePage() {
     }
 
     const handleStartDateSelection = (date) => {
-        if(startDateRadioSelection !== "Full Day"){
-           setTimeout(() => { // timeout is set because sometimes setEndDate method is called before start date is set in react
-               setEndDate(date.getTime()) // if user selects AM or PM as radio selection before date, end date will automatically be equal to start date
-           }, 500);
-        }
         if(date.getTime() > endDate) {
             console.log(date.getTime(),endDate)
             setEndDate()
             setNumOfDaysApplied()
         }
-
+        
         setStartDate(date.getTime())
-        if (endDate) { // if end date is already selected, call date calculation function
-            console.log("day calculation triggered!")
-            calculateNumOfBizDays(date.getTime(), endDate)
+        
+        if(startDateRadioSelection !== "Full Day"){
+           setTimeout(() => { // timeout is set because sometimes setEndDate method is called before start date is set in react
+               setEndDate(date.getTime()) // if user selects AM or PM as radio selection before date, end date will automatically be equal to start date
+           }, 500)
+           setNumOfDaysApplied(0.5)
+        }
+        else{
+            if (endDate) { // if end date is already selected, call date calculation function
+                console.log("day calculation triggered!")
+                calculateNumOfBizDays(date.getTime(), endDate)
+            }
         }
     }
     const handleEndDateSelection = (date) => {
