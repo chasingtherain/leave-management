@@ -186,7 +186,7 @@ exports.approveLeave = (req,res,next) => {
         const approvalEmail = {
         to: staffEmail, //leave applier's email
         from: 'mfachengdu@gmail.com', // Change to your verified sender
-        cc: coveringEmail, reportingEmail,
+        cc: [coveringEmail, reportingEmail],
         subject: `Leave Approved 休假请求已获批准 - ${dateRange}`,
         html: `
             <div>
@@ -257,7 +257,7 @@ exports.rejectLeave = (req,res,next) => {
         {$set: {"staffLeave.$.status": "rejected" }}
         )
     .then((result)=>{
-        console.log(result.staffLeave)
+        // console.log(result.staffLeave)
         // console.log("status updated to rejected on reporting's table")
     })
     .catch((err)=> console.log(err))
@@ -279,47 +279,34 @@ exports.rejectLeave = (req,res,next) => {
         })
         .catch((err)=> console.log(err))
 
-    res.send("status updated to rejected on user and reporting officer's table")
-
     // send rejection email
-    // User.findOne({email: email}) // not needed
-    //     .then((result)=> {
-    //         console.log(result)
+    sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-    //         sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+    const rejectionEmail = {
+    to: staffEmail, //leave applier's email
+    from: 'mfachengdu@gmail.com', // Change to your verified sender
+    cc: [coveringEmail, reportingEmail], // covering and reporting's email
+    subject: `Leave Rejected 休假请求已被拒绝 - ${dateRange}`,
+    html: `
+        <div>
+            <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been rejected.</p> 
+                <p>For more details, do speak to your reporting officer</p>
+        </div>
+        <div>
+            <p>您好 ${staffEmail}，您从${dateRange}的休假请求已被拒绝</p> 
+            <p>详细细节请问主管，谢谢</p> 
 
-    //         const rejectionEmail = {
-    //         to: staffEmail, //leave applier's email
-    //         from: 'mfachengdu@gmail.com', // Change to your verified sender
-    //         cc: coveringEmail, reportingEmail, // covering and reporting's email
-    //         subject: `Leave Rejected 休假请求已被拒绝 - ${dateRange}`,
-    //         html: `
-    //             <div>
-    //                 <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been rejected.</p> 
-    //                  <p>For more details, do speak to your reporting officer</p>
-    //             </div>
-    //             <div>
-    //                 <p>您好 ${staffEmail}，您从${dateRange}的休假请求已被拒绝</p> 
-    //                 <p>详细细节请问主管，谢谢</p> 
-
-    //             </div>
-    //         `
-    //         }
-    //         sendgridMail
-    //             .send(rejectionEmail) // email to inform user and covering of leave request
-    //             .then(() => {
-    //                 // res.status(200).send("rejection email sent to user and covering")
-    //                 console.log('rejection email sent to user and covering')
-    //             })
-    //             .catch((error) => {
-    //                 console.error("sendgrid error during rejection email: ", error)
-    //                 console.log("err: ", error.response.body)
-    //             })
-            
-    //     })
-    //     .catch(err => {
-    //         console.log(err)
-    //     })
-
-
+        </div>
+    `
+    }
+    sendgridMail
+        .send(rejectionEmail) // email to inform user and covering of leave request
+        .then(() => {
+            res.send("status updated to rejected on user and reporting officer's table")
+            console.log('rejection email sent to user and covering')
+        })
+        .catch((error) => {
+            console.error("sendgrid error during rejection email: ", error)
+            console.log("err: ", error.response.body)
+        })
 }
