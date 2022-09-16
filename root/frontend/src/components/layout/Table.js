@@ -14,11 +14,11 @@ function Table({headerType}) {
     const currentUserLeave = currentUser.leave
 
     // table headers
-    const requestTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
-    const historyTableHeader = ["ID", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
+    const requestTableHeader = ["ID", "Leave Type 假性", "Period", "No. of calendar days 时间段", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
+    const historyTableHeader = ["ID", "Leave Type 假性", "Period", "No. of calendar days 时间段", "Submitted on 提交日期", "Quota used 使用额", "Status 状态" ]
     const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type", "Entitlement", "Pending", "Quota used", "Available", "Note", "Bring Over to Next Year?"]
+    const entitlementTableHeader = ["Leave Type 假性", "Entitlement 年额", "Pending 待批准", "Quota used 已用", "Available 可用", "Note 备注", "Bring Over to Next Year? 带到明年? "]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
     

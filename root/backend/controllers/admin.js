@@ -11,9 +11,9 @@ exports.postCreateUser = (req,res,next) => {
     const password = req.body.password
     const createdOn = req.body.createdOn
     const lastUpdatedOn = req.body.lastUpdatedOn
-    const ro = req.body.ro
+    // const ro = req.body.ro
     const reportingEmail = req.body.reportingEmail
-    const co = req.body.co
+    // const co = req.body.co
     const coveringEmail = req.body.coveringEmail
     
     User.findOne({email: email})
@@ -48,9 +48,9 @@ exports.postCreateUser = (req,res,next) => {
                         password: hashedPassword,
                         createdOn: createdOn,
                         lastUpdatedOn: lastUpdatedOn,
-                        ro: ro,
+                        // ro: ro,
                         reportingEmail: reportingEmail,
-                        co: co,
+                        // co: co,
                         coveringEmail: coveringEmail,
                         leave: chengduLrsLeaveScheme,
                         leaveHistory: [],

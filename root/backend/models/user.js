@@ -27,18 +27,18 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    ro: {
-        type: String,
-        required: true
-    },
+    // ro: {
+    //     type: String,
+    //     required: true
+    // },
     reportingEmail: {
         type: String,
         required: true
     },
-    co: {
-        type: String,
-        required: true
-    },
+    // co: {
+    //     type: String,
+    //     required: true
+    // },
     coveringEmail: {
         type: String,
         required: true

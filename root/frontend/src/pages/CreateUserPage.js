@@ -11,9 +11,9 @@ function CreateUserPage() {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [confirmPassword, setConfirmPassword] = useState()
-    const [ro, setRo] = useState()
+    // const [ro, setRo] = useState()
     const [reportingEmail, setReportingEmail] = useState()
-    const [co, setCo] = useState()
+    // const [co, setCo] = useState()
     const [coveringEmail, setCoveringEmail] = useState()
 
     const navigate = useNavigate()
@@ -33,9 +33,9 @@ function CreateUserPage() {
             email === undefined || email.length === 0 ||
             password === undefined || password.length === 0 ||
             confirmPassword === undefined || confirmPassword.length === 0 ||
-            ro === undefined || ro.length === 0 ||
+            // ro === undefined || ro.length === 0 ||
             reportingEmail === undefined || reportingEmail.length === 0 ||
-            co === undefined || co.length === 0 ||
+            // co === undefined || co.length === 0 ||
             coveringEmail === undefined || coveringEmail.length === 0 ||
             isAdmin === undefined
         )
@@ -71,9 +71,9 @@ function CreateUserPage() {
             password: password,
             createdOn: new Date(),
             lastUpdatedOn: new Date(),
-            ro: ro,
+            // ro: ro,
             reportingEmail: reportingEmail,
-            co: co,
+            // co: co,
             coveringEmail: coveringEmail
         }
         validateAndSubmitData(url, formData)
@@ -95,12 +95,12 @@ function CreateUserPage() {
                     <input type="password" className="input input-bordered w-full max-w-xs" name="email" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword}/>
                     <label className="label text-sm">Account Type</label>
                     <RadioSelection radioType="accountTypeRadio" id="accountType"/>
-                    <label className="label text-sm">Reporting Officer 主管</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setRo(e.target.value)} value={ro}/>
+                    {/* <label className="label text-sm">Reporting Officer 主管</label>
+                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setRo(e.target.value)} value={ro}/> */}
                     <label className="label text-sm">Reporting Officer Email 主管邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setReportingEmail(e.target.value)} value={reportingEmail}/>
-                    <label className="label text-sm">Covering Officer 代办</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCo(e.target.value)} value={co}/>
+                    {/* <label className="label text-sm">Covering Officer 代办</label>
+                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCo(e.target.value)} value={co}/> */}
                     <label className="label text-sm">Covering Officer Email 代办邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
                     <button type="submit" className='btn mt-8 rounded-sm'>Create User</button>
