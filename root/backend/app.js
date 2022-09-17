@@ -5,6 +5,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session)
+const multer = require('multer')
 
 const MONGODB_URI = 'mongodb+srv://mfachengdu:iamsingaporean@cluster0.rbiadah.mongodb.net/leave-management?retryWrites=true&w=majority'
 
@@ -26,8 +27,9 @@ const authRoutes = require('./routes/auth')
 const { collection } = require('./models/user')
 
 app.use(cors())
+app.use(multer().single('upload'))
 app.use(
-    session({secret: "secret94", resave: false, saveUninitialized: false, store: store}))
+    session({secret: "secret94", resave: false, saveUninitialized: false, store: store, cookie: { maxAge: 86400 }}))
 app.use(express.urlencoded({extended: true})) //Parse URL-encoded bodies
 app.use(express.json())
 

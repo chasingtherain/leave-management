@@ -77,7 +77,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         const dateOfApplication = moment(req.body.dateOfApplication).format("DD MMM YYYY")
         const startDate = moment(req.body.startDate).format("DD MMM YYYY")
         const endDate = moment(req.body.endDate).format("DD MMM YYYY")
-
+        console.log(req.body)
     // find userid from mongodb
     User
         .findOne({_id: userId})

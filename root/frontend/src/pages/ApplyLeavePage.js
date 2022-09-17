@@ -228,11 +228,14 @@ function ApplyLeavePage() {
                     ></textarea>
             </div>
             <div>
-                <label htmlFor="RO" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
+                <label htmlFor="upload" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
                 <p className='text-xs'> MC is compulsory / 病假单必上传</p>
-                <button type="button" className="btn btn-xs text-white text-center text-sm mt-2">
-                    Upload
-                </button>
+                <input 
+                    id='upload'
+                    name="upload"
+                    type="file" 
+                    className="text-center text-sm mt-2"
+                />
             </div>
             <div className="my-4">
                 <label htmlFor="reportingEmail" className="text-lg font-weight-900 -ml-1 label">RO email 主管邮件</label>

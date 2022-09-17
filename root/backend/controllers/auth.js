@@ -1,13 +1,19 @@
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
 
 const sendgridMail = require('@sendgrid/mail')
+
+// generate jwt token
+const generateToken = (id) => {
+    return jwt.sign({id}, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '7d'})
+}
 
 exports.postLogin = (req,res,next) => {
     const email = req.body.email
     const password = req.body.password
-    console.log(req.body)
+
     User
         .findOne({email: email})
         .then(user => {
@@ -22,7 +28,7 @@ exports.postLogin = (req,res,next) => {
                         req.session.isLoggedIn = true;
                         req.session.user = user;
                         return req.session.save(err => {
-                            console.log("err: ", err)
+                            console.log("session err: ", err)
                             // console.log(user)
                             res.status(200).send(
                                 {
@@ -38,7 +44,8 @@ exports.postLogin = (req,res,next) => {
                                     coveringEmail: user.coveringEmail,
                                     leave: user.leave,
                                     leaveHistory: user.leaveHistory,
-                                    staffLeave: user.staffLeave
+                                    staffLeave: user.staffLeave,
+                                    token: generateToken(user._id)
                                 })
                         })
                     }
@@ -51,11 +58,14 @@ exports.postLogin = (req,res,next) => {
 
 exports.postLogout = (req,res,next) => {
     console.log("before destroying: ", req.session)
-    req.session.destroy((err) => {
-        console.log("err: ", err)
-    })
-    res.status(200).send("sign out successful")
-    console.log("after destroying: ", req.session)
+    if(req.session){
+        req.session.destroy((err) => {
+            if (err) throw err
+            req.session = null
+            res.status(200).send("sign out successful")
+        })
+        console.log("after destroying: ", req.session)
+    }
 }
 
 
