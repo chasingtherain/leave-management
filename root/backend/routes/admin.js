@@ -19,4 +19,10 @@ router.post('/reject-leave', adminController.rejectLeave)
 // route is /admin/create-new-leave
 router.post('/create-new-leave', adminController.postCreateLeaveType)
 
+// route is /admin/get-user-info-by-email
+router.get('/get-user-info-by-email/:id', adminController.getUserInfoByEmail)
+
+// route is /admin/update-user
+router.post('/update-user', adminController.postUpdateUser)
+
 module.exports = router

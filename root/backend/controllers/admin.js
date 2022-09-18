@@ -310,3 +310,61 @@ exports.rejectLeave = (req,res,next) => {
     //         console.log("err: ", error.response.body)
     //     })
 }
+
+exports.getUserInfoByEmail = (req,res,next) => {
+    const userEmail = req.params.id
+    console.log("req.params: ", req.params)
+    User
+        .findOne({email: userEmail})
+        .then(user => {
+            if(!user){
+                return res.status(400).send("user not found")
+            }
+            res.status(200).send(
+                {
+                    _id: user._id,
+                    name: user.name,
+                    isAdmin: user.isAdmin,
+                    email: user.email,
+                    createdOn: user.createdOn,
+                    lastUpdatedOn: user.lastUpdatedOn,
+                    reportingEmail: user.reportingEmail,
+                    coveringEmail: user.coveringEmail,
+                    leave: user.leave,
+                    leaveHistory: user.leaveHistory,
+                    staffLeave: user.staffLeave
+                })
+        })
+        .catch( err =>console.log("getUserInfoByEmail err:", err))
+}
+
+exports.postUpdateUser = (req,res,next) => {
+    const userEmail = req.body.userEmail
+    const newReportingEmail = req.body.newReportingEmail
+    const newCoveringEmail = req.body.newCoveringEmail
+    console.log("req.body: ", req.body)
+
+    // update reporting's email
+    if (newReportingEmail) {
+        User.findOneAndUpdate(
+            {email: userEmail,},
+            {$set: {"reportingEmail": newReportingEmail }}
+        )
+        .then((result)=>{
+            // console.log(result)
+        })
+        .catch((err)=> console.log("update reporting email error: ", err))
+    }
+    // update covering's email
+    if (newCoveringEmail) {
+        User.findOneAndUpdate(
+            {email: userEmail,},
+            {$set: {"coveringEmail": newCoveringEmail }}
+        )
+        .then((result)=>{
+            // console.log(result)
+        })
+        .catch((err)=> console.log("update covering email error: ", err))
+    }
+    res.status(200).send("update successful")
+}

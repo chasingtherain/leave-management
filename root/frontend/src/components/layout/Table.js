@@ -28,7 +28,19 @@ function Table({headerType}) {
     
     const handleEditClick = (event) => {
         // identify user's id, send user's data to update user info form
+        // console.log(event.target.id)
         setCurrentEditUser(event.target.id)
+        fetchCurrentEditUserDetails(event.target.id)
+    }
+
+    const fetchCurrentEditUserDetails = (userEmail) => {
+        const url = `${process.env.REACT_APP_BACKENDURL}/admin/get-user-info-by-email/${userEmail}`
+        axios
+        .get(url)
+        .then(resp => {
+            setCurrentEditUser(resp.data)
+        })
+        .catch(err => console.log(err))
     }
 
     const handleCancelClick = (e) => {
@@ -253,7 +265,13 @@ function Table({headerType}) {
                                     <td>{list.isAdmin}</td>
                                     <td>{list.reportingEmail}</td>
                                     <td>{list.coveringEmail}</td>
-                                    <td><Link to ="/update-user"><button id={list.email} className='btn btn-xs btn-neutral' onClick={handleEditClick}>edit</button></Link></td>
+                                    <td>
+                                        <Link to ="/update-user">
+                                            <button id={list.email} className='btn btn-xs btn-neutral' onClick={handleEditClick}>
+                                                edit
+                                            </button>
+                                        </Link>
+                                    </td>
                                 </tr>
                         ))
             default:
