@@ -10,7 +10,10 @@ function UserManagementPage() {
         <div className='grid place-items-end mb-2 mr-2'>
             <div className='flex gap-4 mr-2'>
                 <Link to="/create-user">
-                    <AiOutlineUserAdd className='text-4xl mt-2 hover:cursor'/>
+                    <button className='btn px-8'>
+                        <span><AiOutlineUserAdd className='text-3xl mr-4 px-0 hover:cursor'/></span>
+                        <span className='text-[16px]'>Add New User</span>
+                    </button>   
                 </Link>
                 {/* <Link to="/change-log">
                     <button className='btn bg-black rounded-md px-6 text-lg'>Change Log</button>

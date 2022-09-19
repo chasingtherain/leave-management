@@ -27,7 +27,7 @@ function UpdateUserInfoPage() {
             })
             .catch(err => console.log(err))
 
-           alert(`${currentEditUser} account is deleted!`)
+           alert(`${currentEditUser.email}'s account deleted!`)
        }
     }
 
@@ -42,30 +42,35 @@ function UpdateUserInfoPage() {
         setActiveUpdateButton(false)
     }
 
-    const validateAndSubmitUpdateData = (e) => {
-        const url = `${process.env.REACT_APP_BACKENDURL}/admin/update-user`
-        e.preventDefault()
-        if(newReportingEmail && !validateEmail(newReportingEmail)){
-            return toast.error("Invalid reporting email!")
-        }
-        if(newCoveringEmail && !validateEmail(newCoveringEmail)){
-            return toast.error("Invalid covering email!")
-        }
-        const updateData = {
-            userEmail: currentEditUser.email,
-            newReportingEmail: newReportingEmail,
-            newCoveringEmail: newCoveringEmail
-        }
 
-        axios
-        .post(url, updateData)
-        .then(resp => {
-            fetchUserList()
-            console.log(resp)
-            toast.success("valid update data")
-            navigate('/user-management')
-        })
-        .catch(err => console.log(err))
+    const validateAndSubmitUpdateData = (e) => {
+        e.preventDefault()
+        if(window.confirm(`Confirm changes?`
+            )){
+            const url = `${process.env.REACT_APP_BACKENDURL}/admin/update-user`
+            if(newReportingEmail && !validateEmail(newReportingEmail)){
+                return toast.error("Invalid reporting email!")
+            }
+            if(newCoveringEmail && !validateEmail(newCoveringEmail)){
+                return toast.error("Invalid covering email!")
+            }
+            const updateData = {
+                userEmail: currentEditUser.email,
+                newReportingEmail: newReportingEmail,
+                newCoveringEmail: newCoveringEmail
+            }
+    
+            axios
+            .post(url, updateData)
+            .then(resp => {
+                fetchUserList()
+                console.log(resp)
+                toast.success("Update successful")
+                navigate('/user-management')
+            })
+            .catch(err => console.log(err))
+
+        }
 
     }
 
@@ -106,7 +111,8 @@ function UpdateUserInfoPage() {
                     <button 
                         type="submit" 
                         className="btn btn-primary text-white w-1/6 text-center text-base font-semibold shadow-md rounded-lg mt-6"
-                        disabled={activeUpdateButton}>
+                        disabled={activeUpdateButton}
+                    >
                         Update
                     </button>
                     <button

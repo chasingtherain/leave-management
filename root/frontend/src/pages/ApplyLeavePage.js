@@ -255,7 +255,7 @@ function ApplyLeavePage() {
                 </div>
 
             </div>
-            <button type="submit" className="btn btn-primary text-white w-1/6 text-center text-base font-semibold shadow-md rounded-lg mt-4">
+            <button type="submit" className="btn text-white mt-8 px-28 text-center text-base font-semibold shadow-md rounded-lg mt-4">
                 Apply / 申请
             </button>
         </div>
