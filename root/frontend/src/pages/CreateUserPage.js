@@ -11,20 +11,21 @@ function CreateUserPage() {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [confirmPassword, setConfirmPassword] = useState()
-    // const [ro, setRo] = useState()
     const [reportingEmail, setReportingEmail] = useState()
-    // const [co, setCo] = useState()
     const [coveringEmail, setCoveringEmail] = useState()
+    const [createUserBtnLoading, setCreateUserBtnLoading] = useState()
 
     const navigate = useNavigate()
 
     const validateAndSubmitData = async (url, formData) => {
-        
+        setCreateUserBtnLoading("loading")
         if(!validateEmail(email)){
+            setCreateUserBtnLoading("")
             return toast.error("Invalid email!")
         }
         
         if(password !== confirmPassword){
+            setCreateUserBtnLoading("")
             return toast.error("Passwords don't match!")
         }
         
@@ -38,8 +39,10 @@ function CreateUserPage() {
             // co === undefined || co.length === 0 ||
             coveringEmail === undefined || coveringEmail.length === 0 ||
             isAdmin === undefined
-        )
-        return toast.error("Fill in all blanks!")
+        ){
+            setCreateUserBtnLoading("")
+            return toast.error("Fill in all blanks!")
+        }
 
         axios
             .post(url, formData)
@@ -103,7 +106,7 @@ function CreateUserPage() {
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCo(e.target.value)} value={co}/> */}
                     <label className="label text-sm">Covering Officer Email 代办邮箱</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
-                    <button type="submit" className='btn mt-8 rounded-sm'>Create User</button>
+                    <button type="submit" className={`btn mt-8 rounded-sm ${createUserBtnLoading}`}>Create User</button>
                 </form>
             </div>
         </div>

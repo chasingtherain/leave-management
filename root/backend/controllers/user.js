@@ -127,7 +127,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             User
                 .findOne({email: reportingEmail})
                 .then((user)=>{
-                    if (!user) return res.status(400).send("reporting officer email not found in db")
+                    // if (!user) return res.status(400).send("reporting officer email not found in db")
+                    if (!user) return console.log("reporting officer email not found in db")
                     User.updateOne(
                         {email: reportingEmail},
                         {$push: {"staffLeave": staffLeaveData}}
@@ -137,9 +138,6 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                     })
                     .catch(err => console.log("subordinate leave err: ", err))    
                 })
-        })
-
-        .then((result)=> {
             // send email to user, covering
             sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
@@ -194,8 +192,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         res.status(200).send("leave application successful, email sent to user, covering and reporting officer") 
         // create leave history details and push into User
         console.log("leave application successful")
-            })
-        .catch(err => console.log("postLeaveApplicationForm err: ", err))
+    })
+    .catch(err => console.log("postLeaveApplicationForm err: ", err))
 }
 
 exports.cancelLeaveRequest = (req,res) => {

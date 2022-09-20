@@ -9,20 +9,24 @@ function LoginPage() {
         const navigate = useNavigate()
         const [userEmail, setUserEmail] = useState("")
         const [userPassword, setUserPassword] = useState("")
-        const [error, setError] = useState("")
         const [loginBtnLoading, setLoginBtnLoading] = useState("")
 
         const url = `${process.env.REACT_APP_BACKENDURL}/login`
         
         const validateFormAndSignIn = (e) => {
+            setLoginBtnLoading("loading")
             e.preventDefault()
             if(
                 userEmail === undefined || userEmail.length === 0 ||
                 userPassword === undefined || userPassword.length === 0
             )
+            {
+                setLoginBtnLoading("")
                 return toast.error("Fill in all blanks!")
+            }
 
             if(!validateEmail(userEmail)){
+                setLoginBtnLoading("")
                 return toast.error("Invalid email!")
             }
             const signInData = 
@@ -46,7 +50,6 @@ function LoginPage() {
                     console.log(err)
                     if(err.response.status === 400) toast.error("email is not registered!")
                     if(err.response.status === 401) toast.error("Incorrect email or password")
-                    console.log(err.message, ": ", err.response.data)
                 })
         }
         
@@ -64,11 +67,6 @@ function LoginPage() {
                         <input type="password" placeholder="Password 密码" className="input input-bordered w-full max-w-xs my-4" onChange={(event) => setUserPassword(event.target.value)}/>
                     </div>
                     <button type='submit' className={`btn btn-wide bg-black my-8 ${loginBtnLoading}`}>LOGIN 登陆</button>
-                    {error && 
-                        <>
-                            <p className='text-red-600'>Invalid email or password.</p>
-                        </>
-                    }
                     <Link to="/change-password">
                         <span className='underline text-slate-400'>Forgot password / 忘了密码</span>
                     </Link>

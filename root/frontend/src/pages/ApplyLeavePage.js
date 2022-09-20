@@ -28,6 +28,7 @@ function ApplyLeavePage() {
         currentUser.leaveHistory
             .filter(entry => entry.status === "pending" || entry.status === "approved")
             .map(entry => +(entry.startDateUnix)))
+    const [applyBtnLoading, setApplyBtnLoading] = useState("")
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
@@ -36,22 +37,33 @@ function ApplyLeavePage() {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
         const currentDate = new Date()
         e.preventDefault()
+        setApplyBtnLoading("loading")
     
-        if(!currentLeaveSelection)
+        if(!currentLeaveSelection){
+            setApplyBtnLoading("")
             return toast.error("leave type not selected")
-        if(currentUserAppliedDates.includes(startDate))
+        }
+        if(currentUserAppliedDates.includes(startDate)){
+            setApplyBtnLoading("")
             return toast.error("You have already applied leave on this day!")
-        if(startDate === undefined || endDate === undefined)
+        }
+        if(startDate === undefined || endDate === undefined){
+            setApplyBtnLoading("")
             return toast.error("start and end date must be selected!")
-        if(!startDateRadioSelection)
+        }
+        if(!startDateRadioSelection){
+            setApplyBtnLoading("")
             return toast.error("Please select AM, PM Leave or Full Day")
-
+        }
         // user must have enough leave 
-        if(numOfDaysApplied > numOfSelectedLeaveEntitlement)
+        if(numOfDaysApplied > numOfSelectedLeaveEntitlement){
+            setApplyBtnLoading("")
             return toast.error("Insufficient leave!")
-        
-        if(!checkBoxStatus)
+        }
+        if(!checkBoxStatus){
+            setApplyBtnLoading("")
             return toast.error("Checkbox not checked!")
+        }
         const applyLeaveFormData = {
             userId: currentUser._id,
             startDate: startDate,
@@ -255,7 +267,7 @@ function ApplyLeavePage() {
                 </div>
 
             </div>
-            <button type="submit" className="btn text-white mt-8 px-28 text-center text-base font-semibold shadow-md rounded-lg mt-4">
+            <button type="submit" className={`btn text-white mt-8 px-28 text-center text-base font-semibold shadow-md rounded-lg mt-4 ${applyBtnLoading}`}>
                 Apply / 申请
             </button>
         </div>

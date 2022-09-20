@@ -10,9 +10,13 @@ function UpdateUserInfoPage() {
     const [newReportingEmail, setNewReportingEmail] = useState()
     const [newCoveringEmail, setNewCoveringEmail] = useState()
     const [activeUpdateButton, setActiveUpdateButton] = useState(true)
+    const [updateBtnLoading, setUpdateBtnLoading] = useState()
+    const [deleteBtnLoading, setDeleteBtnLoading] = useState()
 
     const navigate = useNavigate()
+
     const handleDeleteClick = () => {
+        setDeleteBtnLoading("loading")
        if(window.confirm("Delete user?")){
            const deleteUserData = {
                email: currentEditUser
@@ -45,13 +49,16 @@ function UpdateUserInfoPage() {
 
     const validateAndSubmitUpdateData = (e) => {
         e.preventDefault()
+        setUpdateBtnLoading("loading")
         if(window.confirm(`Confirm changes?`
             )){
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/update-user`
             if(newReportingEmail && !validateEmail(newReportingEmail)){
+                setUpdateBtnLoading("")
                 return toast.error("Invalid reporting email!")
             }
             if(newCoveringEmail && !validateEmail(newCoveringEmail)){
+                setUpdateBtnLoading("")
                 return toast.error("Invalid covering email!")
             }
             const updateData = {
@@ -110,7 +117,7 @@ function UpdateUserInfoPage() {
                 <div className='flex flex-col'>
                     <button 
                         type="submit" 
-                        className="btn btn-primary text-white w-1/6 text-center text-base font-semibold shadow-md rounded-lg mt-6"
+                        className={`btn btn-primary text-white w-1/6 text-center text-base font-semibold shadow-md rounded-lg mt-6 ${updateBtnLoading}`}
                         disabled={activeUpdateButton}
                     >
                         Update
@@ -118,7 +125,7 @@ function UpdateUserInfoPage() {
                     <button
                         type='button'
                         onClick={handleDeleteClick} 
-                        className="btn btn-error text-white w-1/6 text-center text-base font-semibold shadow-md rounded-lg mt-2">
+                        className={`btn btn-error text-white w-1/6 text-center text-base font-semibold shadow-md rounded-lg mt-2 ${deleteBtnLoading}`}>
                             Delete
                     </button>
                 </div>
