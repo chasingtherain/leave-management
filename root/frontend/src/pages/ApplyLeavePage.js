@@ -14,6 +14,8 @@ function ApplyLeavePage() {
     const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
     const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
     // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
+    console.log(moment().dayOfYear(1)._d)
+    console.log(moment().toDate())
 
     const navigate = useNavigate()
 
@@ -31,7 +33,7 @@ function ApplyLeavePage() {
     const [applyBtnLoading, setApplyBtnLoading] = useState("")
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
-    const numOfSelectedLeaveEntitlement = userSelectedLeave[0].entitlement // refers to how many days a user is entitled for selected leave type
+    const numOfSelectedLeave = userSelectedLeave[0].entitlement - userSelectedLeave[0].pending - userSelectedLeave[0].used// refers to how many days a user is entitled for selected leave type
 
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
@@ -56,7 +58,7 @@ function ApplyLeavePage() {
             return toast.error("Please select AM, PM Leave or Full Day")
         }
         // user must have enough leave 
-        if(numOfDaysApplied > numOfSelectedLeaveEntitlement){
+        if(numOfDaysApplied > numOfSelectedLeave){
             setApplyBtnLoading("")
             return toast.error("Insufficient leave!")
         }
@@ -163,16 +165,16 @@ function ApplyLeavePage() {
     }
 
     const leaveTypeMessage = () => {
-        if(numOfSelectedLeaveEntitlement === 0){
+        if(numOfSelectedLeave === 0){
             return (<>
                 <p className='mt-4 text-sm'>You have 0 days of: {currentLeaveSelection}</p>
                 <p className='text-sm'>您已用完: {currentLeaveSelection}</p>
             </>)    
         }
-        if(numOfSelectedLeaveEntitlement){
+        if(numOfSelectedLeave){
             return (<>
-                <p className='mt-4 text-sm'>You have {numOfSelectedLeaveEntitlement} days of: {currentLeaveSelection}</p>
-                <p className='text-sm'>您有{numOfSelectedLeaveEntitlement}天的: {currentLeaveSelection}</p>
+                <p className='mt-4 text-sm'>You have {numOfSelectedLeave} days of: {currentLeaveSelection}</p>
+                <p className='text-sm'>您有{numOfSelectedLeave}天的: {currentLeaveSelection}</p>
             </>)
         }
 
@@ -199,7 +201,7 @@ function ApplyLeavePage() {
                             dateFormat='dd MMM yyyy'
                             className='border-[1px] border-secondary w-32 h-10 rounded-sm' 
                             selected={startDate} 
-                            minDate={moment().toDate()}
+                            minDate={moment().dayOfYear(1)._d}
                             onChange={(date) => handleStartDateSelection(date)} 
                         />
                     </div>
@@ -222,8 +224,8 @@ function ApplyLeavePage() {
                 {numOfDaysApplied &&
                 <>
                     <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
-                    {(numOfDaysApplied <= numOfSelectedLeaveEntitlement) && <p className='text-sm'>Balance of: {numOfSelectedLeaveEntitlement - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>}
-                    {(numOfDaysApplied > numOfSelectedLeaveEntitlement) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
+                    {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of: {numOfSelectedLeave - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>}
+                    {(numOfDaysApplied > numOfSelectedLeave) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
                 </>
                 }
             </div>

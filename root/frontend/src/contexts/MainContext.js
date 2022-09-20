@@ -48,7 +48,8 @@ export const MainContextProvider = ({ children }) => {
         })
         .catch(err => console.log(err))
       }
-    setAuthState(true)
+    setTimeout( () => setAuthState(true), 1000)
+    // setAuthState(true)
 }
 
   useEffect(()=>{

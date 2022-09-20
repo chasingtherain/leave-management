@@ -30,19 +30,12 @@ function App() {
           <Navbar/>
           <Routes>
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
-            <Route path = '/login' element={<LoginPage/>}/>
+            {!currentUser && <Route path = '/login' element={<LoginPage/>}/>}
             <Route path = '/change-password' element={<ChangePasswordPage/>}/>
             <Route path = '/set-new-password/:token' element={<SetNewPasswordPage/>}/>
             {/* <Route path = '/*' element={<PageNotFound/>}/> */}
-
-            {/* logged in routes */}
-            <Route path = '/' element={<LoggedInRoute/>}>
-              <Route path = '/' element={<Homepage/>}/>
-            </Route>
-
-            <Route path = '/profile' element={<LoggedInRoute/>}>
-              <Route path = '/profile' element={<CreateUserPage/>}/>
-            </Route>
+            {currentUser && <Route path = '/' element={<Homepage/>}/>}
+            {currentUser && <Route path = '/profile' element={<ProfilePage/>}/>}
 
             {/* admin routes */}
             <Route path = '/create-user' element={<AdminRoute/>}>

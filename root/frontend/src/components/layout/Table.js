@@ -9,14 +9,15 @@ function Table({headerType}) {
     const {currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
+    const currentYear = currentDate.getFullYear()
     const currentUserLeave = currentUser.leave
 
     // table headers
     const requestTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
-    const historyTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态" ]
+    const historyTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
     const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type 假性", "Entitlement 年额", "Pending 待批准", "Quota used 已用", "Available 可用", "Note 备注", "Bring Over to Next Year? 带到明年? "]
+    const entitlementTableHeader = ["Leave Type 假性",`Entitlement Rollover 年额 (${currentYear-1})`, `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用", "Note 备注", "Bring Over to Next Year? 带到明年? "]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
     
@@ -197,10 +198,11 @@ function Table({headerType}) {
                 return currentUserLeave.map((leave,index) => 
                     <tr key={index}>
                         <td>{leave.name}</td>
+                        <td>{(leave.name === "Annual Leave 年假") ? 0 : "-"}</td>
                         <td>{leave.entitlement}</td>
                         <td>{leave.pending}</td>
                         <td>{leave.used}</td>
-                        <td>{leave.entitlement - leave.used}</td>
+                        <td>{leave.entitlement - leave.pending - leave.used}</td>
                         <td><InfoBubble info={leave.note}/></td>
                         <td>{(leave.rollover) ? "Yes" : "No"}</td>
                     </tr>)
@@ -250,6 +252,17 @@ function Table({headerType}) {
                                     <td>
                                         {statusBadgeSelection(leave.status)}
                                     </td>
+                                    <td>
+                                    {(leave.status !== "cancelled" && leave.status !== "rejected") ?
+                                    <button 
+                                        id={leave._id} 
+                                        name={leave.leaveType}
+                                        onClick={(e) => handleCancelClick(e)} 
+                                        className="btn btn-sm btn-error px-2 rounded-md text-white">cancel 取消
+                                    </button>
+                                    : <></>
+                                    }
+                                </td>
                                 </tr>
                         )
                 : 
