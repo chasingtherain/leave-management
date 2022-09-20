@@ -100,6 +100,7 @@ exports.postCreateUser = (req,res,next) => {
 
 
 }
+
 exports.postDeleteUser = (req,res,next) => {
     const email = req.body.email
     

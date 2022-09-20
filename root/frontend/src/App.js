@@ -8,7 +8,7 @@ import UserManagementPage from "./pages/UserManagementPage";
 import UpdateUserInfoPage from "./pages/UpdateUserInfoPage";
 import CreateUserPage from "./pages/CreateUserPage";
 import ChangeLogPage from "./pages/ChangeLogPage";
-import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/private/AdminRoute";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useMainContext } from "./hooks/useMainContext";
@@ -16,44 +16,56 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import SetNewPasswordPage from "./pages/SetNewPasswordPage";
 import CreateNewLeave from "./pages/CreateNewLeave";
 import ApproveLeavePage from "./pages/ApproveLeavePage";
+import SkeletonLoader from "./components/layout/SkeletonLoader";
+import LoggedInRoute from "./components/private/LoggedInRoute";
 
 function App() {
-  const {currentUser} = useMainContext()
+  const {authState, currentUser} = useMainContext()
+  
   return (
     <>
+      {!authState && <SkeletonLoader/>}
+      {authState && (
         <Router>
           <Navbar/>
           <Routes>
-            {currentUser && <Route exact path = '/' element={<Homepage/>}/>}
-            {<Route exact path = '/' element={<LoginPage/>}/>} {/* if user is not logged in, '/' will display login page */}
             <Route path = '/apply-leave' element={<ApplyLeavePage/>}/>
             <Route path = '/login' element={<LoginPage/>}/>
-            <Route path = '/profile' element={<ProfilePage/>}/>
             <Route path = '/change-password' element={<ChangePasswordPage/>}/>
             <Route path = '/set-new-password/:token' element={<SetNewPasswordPage/>}/>
+            {/* <Route path = '/*' element={<PageNotFound/>}/> */}
 
-            {/* private routes */}
-            <Route path = '/create-user' element={<PrivateRoute/>}>
+            {/* logged in routes */}
+            <Route path = '/' element={<LoggedInRoute/>}>
+              <Route path = '/' element={<Homepage/>}/>
+            </Route>
+
+            <Route path = '/profile' element={<LoggedInRoute/>}>
+              <Route path = '/profile' element={<CreateUserPage/>}/>
+            </Route>
+
+            {/* admin routes */}
+            <Route path = '/create-user' element={<AdminRoute/>}>
               <Route path = '/create-user' element={<CreateUserPage/>}/>
             </Route>
-            <Route path = '/change-log' element={<PrivateRoute/>}>
+            <Route path = '/change-log' element={<AdminRoute/>}>
               <Route path = '/change-log' element={<ChangeLogPage/>}/>
             </Route>
-            <Route path = '/update-user' element={<PrivateRoute/>}>
+            <Route path = '/update-user' element={<AdminRoute/>}>
               <Route path = '/update-user' element={<UpdateUserInfoPage/>}/>
             </Route>
-            <Route path = '/user-management' element={<PrivateRoute/>}>
+            <Route path = '/user-management' element={<AdminRoute/>}>
               <Route path = '/user-management' element={<UserManagementPage/>}/>
             </Route>
-            <Route path = '/create-new-leave' element={<PrivateRoute/>}>
+            <Route path = '/create-new-leave' element={<AdminRoute/>}>
               <Route path = '/create-new-leave' element={<CreateNewLeave/>}/>
             </Route>
-            <Route path = '/approve-leave' element={<PrivateRoute/>}>
+            <Route path = '/approve-leave' element={<AdminRoute/>}>
               <Route path = '/approve-leave' element={<ApproveLeavePage/>}/>
             </Route>
-
           </Routes>
         </Router>
+      )}
         <ToastContainer/>
     </>
   );

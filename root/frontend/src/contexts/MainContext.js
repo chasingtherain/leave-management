@@ -10,13 +10,13 @@ export const MainContextProvider = ({ children }) => {
 
   const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
   const [currentEditUser, setCurrentEditUser] = useState()
-
   const [sessionToken, setSessionToken] = useState(() => {
     let token =  sessionStorage.getItem('leaveMgtToken')
     if(token) return token
     else return ""
   })
-
+  const [authState, setAuthState] = useState(false)
+  console.log(authState)
   const fetchUserList = async () => {
     axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
@@ -38,14 +38,17 @@ export const MainContextProvider = ({ children }) => {
   }
 
   const validateSession = () => {
-    const url = `${process.env.REACT_APP_BACKENDURL}/validate-session`
-    axios
-    .post(url, {sessionId: sessionToken})
-    .then((user) => {
-        // set user as current user
-        setCurrentUser(user.data)
-    })
-    .catch(err => console.log(err))
+    if(sessionToken){
+      const url = `${process.env.REACT_APP_BACKENDURL}/validate-session`
+      axios
+      .post(url, {sessionId: sessionToken})
+      .then((user) => {
+          // set user as current user
+          setCurrentUser(user.data)
+        })
+        .catch(err => console.log(err))
+      }
+    setAuthState(true)
 }
 
   useEffect(()=>{
@@ -62,6 +65,7 @@ export const MainContextProvider = ({ children }) => {
   return (
     <MainContext.Provider value={{
       activeTab, 
+      authState,
       currentEditUser,
       currentLeaveSelection,
       currentUser,
