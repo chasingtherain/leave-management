@@ -1,10 +1,12 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useMainContext } from '../hooks/useMainContext'
 
 export default function PrivateRoute() {
-    const {currentUser} = useMainContext()
-
+    const {currentUser, sessionToken} = useMainContext()
+    
+    // check if session storage is valid, server will return current user for FE to set
 
     return (
     <div>

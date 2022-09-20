@@ -11,13 +11,19 @@ export const MainContextProvider = ({ children }) => {
   const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
   const [currentEditUser, setCurrentEditUser] = useState()
 
+  const [sessionToken, setSessionToken] = useState(() => {
+    let token =  sessionStorage.getItem('leaveMgtToken')
+    if(token) return token
+    else return ""
+  })
+
   const fetchUserList = async () => {
     axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
       .then(resp =>{ 
         setUserList(resp.data)
-        console.log(resp)}
-      )
+        // console.log(resp)
+      })
       .catch(err => console.log(err))
   }
 
@@ -26,13 +32,25 @@ export const MainContextProvider = ({ children }) => {
       axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getUser/${currentUser._id}`)
       .then(resp => {
-          console.log(resp.data)
+          // console.log(resp.data)
           setCurrentUser(resp.data)
       })
   }
 
+  const validateSession = () => {
+    const url = `${process.env.REACT_APP_BACKENDURL}/validate-session`
+    axios
+    .post(url, {sessionId: sessionToken})
+    .then((user) => {
+        // set user as current user
+        setCurrentUser(user.data)
+    })
+    .catch(err => console.log(err))
+}
+
   useEffect(()=>{
     fetchUserList()
+    validateSession()
     console.log("use effect triggered")
   }, [])
 
@@ -48,6 +66,7 @@ export const MainContextProvider = ({ children }) => {
       currentLeaveSelection,
       currentUser,
       isAdmin,
+      sessionToken,
       userList,
       fetchCurrentUserInfo,
       fetchUserList,
@@ -56,6 +75,7 @@ export const MainContextProvider = ({ children }) => {
       setCurrentLeaveSelection,
       setCurrentUser,
       setIsAdmin,
+      setSessionToken,
       validateEmail
 
      }}>

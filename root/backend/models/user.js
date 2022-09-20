@@ -45,6 +45,8 @@ const userSchema = new Schema({
     },
     resetToken: String,
     resetTokenExpiration: Date,
+    sessionToken: String,
+    sessionTokenExpiration: Date,
     leave: {
         type: Object,
         required: true

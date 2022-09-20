@@ -14,6 +14,7 @@ function Navbar() {
         console.log(resp)
         if(resp.status === 200) {
             toast.success("Log out successful")
+            sessionStorage.removeItem('leaveMgtToken')
             setCurrentUser(null)
             navigate('/login')
         }

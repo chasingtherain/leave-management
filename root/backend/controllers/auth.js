@@ -13,7 +13,6 @@ const generateToken = (id) => {
 exports.postLogin = (req,res,next) => {
     const email = req.body.email
     const password = req.body.password
-
     User
         .findOne({email: email})
         .then(user => {
@@ -30,23 +29,32 @@ exports.postLogin = (req,res,next) => {
                         return req.session.save(err => {
                             console.log("session err: ", err)
                             // console.log(user)
-                            res.status(200).send(
-                                {
-                                    _id: user._id,
-                                    name: user.name,
-                                    isAdmin: user.isAdmin,
-                                    email: user.email,
-                                    createdOn: user.createdOn,
-                                    lastUpdatedOn: user.lastUpdatedOn,
-                                    // ro: user.ro,
-                                    reportingEmail: user.reportingEmail,
-                                    // co: user.co,
-                                    coveringEmail: user.coveringEmail,
-                                    leave: user.leave,
-                                    leaveHistory: user.leaveHistory,
-                                    staffLeave: user.staffLeave,
-                                    token: generateToken(user._id)
+                            const sessionTokenByServer = generateToken(user._id)
+                            console.log(sessionTokenByServer)
+                            User.findOneAndUpdate( // upon login, update token value on server 
+                                {email: user.email},
+                                {$set: {"sessionToken": sessionTokenByServer }}
+                                )
+                                .then(result => {
+                                    // console.log(result.sessionToken)
+                                    res.status(200).send(
+                                        {
+                                            _id: user._id,
+                                            name: user.name,
+                                            isAdmin: user.isAdmin,
+                                            email: user.email,
+                                            createdOn: user.createdOn,
+                                            lastUpdatedOn: user.lastUpdatedOn,
+                                            reportingEmail: user.reportingEmail,
+                                            coveringEmail: user.coveringEmail,
+                                            leave: user.leave,
+                                            leaveHistory: user.leaveHistory,
+                                            staffLeave: user.staffLeave,
+                                            sessionToken: sessionTokenByServer
+                                        })
                                 })
+                            .catch(err => console.log(err))
+
                         })
                     }
                     res.status(401).send("password does not match")
@@ -66,6 +74,20 @@ exports.postLogout = (req,res,next) => {
         })
         console.log("after destroying: ", req.session)
     }
+}
+
+exports.postValidateSession = (req,res,next) => {
+    console.log("req.body: ", req.body)
+    const sessionId = req.body.sessionId
+    User
+        .findOne({sessionToken: sessionId})
+        .then(user => {
+            if(!user){
+                return res.status(400).send("invalid token!")
+            }
+            res.send(user)
+        })
+        .catch(err => console.log(err))
 }
 
 

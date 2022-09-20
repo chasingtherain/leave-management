@@ -3,6 +3,7 @@ const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 
 const sendgridMail = require('@sendgrid/mail')
+const jwt = require('jsonwebtoken')
 
 exports.postCreateUser = (req,res,next) => {
     const name = req.body.name
@@ -54,7 +55,8 @@ exports.postCreateUser = (req,res,next) => {
                         coveringEmail: coveringEmail,
                         leave: chengduLrsLeaveScheme,
                         leaveHistory: [],
-                        staffLeave: []
+                        staffLeave: [],
+                        sessionToken: jwt.sign({email}, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '7d'})
                     })
                 
                 user

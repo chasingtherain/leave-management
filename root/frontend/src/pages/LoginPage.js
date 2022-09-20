@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { useMainContext } from '../hooks/useMainContext';
 
 function LoginPage() {    
-        const {fetchUserList, setCurrentUser, validateEmail} = useMainContext()
+        const {fetchUserList, setCurrentUser, sessionToken, setSessionToken, validateEmail} = useMainContext()
         const navigate = useNavigate()
         const [userEmail, setUserEmail] = useState("")
         const [userPassword, setUserPassword] = useState("")
@@ -34,7 +34,10 @@ function LoginPage() {
                 .post(url, signInData)
                 .then(resp => {
                     if(resp.status === 200) toast.success("Login Successful!")
+                    console.log(resp.data)
                     setCurrentUser(resp.data)
+                    sessionStorage.setItem('leaveMgtToken',JSON.stringify(resp.data.sessionToken).replace(/"/g,""))
+                    setSessionToken(resp.data.sessionToken)
                     fetchUserList()
                     navigate('/')
                     console.log(resp)

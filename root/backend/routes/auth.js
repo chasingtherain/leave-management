@@ -8,5 +8,6 @@ router.post('/login',authController.postLogin)
 router.post('/logout',authController.postLogout)
 router.post('/change-password', authController.postChangePassword)
 router.post('/set-new-password/', authController.postUpdatePassword)
+router.post('/validate-session/', authController.postValidateSession)
 
 module.exports = router
