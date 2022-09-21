@@ -4,7 +4,7 @@ import { useMainContext } from '../../hooks/useMainContext'
 
 function LoggedInRoute() {
     const {currentUser} = useMainContext()
-    console.log(currentUser)
+
     return (
     <div>
         {/* if user is not logged in, direct them to sign in page */}

@@ -101,7 +101,9 @@ exports.postLeaveApplicationForm = (req,res,next) => {
 
             return User.updateOne( 
                     {_id: userId, "leave.name": targetLeaveName}, 
-                    {$inc: {"leave.$.pending": numOfDaysTaken},})
+                    {
+                        $inc: {"leave.$.pending": numOfDaysTaken},
+                    })
             .then((result) => {
                 return User.updateOne(
                     {_id: userId}, 

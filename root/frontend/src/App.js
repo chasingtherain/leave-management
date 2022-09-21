@@ -18,6 +18,7 @@ import CreateNewLeave from "./pages/CreateNewLeave";
 import ApproveLeavePage from "./pages/ApproveLeavePage";
 import SkeletonLoader from "./components/layout/SkeletonLoader";
 import LoggedInRoute from "./components/private/LoggedInRoute";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const {authState, currentUser} = useMainContext()
@@ -33,9 +34,14 @@ function App() {
             {!currentUser && <Route path = '/login' element={<LoginPage/>}/>}
             <Route path = '/change-password' element={<ChangePasswordPage/>}/>
             <Route path = '/set-new-password/:token' element={<SetNewPasswordPage/>}/>
-            {/* <Route path = '/*' element={<PageNotFound/>}/> */}
-            {currentUser && <Route path = '/' element={<Homepage/>}/>}
+            <Route path = '/*' element={<NotFoundPage/>}/>
+            {/* {currentUser && <Route path = '/' element={<Homepage/>}/>} */}
             {currentUser && <Route path = '/profile' element={<ProfilePage/>}/>}
+
+            {/* logged in routes */}
+            <Route path = '/' element={<LoggedInRoute/>}>
+              <Route path = '/' element={<Homepage/>}/>
+            </Route>
 
             {/* admin routes */}
             <Route path = '/create-user' element={<AdminRoute/>}>
