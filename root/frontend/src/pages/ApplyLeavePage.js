@@ -182,66 +182,67 @@ function ApplyLeavePage() {
 
 
   return (
-    <form className="" onSubmit={validateAndSubmitLeaveApplication}>
+    <form className="w-full flex flex-col justify-start items-center" onSubmit={validateAndSubmitLeaveApplication}>
         <div className='grid place-items-center mt-8 mb-3'>
             <p className='text-slate-600 text-3xl'>Apply <span className="text-sky-500">Leave</span> </p>
             <p className='text-slate-600 text-3xl'>请<span className="text-sky-500">假</span> </p>
         </div>
-        <div className="w-full px-5 ml-[40%]">
-            <div className="my-4">
-                <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Type</label>
-                <Select options={leaveOptions}/>
-                {leaveTypeMessage()}
-            </div>
-            <div className="my-4">
-                <div className='flex'>
-                    <div>
-                        <label htmlFor="startDate" className="text-sm">Start Date</label>
-                        <ReactDatePicker
-                            dateFormat='dd MMM yyyy'
-                            className='border-[1px] border-secondary w-32 h-10 rounded-sm' 
-                            selected={startDate} 
-                            minDate={moment().dayOfYear(1)._d}
-                            onChange={(date) => handleStartDateSelection(date)} 
-                        />
-                    </div>
-                    <div className='mr-28'>
-                        <label htmlFor="endDate" className="text-sm">End Date</label>
-                        <ReactDatePicker 
-                            dateFormat='dd MMM yyyy' 
-                            className='border-[1px] border-secondary w-32 h-10 rounded-sm' 
-                            selected={(startDateRadioSelection === "Full Day") ? endDate : startDate} 
-                            readOnly= {startDateRadioSelection !== "Full Day"}
-                            minDate={startDate}
-                            onChange={(date) => handleEndDateSelection(date)} />
-                    </div>
-                </div>
-                <div className='mt-4 flex gap-2' onChange={(e) => handleRadioSelection(e)}>
-                    <input type="radio" id="fullDay" name="dateRangeRadio" className="radio-sm required" value="Full Day" defaultChecked/> Full Day
-                    <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
-                    <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
-                </div>
-                {numOfDaysApplied &&
-                <>
-                    <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
-                    {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of: {numOfSelectedLeave - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>}
-                    {(numOfDaysApplied > numOfSelectedLeave) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
-                </>
-                }
-            </div>
 
-            <div className="my-4">
-                <label htmlFor="remarks" className="text-lg font-weight-900 mr-6 label">Remarks</label>
+        <div className="my-4 ml-8">
+            <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Type</label>
+            <Select options={leaveOptions}/>
+            {leaveTypeMessage()}
+        </div>
+
+        <div className='flex ml-20'>
+            <div className=''>
+                <label htmlFor="startDate" className="text-sm">Start Date</label>
+                <ReactDatePicker
+                    dateFormat='dd MMM yyyy'
+                    className='border-[1px] border-secondary w-28 h-10 rounded-sm' 
+                    selected={startDate} 
+                    minDate={moment().dayOfYear(1)._d}
+                    onChange={(date) => handleStartDateSelection(date)} 
+                />
+            </div>
+            <div className='-ml-8'>
+                <label htmlFor="endDate" className="text-sm">End Date</label>
+                <ReactDatePicker 
+                    dateFormat='dd MMM yyyy' 
+                    className='border-[1px] border-secondary w-28 h-10 rounded-sm' 
+                    selected={(startDateRadioSelection === "Full Day") ? endDate : startDate} 
+                    readOnly= {startDateRadioSelection !== "Full Day"}
+                    minDate={startDate}
+                    onChange={(date) => handleEndDateSelection(date)} />
+            </div>
+        </div>
+            
+        <div className='mt-4 mr-8 flex gap-2' onChange={(e) => handleRadioSelection(e)}>
+            <input type="radio" id="fullDay" name="dateRangeRadio" className="radio-sm required" value="Full Day" defaultChecked/> Full Day
+            <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
+            <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
+        </div>
+        {numOfDaysApplied &&
+        <>
+            <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
+            {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of: {numOfSelectedLeave - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>}
+            {(numOfDaysApplied > numOfSelectedLeave) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
+        </>
+        }
+
+
+            <div className="my-4 mr-6">
+                <label htmlFor="remarks" className="text-lg font-weight-900 label">Remarks</label>
                 <textarea 
                     id="remarks" 
-                    className="w-80 py-2 px-4 placeholder-gray-400 rounded-lg border-2" 
+                    className="py-2 px-4 placeholder-gray-400 rounded-lg border-2" 
                     placeholder="Reason (optional) / 请假原因(选填)" 
                     name="comment" 
-                    rows="3"
+                    rows="2"
                     onChange={(e) => setRemarks(e.target.value)}
                     ></textarea>
             </div>
-            <div>
+            <div className='ml-12'>
                 <label htmlFor="upload" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
                 <p className='text-xs'> MC is compulsory / 病假单必上传</p>
                 <input 
@@ -253,11 +254,23 @@ function ApplyLeavePage() {
             </div>
             <div className="my-4">
                 <label htmlFor="reportingEmail" className="text-lg font-weight-900 -ml-1 label">RO email 主管邮件</label>
-                <input id="reportingEmail" type="text" disabled className="input input-bordered input-primary w-full max-w-xs" value={currentUser.reportingEmail}/>
+                <input 
+                    id="reportingEmail" 
+                    type="text" 
+                    disabled 
+                    className="input input-bordered input-primary w-full max-w-xs" 
+                    style={{ width:"250px" }} 
+                    value={currentUser.reportingEmail}/>
             </div>
             <div className="my-4">
                 <label htmlFor="coveringEmail" className="text-lg font-weight-900 -ml-1 label">CO email 代办邮件</label>
-                <input id="coveringEmail" type="text" disabled className="input input-bordered input-primary w-full max-w-xs" value={currentUser.coveringEmail}/>
+                <input 
+                    id="coveringEmail" 
+                    type="text" 
+                    disabled 
+                    className="input input-bordered input-primary w-full max-w-xs"
+                    style={{ width:"250px" }} 
+                    value={currentUser.coveringEmail}/>
             </div>
             <div className="flex items-center">
                 <label className="cursor-pointer label -ml-1">
@@ -272,7 +285,6 @@ function ApplyLeavePage() {
             <button type="submit" className={`btn text-white mt-8 px-28 text-center text-base font-semibold shadow-md rounded-lg mt-4 ${applyBtnLoading}`}>
                 Apply / 申请
             </button>
-        </div>
     </form>
 
   )
