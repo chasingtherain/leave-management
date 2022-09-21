@@ -149,6 +149,7 @@ function Table({headerType}) {
                 return (currentUser.staffLeave.filter(entry => entry.status === "pending")) ?
                     currentUser.staffLeave
                         .filter(entry => entry.status === "pending")
+                        .sort((a,b)=> a.startDateUnix - b.startDateUnix)
                         .map((subLeave,index) => 
                         <tr>
                             <td>{subLeave.staffEmail}</td>
@@ -180,6 +181,7 @@ function Table({headerType}) {
                 return (currentUser.staffLeave.filter(entry => entry.status === "approved" || entry.status === "rejected")) ?
                  currentUser.staffLeave
                     .filter(entry => entry.status === "approved" || entry.status === "rejected")
+                    .sort((a,b)=> b.startDateUnix - a.startDateUnix)
                     .map((subLeave,index) => 
                     <tr>
                         <td>{subLeave.staffEmail}</td>
@@ -210,6 +212,7 @@ function Table({headerType}) {
                 return (currentUser.leaveHistory) ?
                 currentUser.leaveHistory
                     .filter(entry => entry.startDateUnix > currentDateUnix)
+                    .sort((a,b)=> a.startDateUnix - b.startDateUnix)
                     .map((leave,index)=>
                             <tr key={index}>
                                 <td className='text-sm'>{leave._id}</td>
@@ -241,6 +244,7 @@ function Table({headerType}) {
                 return (currentUser.leaveHistory) ?
                     currentUser.leaveHistory
                         .filter(entry => entry.startDateUnix <= currentDateUnix)
+                        .sort((a,b)=> b.startDateUnix - a.startDateUnix)
                         .map((leave,index)=>
                                 <tr key={index}>
                                     <td className='text-sm'>{leave._id}</td>
