@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { useMainContext } from '../../hooks/useMainContext'
 
 function Navbar() {
-    const {currentUser, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
+    const {currentUser, setActiveTab, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
     const url = `${process.env.REACT_APP_BACKENDURL}/logout`
     const navigate = useNavigate()
 
@@ -28,7 +28,7 @@ function Navbar() {
         <div className='flex justify-between navbar bg-slate-800'>
                 <div className="navbar-start">
                     {
-                        <button className="btn btn-ghost normal-case text-xl">
+                        <button className="btn btn-ghost normal-case text-xl" onClick={() => setActiveTab("Home 主页")}>
                             {/* icon only links to homepage if user is logged in */}
                             {!currentUser && <div className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </div>}
                             {currentUser && <Link onClick={clearState} to="" className='text-slate-50'>LEAVE <span className="text-sky-400">PLANS</span> </Link>}
@@ -50,7 +50,11 @@ function Navbar() {
                                 <Link to="/user-management" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Manage User</Link>
                             </li> 
                             <li className='text-slate-800'>
-                                <Link to="/approve-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Approve Leave</Link>
+                                <Link 
+                                    to="/approve-leave" 
+                                    className="text-sm mx-2 cursor-pointer hover:text-gray-500"
+                                    onClick={() => setActiveTab("Pending")}
+                                    >Approve Leave</Link>
                             </li>
                             <li className='text-slate-800'>
                                 <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>

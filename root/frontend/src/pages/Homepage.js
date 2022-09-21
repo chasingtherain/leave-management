@@ -8,6 +8,29 @@ function Homepage() {
     const {activeTab} = useMainContext()
     const childCareYear = new Date().getFullYear() - 2
 
+    const activeTabSelection = (activeTab) => {
+        switch (activeTab) {
+            case "Home 主页":
+                return (<>
+                    <h1 className='text-xl my-6 text-center'>Leave Request 休假请求</h1>
+                    <Table headerType="request"/>
+                </>)
+            case "Entitlement 年额":
+                return (<>
+                    <h1 className='text-xl my-6 text-center'>Leave Entitlement 休假数</h1>
+                    <Table headerType="entitlement"/>
+                </>)
+            case "History 历史":
+                return (<>
+                    <h1 className='text-xl mt-20 mb-6 text-center'>Leave History 休假历史</h1>
+                    <Table headerType="history"/>
+                </>)
+            default:
+                console.log("tab not found!")
+                break;
+        }
+    }
+
     return (
     <div>
         <div className='flex justify-between'> 
@@ -17,22 +40,8 @@ function Homepage() {
             </Link>
         </div>
         {/* based on user action, display active tab in homepage */}
-        {activeTab === "Home" ? 
-            (
-            <>
-                <h1 className='text-xl my-6 text-center'>Leave Request 休假请求</h1>
-                <Table headerType="request"/>
-                <h1 className='text-xl mt-20 mb-6 text-center'>Leave History 休假历史</h1>
-                <Table headerType="history"/>
-            </>
-            )
-        : 
-            (
-            <>
-                <h1 className='text-xl my-6 text-center'>Leave Entitlement 休假数</h1>
-                <Table headerType="entitlement"/>
-            </>
-            )
+        {
+            activeTabSelection(activeTab)
         }
 
     </div>

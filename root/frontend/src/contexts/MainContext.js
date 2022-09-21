@@ -3,7 +3,7 @@ import axios from 'axios';
 export const MainContext = createContext()
 
 export const MainContextProvider = ({ children }) => {
-  const [activeTab, setActiveTab] = useState("Home") 
+  const [activeTab, setActiveTab] = useState("Home 主页") 
   const [currentUser, setCurrentUser] = useState()
   const [userList, setUserList] = useState([])
   const [isAdmin, setIsAdmin] = useState()
