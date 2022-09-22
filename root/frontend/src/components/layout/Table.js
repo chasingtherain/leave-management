@@ -209,7 +209,7 @@ function Table({headerType}) {
                         <td><InfoBubble info={leave.note}/></td>
                     </tr>)
             case "request":
-                return (currentUser.leaveHistory) ?
+                return (currentUser.leaveHistory.filter(entry => entry.startDateUnix > currentDateUnix).length) ?
                 currentUser.leaveHistory
                     .filter(entry => entry.startDateUnix > currentDateUnix)
                     .sort((a,b)=> a.startDateUnix - b.startDateUnix)
@@ -238,10 +238,10 @@ function Table({headerType}) {
                                 {/* <td><button className='btn-error px-2 rounded-md text-white'>Cancel 取消</button></td> */}
                             </tr>
                         )
-                    : <p className='text-center w-screen mt-8'>No upcoming leave request / 暂时无请求</p>
+                    : <td>No upcoming leave request / 暂时无请求</td>
 
             case "history":
-                return (currentUser.leaveHistory) ?
+                return (currentUser.leaveHistory.filter(entry => entry.startDateUnix <= currentDateUnix).length) ?
                     currentUser.leaveHistory
                         .filter(entry => entry.startDateUnix <= currentDateUnix)
                         .sort((a,b)=> b.startDateUnix - a.startDateUnix)
@@ -270,7 +270,7 @@ function Table({headerType}) {
                                 </tr>
                         )
                 : 
-                <p className="w-screen text-center text-slate-800 mt-8">No leave history yet / 暂时无历史</p>
+                <td>No leave history / 暂无历史</td>
             case "user-management":
                 return userList.map((list, index) => 
                         (

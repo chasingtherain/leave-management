@@ -30,6 +30,10 @@ const leaveSchema = new Schema({
     note: {
         type: String,
         required: true
+    },
+    year: {
+        type: Number,
+        required: true
     }
    
 })

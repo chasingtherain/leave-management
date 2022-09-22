@@ -46,6 +46,9 @@ const leaveHistorySchema = new Schema({
     status: {
         type: String,
         required: true
+    },
+    year: {
+        type: Number
     }
 })
 

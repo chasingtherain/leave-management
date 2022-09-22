@@ -19,7 +19,7 @@ function UpdateUserInfoPage() {
         setDeleteBtnLoading("loading")
        if(window.confirm("Delete user?")){
            const deleteUserData = {
-               email: currentEditUser
+               email: currentEditUser.email
            }
 
            axios

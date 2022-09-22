@@ -4,7 +4,8 @@ require('moment-weekday-calc');
 
 const sendgridMail = require('@sendgrid/mail');
 const leaveHistory = require('../models/leaveHistory');
-const { default: mongoose } = require('mongoose');
+
+const date = new Date()
 
 exports.getUser = (req,res,next) => {
     const userId = req.params.id
@@ -23,9 +24,7 @@ exports.getUser = (req,res,next) => {
                     email: user.email,
                     createdOn: user.createdOn,
                     lastUpdatedOn: user.lastUpdatedOn,
-                    // ro: user.ro,
                     reportingEmail: user.reportingEmail,
-                    // co: user.co,
                     coveringEmail: user.coveringEmail,
                     leave: user.leave,
                     leaveHistory: user.leaveHistory,
@@ -93,7 +92,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 coveringEmail: coveringEmail,
                 reportingEmail: reportingEmail,
                 remarks: remarks,
-                status: "pending"
+                status: "pending",
+                year: date.getFullYear()
             })
             console.log("leaveHistoryData: ",leaveHistoryData)
             const filterTargetLeaveType = user.leave.filter(leave => leaveType === leave.name)
@@ -123,7 +123,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 submittedOn: dateOfApplication,
                 quotaUsed: numOfDaysTaken,
                 remarks: remarks,
-                status: "pending"
+                status: "pending",
+                year: date.getFullYear()
             }
 
             User
