@@ -1,11 +1,13 @@
 const User = require('../models/user')
-
 const Leave = require('../models/leave')
+const Workday = require('../models/workday')
 
 const bcrypt = require('bcryptjs')
 
 const sendgridMail = require('@sendgrid/mail')
 const jwt = require('jsonwebtoken')
+const { findOneAndUpdate } = require('../models/user')
+
 const date = new Date()
 
 const chengduLrsLeaveScheme = [
@@ -373,4 +375,26 @@ exports.postUpdateUser = (req,res,next) => {
         .catch((err)=> console.log("update covering email error: ", err))
     }
     res.status(200).send("update successful")
+}
+
+exports.setWorkDay = (req,res,next) => {
+    const workDaySelection = req.body.workDaySelection
+    const holidaySelection = req.body.holidaySelection
+    const entity = req.body.entity
+
+    console.log("req.body: ", req.body)
+
+    Workday.findOneAndUpdate(
+        {entity: entity},
+        {$set: {"workday": workDaySelection, "holiday": holidaySelection}},
+        {upsert: true}
+    )
+    .then((result)=>{
+        console.log(result)
+    })
+    .catch((err)=> console.log(err))
+
+    // save selections in a new collection
+    // return status 200
+
 }

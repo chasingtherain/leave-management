@@ -59,6 +59,9 @@ function Navbar() {
                             <li className='text-slate-800'>
                                 <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>
                             </li>
+                            <li className='text-slate-800'>
+                                <Link to="/set-work-day" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Set Work Days</Link>
+                            </li>
                         </ul>
                     </div>)
                     }

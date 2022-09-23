@@ -25,4 +25,7 @@ router.get('/get-user-info-by-email/:id', adminController.getUserInfoByEmail)
 // route is /admin/update-user
 router.post('/update-user', adminController.postUpdateUser)
 
+// route is /admin/set-work-day
+router.post('/set-work-day', adminController.setWorkDay)
+
 module.exports = router

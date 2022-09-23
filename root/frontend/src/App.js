@@ -19,6 +19,7 @@ import ApproveLeavePage from "./pages/ApproveLeavePage";
 import SkeletonLoader from "./components/layout/SkeletonLoader";
 import LoggedInRoute from "./components/private/LoggedInRoute";
 import NotFoundPage from "./pages/NotFoundPage";
+import SetWorkdayPage from "./pages/SetWorkdayPage";
 
 function App() {
   const {authState, currentUser} = useMainContext()
@@ -65,6 +66,9 @@ function App() {
             </Route>
             <Route path = '/approve-leave' element={<AdminRoute/>}>
               <Route path = '/approve-leave' element={<ApproveLeavePage/>}/>
+            </Route>
+            <Route path = '/set-work-day' element={<AdminRoute/>}>
+              <Route path = '/set-work-day' element={<SetWorkdayPage/>}/>
             </Route>
           </Routes>
         </Router>

@@ -16,7 +16,10 @@ export const MainContextProvider = ({ children }) => {
     else return ""
   })
   const [authState, setAuthState] = useState(false)
-  console.log(authState)
+
+  const [workDaySelection, setWorkDaySelection] = useState([])
+  const [holidaySelection, setHolidaySelection] = useState([])
+
   const fetchUserList = async () => {
     axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
@@ -70,17 +73,21 @@ export const MainContextProvider = ({ children }) => {
       currentEditUser,
       currentLeaveSelection,
       currentUser,
+      holidaySelection,
       isAdmin,
       sessionToken,
       userList,
+      workDaySelection,
       fetchCurrentUserInfo,
       fetchUserList,
       setActiveTab,
       setCurrentEditUser,
       setCurrentLeaveSelection,
       setCurrentUser,
+      setHolidaySelection,
       setIsAdmin,
       setSessionToken,
+      setWorkDaySelection,
       validateEmail
 
      }}>
