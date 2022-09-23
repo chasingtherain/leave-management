@@ -45,7 +45,7 @@ function Navbar() {
 
                     {currentUser && (currentUser.isAdmin === "admin") && (<div className="dropdown dropdown-end dropdown-hover text-lg mx-2 text-white cursor-pointer p-4">
                         <label tabIndex={0}>Admin</label>
-                        <ul tabIndex={0} className="menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+                        <ul tabIndex={0} className="absolute z-1 menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                             <li className='text-slate-800'>
                                 <Link to="/user-management" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Manage User</Link>
                             </li> 

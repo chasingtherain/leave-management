@@ -38,13 +38,13 @@ function SetWorkdayPage() {
             entity: "chengdu" 
         }
         if(window.confirm("Update changes?")){
-            console.log("changes updated")
             axios
                 .post(url, workDayData)
                 .then((res => {
                     console.log(res)
                 }))
                 .catch(err => console.log(err))
+            setActiveUpdateButton(true)
         }
     }
 
@@ -52,23 +52,24 @@ function SetWorkdayPage() {
     <div className=''>
         <div className='flex flex-col justify-start items-center'>
             <h1 className='text-xl mt-6 text-center'>Work Days 补休</h1>
-            <p className='my-2'>The following weekends or rest days are work days in {date.getFullYear()}:</p>
+            <p className='my-2 text-center'>The following weekends or rest days are work days in {date.getFullYear()}:</p>
             <Calendar
                 
                 multiple
-                numberOfMonths={5}
+                numberOfMonths={3}
                 format='DD MMM YYYY'
                 value={workDaySelection}
                 onChange={handleWorkDaySelection}
+                className=''
                 plugins={[<DatePanel position="left" sort="date" header={`Work Days (${workDaySelection.length})`}/>]} 
             />
         </div>
         <div className='flex flex-col justify-start items-center'>
             <h1 className='text-xl mt-6 text-center'>Public Holidays</h1>   
-            <p className='mt-2 mb-4'>The following days are public holidays / off in lieu in {date.getFullYear()}:</p>
+            <p className='mt-2 mb-4'>The following days are rest days / off in lieu in {date.getFullYear()}:</p>
                 <Calendar
                     multiple
-                    numberOfMonths={5}
+                    numberOfMonths={3}
                     format='DD MMM YYYY'
                     value={holidaySelection}
                     onChange={handleHolidaySelection}

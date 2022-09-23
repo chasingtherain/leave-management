@@ -14,8 +14,6 @@ function ApplyLeavePage() {
     const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
     const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
     // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
-    console.log(moment().dayOfYear(1)._d)
-    console.log(moment().toDate())
 
     const navigate = useNavigate()
 
@@ -114,7 +112,7 @@ function ApplyLeavePage() {
         }
         else{
             if (endDate) { // if end date is already selected, call date calculation function
-                console.log("day calculation triggered!")
+                // console.log("day calculation triggered!")
                 calculateNumOfBizDays(date.getTime(), endDate)
             }
         }
@@ -122,7 +120,7 @@ function ApplyLeavePage() {
     const handleEndDateSelection = (date) => {
         setEndDate(date.getTime())
         if (startDate) { // if start date is already selected, call date calculation function
-            console.log("day calculation triggered!")
+            // console.log("day calculation triggered!")
             calculateNumOfBizDays(startDate, date.getTime())
         }
     }
@@ -140,7 +138,7 @@ function ApplyLeavePage() {
             axios
                 .post(`${process.env.REACT_APP_BACKENDURL}/user/numOfDays`, data)
                 .then(res => {
-                    console.log(res)
+                    // console.log(res)
                     setNumOfDaysApplied(res.data.numOfDaysApplied)
                 })
                 .catch(err =>{
@@ -224,8 +222,8 @@ function ApplyLeavePage() {
         </div>
         {numOfDaysApplied &&
         <>
-            <p className='text-sm mt-3'>{`You have selected ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
-            {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of: {numOfSelectedLeave - numOfDaysApplied} day(s) for {currentLeaveSelection}</p>}
+            <p className='text-sm mt-3'>{`You have selected / 已选： ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
+            {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of / 剩: {numOfSelectedLeave - numOfDaysApplied} day(s) of {currentLeaveSelection}</p>}
             {(numOfDaysApplied > numOfSelectedLeave) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
         </>
         }

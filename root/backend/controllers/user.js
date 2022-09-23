@@ -1,4 +1,6 @@
 const User = require('../models/user')
+const Workday = require('../models/workday')
+
 var moment = require('moment');
 require('moment-weekday-calc');
 
@@ -49,20 +51,30 @@ exports.getNumOfDaysApplied = (req,res,next) => {
     const startDate = req.body.startDate
     const endDate = req.body.endDate
 
-    if(startDate < endDate){
-        const numOfDays = moment().weekdayCalc({  
-            rangeStart: moment(startDate).format("DD MMM YYYY"),  
-            rangeEnd: moment(endDate).format("DD MMM YYYY"),  
-            weekdays: [1,2,3,4,5],  
-            exclusions: ['12 Sep 2022','7 Apr 2015'],
-            inclusions: ['10 Apr 2015']
+
+    Workday
+        .findOne({entity: "chengdu"})
+        .then(result => {
+            // console.log(result)
+            const holidaySelection = result.holiday.map(timestamp => moment(timestamp).format("DD MMM YYYY"))
+            const workdaySelection = result.workday.map(timestamp => moment(timestamp).format("DD MMM YYYY"))
+
+            if(startDate < endDate){
+                const numOfDays = moment().weekdayCalc({  
+                    rangeStart: moment(startDate).format("DD MMM YYYY"),  
+                    rangeEnd: moment(endDate).format("DD MMM YYYY"),  
+                    weekdays: [1,2,3,4,5],  
+                    exclusions: holidaySelection, // do not count these dates as business days
+                    inclusions: workdaySelection // count as business days
+                })
+                console.log(moment(startDate).format("DD MMM YYYY"), moment(endDate).format("DD MMM YYYY"), numOfDays)
+                res.status(200).send({numOfDaysApplied: numOfDays})
+            }
+            else{
+                res.status(400).send("start date is bigger than end date")
+            }
         })
-        console.log(moment(startDate).format("DD MMM YYYY"), moment(endDate).format("DD MMM YYYY"), numOfDays)
-        res.status(200).send({numOfDaysApplied: numOfDays})
-    }
-    else{
-        res.status(400).send("start date is bigger than end date")
-    }
+        .catch(err => console.log(err))
 }
 
 exports.postLeaveApplicationForm = (req,res,next) => {
