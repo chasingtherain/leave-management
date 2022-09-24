@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {useMainContext} from '../../hooks/useMainContext'
 
+
 function Tab() {
     const {activeTab, setActiveTab} = useMainContext()
     const homePageTabs = ["Home 主页", "Entitlement 年额", "History 历史"]

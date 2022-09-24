@@ -20,6 +20,7 @@ import SkeletonLoader from "./components/layout/SkeletonLoader";
 import LoggedInRoute from "./components/private/LoggedInRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 import SetWorkdayPage from "./pages/SetWorkdayPage";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
   const {authState, currentUser} = useMainContext()
@@ -69,6 +70,9 @@ function App() {
             </Route>
             <Route path = '/set-work-day' element={<AdminRoute/>}>
               <Route path = '/set-work-day' element={<SetWorkdayPage/>}/>
+            </Route>
+            <Route path = '/dashboard' element={<AdminRoute/>}>
+              <Route path = '/dashboard' element={<DashboardPage/>}/>
             </Route>
           </Routes>
         </Router>

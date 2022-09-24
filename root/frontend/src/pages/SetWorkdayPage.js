@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { Calendar, DateObject } from "react-multi-date-picker"
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import DatePanel from 'react-multi-date-picker/plugins/date_panel';
-import weekends from "react-multi-date-picker/plugins/highlight_weekends"
 import { useMainContext } from '../hooks/useMainContext';
 function SetWorkdayPage() {
     const {holidaySelection, setHolidaySelection, workDaySelection, setWorkDaySelection} = useMainContext()
@@ -42,6 +40,7 @@ function SetWorkdayPage() {
                 .post(url, workDayData)
                 .then((res => {
                     console.log(res)
+                    toast.success("Update successful")
                 }))
                 .catch(err => console.log(err))
             setActiveUpdateButton(true)

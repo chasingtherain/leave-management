@@ -47,9 +47,6 @@ function Navbar() {
                         <label tabIndex={0}>Admin</label>
                         <ul tabIndex={0} className="absolute z-1 menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                             <li className='text-slate-800'>
-                                <Link to="/user-management" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Manage User</Link>
-                            </li> 
-                            <li className='text-slate-800'>
                                 <Link 
                                     to="/approve-leave" 
                                     className="text-sm mx-2 cursor-pointer hover:text-gray-500"
@@ -57,10 +54,16 @@ function Navbar() {
                                     >Approve Leave</Link>
                             </li>
                             <li className='text-slate-800'>
-                                <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>
+                                <Link to="/user-management" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Manage User</Link>
+                            </li> 
+                            <li className='text-slate-800'>
+                                <Link to="/dashboard" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Dashboard</Link>
                             </li>
                             <li className='text-slate-800'>
                                 <Link to="/set-work-day" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Set Work Days</Link>
+                            </li>
+                            <li className='text-slate-800'>
+                                <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>
                             </li>
                         </ul>
                     </div>)

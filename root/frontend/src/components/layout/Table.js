@@ -20,6 +20,7 @@ function Table({headerType}) {
     const entitlementTableHeader = ["Leave Type 假性",`Entitlement Rollover\n年额带过 (${currentYear-1})`, `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用", "Bring Over to Next Year?\n带到明年? ","Note 备注"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
+    const dashboardTableHeader = ["Name","Email","No. of Annual Leave left","No. of Sick Leave Used"]
     
     const changeLogData = [
         ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
@@ -113,6 +114,8 @@ function Table({headerType}) {
                 return approvalHistoryTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             case "change-log":
                 return changeLogHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
+            case "dashboard":
+                return dashboardTableHeader.map((headerName,index) => <th className='whitespace-pre-line' key={index}>{headerName}</th>)
             case "entitlement":
                 return entitlementTableHeader.map((headerName,index) => <th className='whitespace-pre-line' key={index}>{headerName}</th>)
             case "request":
@@ -196,6 +199,16 @@ function Table({headerType}) {
                 : <p className='text-center w-screen mt-8'>No approval leave history yet</p>
             case "change-log":
                 return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
+            case "dashboard":
+                return userList
+                    .filter(entry => entry.isAdmin === "user")
+                    .map((user,index) => 
+                    <tr key={index}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.leave[0].entitlement - user.leave[0].used}</td>
+                        <td>{user.leave[2].used}</td>
+                    </tr>)
             case "entitlement":
                 return currentUserLeave.map((leave,index) => 
                     <tr key={index}>

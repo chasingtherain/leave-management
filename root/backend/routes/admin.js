@@ -28,4 +28,7 @@ router.post('/update-user', adminController.postUpdateUser)
 // route is /admin/set-work-day
 router.post('/set-work-day', adminController.setWorkDay)
 
+// route is /admin/send-reminder
+router.post('/send-reminder', adminController.postSendReminder)
+
 module.exports = router

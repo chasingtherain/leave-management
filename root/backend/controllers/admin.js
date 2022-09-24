@@ -10,6 +10,8 @@ const { findOneAndUpdate } = require('../models/user')
 
 const date = new Date()
 
+sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 const chengduLrsLeaveScheme = [
     new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: "Compassionate Leave 慈悲假", type:"compassionate", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Death of spouse, parents, children, parents-in-law: 3 days\n own/spouse's grandparents, own siblings: 1 day \n 配偶、父母、子女、岳父母死亡: 3天\n 自己/配偶的祖父母、自己的兄弟姐妹: 1天"}),
@@ -67,7 +69,7 @@ exports.postCreateUser = (req,res,next) => {
                 user
                     .save()
                     .then(result => {
-                        sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
+
                         const msg = {
                         to: email, 
                         from: 'mfachengdu@gmail.com', // Change to your verified sender
@@ -189,7 +191,6 @@ exports.approveLeave = (req,res,next) => {
         .catch((err)=> console.log(err))
 
     // // send approval email
-    //     sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
     //     const approvalEmail = {
     //     to: staffEmail, //leave applier's email
@@ -288,7 +289,6 @@ exports.rejectLeave = (req,res,next) => {
         .catch((err)=> console.log(err))
 
     // // send rejection email
-    // sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
     // const rejectionEmail = {
     // to: staffEmail, //leave applier's email
@@ -397,4 +397,33 @@ exports.setWorkDay = (req,res,next) => {
     // save selections in a new collection
     // return status 200
 
+}
+
+exports.postSendReminder = (req,res,next) => {
+    const leaveCount = req.body.leaveCount
+    const emailList = req.body.targetEmailList
+    console.log("req.body: ", req.body)
+
+    const reminderEmail = {
+    to: emailList, 
+    from: 'mfachengdu@gmail.com', // Change to your verified sender
+    subject: 'Clear your leave 请假吧',
+    html: `
+        <div>
+            <p>Hi, the year is ending and you still have at least ${leaveCount} days of annual leave </p> 
+            <p>Start making year end leave plans with your family, friends and colleagues!</p>
+            <p>Apply leave <a href="${process.env.FRONTENDURL}/login"> here </a> </p>
+        </div>
+    `
+    }
+
+    sendgridMail
+        .send(reminderEmail)
+        .then(() => {
+            res.send("clear leave reminder email sent to user")
+            console.log('clear leave reminder email sent to user')
+        })
+        .catch((error) => {
+            console.error("clear leave reminder email sendgrid error: ", error)
+        })
 }
