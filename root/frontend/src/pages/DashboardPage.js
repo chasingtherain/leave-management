@@ -3,6 +3,7 @@ import Table from '../components/layout/Table'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { useMainContext } from '../hooks/useMainContext'
+import TeamCalendar from '../components/layout/TeamCalendar'
 
 function DashboardPage() {
   const {userList} = useMainContext()
@@ -30,7 +31,8 @@ function DashboardPage() {
   return (
 
     <div>
-      <h1 className='text-xl my-6 text-center'>Staff's Remaining Annual Leave</h1>
+      <TeamCalendar/>
+      {/* <h1 className='text-xl my-6 text-center'>Staff's Remaining Annual Leave</h1>
       <Table headerType="dashboard"/>
       <div class="divider"></div> 
       <div className='flex flex-col justify-start items-center'>
@@ -50,7 +52,7 @@ function DashboardPage() {
           className='btn'
           onClick={handleReminderClick}
           >Send Reminder</button>
-      </div>
+      </div> */}
     </div>
   )
 }
