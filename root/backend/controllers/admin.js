@@ -1,12 +1,13 @@
 const User = require('../models/user')
 const Leave = require('../models/leave')
 const Workday = require('../models/workday')
+const TeamCalendar = require('../models/teamCalendar')
+const TeamCalendarRecord = require('../models/teamCalendarRecord')
 
 const bcrypt = require('bcryptjs')
 
 const sendgridMail = require('@sendgrid/mail')
 const jwt = require('jsonwebtoken')
-const { findOneAndUpdate } = require('../models/user')
 
 const date = new Date()
 
@@ -142,6 +143,9 @@ exports.approveLeave = (req,res,next) => {
     const leaveStatus = req.body.leaveStatus
     const numOfDaysTaken = req.body.numOfDaysTaken
     const submittedOn = req.body.submittedOn
+    const startDateUnix = req.body.startDateUnix
+    const endDateUnix = req.body.endDateUnix
+    const staffName = req.body.staffName
     console.log(req.body)
     
     // update reporting's staffLeave
@@ -158,6 +162,26 @@ exports.approveLeave = (req,res,next) => {
         {$set: {"staffLeave.$.status": "approved" }}
         )
     .then((result)=>{
+
+        const teamCalendarRecord = new TeamCalendarRecord({
+            startDateUnix: startDateUnix,
+            endDateUnix: endDateUnix,
+            staffName: staffName,
+            title: `${staffName} on leave`
+        })
+        
+        TeamCalendar.findOneAndUpdate(
+            {team: "chengdu"},
+            {
+                $set: {"team": "chengdu"},
+                $push: {"approvedLeave": teamCalendarRecord}
+            },
+            {upsert: true}
+        )
+        .then(result => {
+            console.log(result)
+            console.log("trying to create new record on team calendar")
+        })
         // console.log(result.staffLeave)
     })
     .catch((err)=> console.log(err))

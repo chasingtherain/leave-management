@@ -66,6 +66,7 @@ function ApplyLeavePage() {
         }
         const applyLeaveFormData = {
             userId: currentUser._id,
+            staffName: currentUser.name,
             startDate: startDate,
             endDate: endDate,
             dateOfApplication: currentDate.getTime(),

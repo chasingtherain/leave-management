@@ -82,6 +82,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         const userEmail = req.body.userEmail
         const coveringEmail = req.body.coveringEmail
         const reportingEmail = req.body.reportingEmail
+        const staffName = req.body.staffName
         const remarks = req.body.remarks
         const leaveType = req.body.leaveType
         const numOfDaysTaken = req.body.numOfDaysTaken
@@ -99,6 +100,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 leaveType: leaveType,
                 timePeriod: `${startDate} - ${endDate}`,
                 startDateUnix: req.body.startDate,
+                endDateUnix: req.body.endDate,
+                staffName: req.body.staffName,
                 submittedOn: dateOfApplication,
                 quotaUsed: numOfDaysTaken,
                 coveringEmail: coveringEmail,
@@ -132,6 +135,8 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 leaveType: leaveType,
                 timePeriod: `${startDate} - ${endDate}`,
                 startDateUnix: req.body.startDate,
+                endDateUnix: req.body.endDate,
+                staffName: req.body.staffName,
                 submittedOn: dateOfApplication,
                 quotaUsed: numOfDaysTaken,
                 remarks: remarks,

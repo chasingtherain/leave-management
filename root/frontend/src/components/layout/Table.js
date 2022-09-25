@@ -88,7 +88,10 @@ function Table({headerType}) {
                 leaveType: targetStaffLeave[0].leaveType,
                 leaveStatus: targetStaffLeave[0].status,
                 numOfDaysTaken: targetStaffLeave[0].quotaUsed,
-                submittedOn: targetStaffLeave[0].submittedOn
+                submittedOn: targetStaffLeave[0].submittedOn,
+                startDateUnix: targetStaffLeave[0].startDateUnix,
+                endDateUnix: targetStaffLeave[0].endDateUnix,
+                staffName: targetStaffLeave[0].staffName
             }
             console.log("leaveData: ", leaveData)
 

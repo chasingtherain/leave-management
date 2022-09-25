@@ -11,9 +11,16 @@ const leaveHistorySchema = new Schema({
         type: String,
         required: true
     },
+    staffName:{
+        type: String,
+        required: true
+    },
     startDateUnix:{
         type: String,
         required: true
+    },
+    endDateUnix:{
+        type: String
     },
     timestamp:{
         type: Date,

@@ -14,9 +14,8 @@ function TeamCalendar() {
         {
             id: 0,
             title: 'Huangxi on leave',
-            allDay: true,
             start: new Date(2022, 8, 9),
-            end: new Date(2022, 8, 12),
+            end: new Date(2022, 8, 9),
           },
     ]
 
