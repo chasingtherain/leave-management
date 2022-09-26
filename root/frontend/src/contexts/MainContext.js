@@ -6,6 +6,7 @@ export const MainContextProvider = ({ children }) => {
   const [activeTab, setActiveTab] = useState("Home 主页") 
   const [currentUser, setCurrentUser] = useState()
   const [userList, setUserList] = useState([])
+  const [teamCalendar, setTeamCalendar] = useState([])
   const [isAdmin, setIsAdmin] = useState()
 
   const [currentLeaveSelection, setCurrentLeaveSelection] = useState("Annual Leave 年假")
@@ -25,6 +26,17 @@ export const MainContextProvider = ({ children }) => {
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
       .then(resp =>{ 
         setUserList(resp.data)
+        // console.log(resp)
+      })
+      .catch(err => console.log(err))
+  }
+
+  const fetchTeamCalendar = async () => {
+    axios
+      .get(`${process.env.REACT_APP_BACKENDURL}/user/getTeamCalendar`)
+      .then(resp =>{ 
+        console.log(resp.data)
+        setTeamCalendar(resp.data)
         // console.log(resp)
       })
       .catch(err => console.log(err))
@@ -57,6 +69,7 @@ export const MainContextProvider = ({ children }) => {
 
   useEffect(()=>{
     fetchUserList()
+    fetchTeamCalendar()
     validateSession()
     console.log("use effect triggered")
   }, [])

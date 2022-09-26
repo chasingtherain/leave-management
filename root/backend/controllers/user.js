@@ -6,6 +6,7 @@ require('moment-weekday-calc');
 
 const sendgridMail = require('@sendgrid/mail');
 const leaveHistory = require('../models/leaveHistory');
+const TeamCalendar = require('../models/teamCalendar')
 
 const date = new Date()
 
@@ -45,6 +46,13 @@ exports.getAllUsers = (req,res,next) => {
             console.log('Failed to retrieve the Course List: ' + err);
         }
     });
+}
+
+exports.getTeamLeaveRecords = (req,res,next) => {
+    TeamCalendar
+        .findOne({entity: "chengdu"},)
+        .then(result => res.send(result.approvedLeave))
+        .catch(err => console.log(err))
 }
 
 exports.getNumOfDaysApplied = (req,res,next) => {

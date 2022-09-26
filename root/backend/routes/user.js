@@ -8,6 +8,8 @@ router.get('/getUser/:id', userController.getUser)
 
 router.get('/getAllUsers', userController.getAllUsers)
 
+router.get('/getTeamCalendar', userController.getTeamLeaveRecords)
+
 router.post('/numOfDays', userController.getNumOfDaysApplied)
 
 router.post('/applyLeave', userController.postLeaveApplicationForm)
