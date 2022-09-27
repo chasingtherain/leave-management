@@ -49,9 +49,24 @@ exports.getAllUsers = (req,res,next) => {
 }
 
 exports.getTeamLeaveRecords = (req,res,next) => {
+
     TeamCalendar
         .findOne({entity: "chengdu"},)
-        .then(result => res.send(result.approvedLeave))
+        .then(result => 
+            {
+                // update names to big calendar format
+                const newTeamLeave = result.approvedLeave.map(({
+                _id: id,
+                ...rest
+              }) => ({
+                id,
+                ...rest
+              }));
+            
+            console.log(newTeamLeave)
+            
+            res.send(newTeamLeave)
+            })
         .catch(err => console.log(err))
 }
 

@@ -3,7 +3,7 @@ import Table from '../components/layout/Table'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { useMainContext } from '../hooks/useMainContext'
-import TeamCalendar from '../components/layout/TeamCalendar'
+import TeamCalendar from '../components/TeamCalendar'
 
 function DashboardPage() {
   const {userList} = useMainContext()

@@ -164,8 +164,8 @@ exports.approveLeave = (req,res,next) => {
     .then((result)=>{
 
         const teamCalendarRecord = new TeamCalendarRecord({
-            startDateUnix: startDateUnix,
-            endDateUnix: endDateUnix,
+            start: new Date(startDateUnix),
+            end: new Date(endDateUnix),
             staffName: staffName,
             title: `${staffName} on leave`
         })

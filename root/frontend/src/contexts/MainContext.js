@@ -16,6 +16,7 @@ export const MainContextProvider = ({ children }) => {
     if(token) return token
     else return ""
   })
+  
   const [authState, setAuthState] = useState(false)
 
   const [workDaySelection, setWorkDaySelection] = useState([])
@@ -89,6 +90,7 @@ export const MainContextProvider = ({ children }) => {
       holidaySelection,
       isAdmin,
       sessionToken,
+      teamCalendar,
       userList,
       workDaySelection,
       fetchCurrentUserInfo,

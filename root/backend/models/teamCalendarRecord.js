@@ -3,11 +3,11 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const teamCalendarRecordSchema = new Schema({
-    startDateUnix: {
+    start: {
         type: String,
         required: true
     },
-    endDateUnix: {
+    end: {
         type: String,
         required: true
     },
