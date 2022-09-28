@@ -11,11 +11,23 @@ const teamCalendarRecordSchema = new Schema({
         type: String,
         required: true
     },
+    startDateUnix: {
+        type: String,
+        required: true
+    },
+    endDateUnix: {
+        type: String,
+        required: true
+    },
     staffName: {
         type: String,
         required: true
     },
     title: {
+        type: String,
+        required: true
+    },
+    status: {
         type: String,
         required: true
     }

@@ -55,6 +55,7 @@ exports.getTeamLeaveRecords = (req,res,next) => {
         .then(result => 
             {
                 // update names to big calendar format
+                // console.log("team record: ", result)
                 const newTeamLeave = result.approvedLeave.map(({
                 _id: id,
                 ...rest
@@ -63,7 +64,7 @@ exports.getTeamLeaveRecords = (req,res,next) => {
                 ...rest
               }));
             
-            console.log(newTeamLeave)
+            // console.log(newTeamLeave)
             
             res.send(newTeamLeave)
             })
@@ -246,10 +247,11 @@ exports.cancelLeaveRequest = (req,res) => {
     const leaveType = leaveHistory[0].leaveType
     const quotaUsed = leaveHistory[0].quotaUsed
     const timePeriod = leaveHistory[0].timePeriod
-    const startDateUnix = leaveHistory[0].startDateUnix
     const submittedOn = leaveHistory[0].submittedOn
     const leaveStatus = leaveHistory[0].status
-
+    const startDateUnix = new Date(+(leaveHistory[0].startDateUnix))
+    const endDateUnix = new Date(+(leaveHistory[0].endDateUnix))
+    console.log("req body: ", req.body,"startDateUnix: ", startDateUnix.toString(),"endDateUnix: ", endDateUnix.toString())
     const leaveRequestId = leaveHistory[0]._id
     const leaveRequestTimestamp = leaveHistory[0].timestamp
 
@@ -278,25 +280,39 @@ exports.cancelLeaveRequest = (req,res) => {
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
 
-    User
-        .findOneAndUpdate( // update user's leave status
-            {
-                _id: userId, 
-                "leaveHistory.startDateUnix": startDateUnix,
-                "leaveHistory.leaveType": leaveType,
-                "leaveHistory.timePeriod": timePeriod,
-                "leaveHistory.quotaUsed": quotaUsed,
-                "leaveHistory.status": leaveStatus,
-                "leaveHistory.submittedOn": submittedOn,
-            },
-            {
-                $set: {"leaveHistory.$.status": "cancelled" }
-            }
-        )
-        .then(() => {
-            console.log("updated user's leave status to cancelled")
-        })
-        .catch(err => console.log("update leaveHistory status err: ", err))
+    // User
+    //     .findOneAndUpdate( // update user's leave status
+    //         {
+    //             _id: userId, 
+    //             "leaveHistory.startDateUnix": startDateUnix,
+    //             "leaveHistory.leaveType": leaveType,
+    //             "leaveHistory.timePeriod": timePeriod,
+    //             "leaveHistory.quotaUsed": quotaUsed,
+    //             "leaveHistory.status": leaveStatus,
+    //             "leaveHistory.submittedOn": submittedOn,
+    //         },
+    //         {
+    //             $set: {"leaveHistory.$.status": "cancelled" }
+    //         }
+    //     )
+    //     .then(() => {
+            // update team leave record to cancelled
+            TeamCalendar.findOneAndUpdate(
+                {
+                    team: "chengdu",
+                    "approvedLeave.start": startDateUnix.toString(),
+                    "approvedLeave.end": endDateUnix.toString(),
+                },
+                {
+                    $set: {"approvedLeave.$.status": "cancelled"}
+                }
+            )
+            .then(result => {
+                // console.log(result)
+            })
+            .catch(err => console.log(err))
+        // })
+        // .catch(err => console.log(err))
 
     User
         .findOneAndUpdate( // update reporting's leave status

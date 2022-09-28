@@ -91,6 +91,8 @@ function Table({headerType}) {
                 submittedOn: targetStaffLeave[0].submittedOn,
                 startDateUnix: targetStaffLeave[0].startDateUnix,
                 endDateUnix: targetStaffLeave[0].endDateUnix,
+                start: new Date(targetStaffLeave[0].startDateUnix),
+                end: new Date(targetStaffLeave[0].endDateUnix),
                 staffName: targetStaffLeave[0].staffName
             }
             console.log("leaveData: ", leaveData)

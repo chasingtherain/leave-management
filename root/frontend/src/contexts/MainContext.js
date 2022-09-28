@@ -16,7 +16,7 @@ export const MainContextProvider = ({ children }) => {
     if(token) return token
     else return ""
   })
-  
+
   const [authState, setAuthState] = useState(false)
 
   const [workDaySelection, setWorkDaySelection] = useState([])
@@ -36,7 +36,7 @@ export const MainContextProvider = ({ children }) => {
     axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getTeamCalendar`)
       .then(resp =>{ 
-        console.log(resp.data)
+        console.log("fetchTeamCalendar: ", resp.data)
         setTeamCalendar(resp.data)
         // console.log(resp)
       })

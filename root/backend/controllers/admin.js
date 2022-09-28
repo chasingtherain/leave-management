@@ -143,10 +143,10 @@ exports.approveLeave = (req,res,next) => {
     const leaveStatus = req.body.leaveStatus
     const numOfDaysTaken = req.body.numOfDaysTaken
     const submittedOn = req.body.submittedOn
-    const startDateUnix = req.body.startDateUnix
-    const endDateUnix = req.body.endDateUnix
+    const startDateUnix = req.body.start
+    const endDateUnix = req.body.end
     const staffName = req.body.staffName
-    console.log(req.body)
+    console.log("startDateUnix: ", startDateUnix, "endDateUnix: ", endDateUnix)
     
     // update reporting's staffLeave
     User.findOneAndUpdate(
@@ -166,10 +166,13 @@ exports.approveLeave = (req,res,next) => {
         const teamCalendarRecord = new TeamCalendarRecord({
             start: new Date(startDateUnix),
             end: new Date(endDateUnix),
+            startDateUnix: startDateUnix,
+            endDateUnix: endDateUnix,
             staffName: staffName,
-            title: `${staffName} on leave`
+            title: `${staffName} on leave`,
+            status: "approved"
         })
-        
+        console.log("teamCalendarRecord:", teamCalendarRecord)
         TeamCalendar.findOneAndUpdate(
             {team: "chengdu"},
             {
@@ -179,10 +182,12 @@ exports.approveLeave = (req,res,next) => {
             {upsert: true}
         )
         .then(result => {
-            console.log(result)
+            // console.log(result)
             console.log("trying to create new record on team calendar")
         })
-        // console.log(result.staffLeave)
+        .catch(err => console.log(err))
+
+        console.log("updated user's leave status to cancelled")
     })
     .catch((err)=> console.log(err))
 
