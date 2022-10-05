@@ -297,20 +297,32 @@ exports.cancelLeaveRequest = (req,res) => {
     //     )
     //     .then(() => {
             // update team leave record to cancelled
-            TeamCalendar.findOneAndUpdate(
+            TeamCalendar.deleteOne(
                 {
                     team: "chengdu",
                     "approvedLeave.start": startDateUnix.toString(),
                     "approvedLeave.end": endDateUnix.toString(),
-                },
-                {
-                    $set: {"approvedLeave.$.status": "cancelled"}
                 }
             )
             .then(result => {
                 // console.log(result)
             })
             .catch(err => console.log(err))
+
+            // TeamCalendar.findOneAndUpdate(
+            //     {
+            //         team: "chengdu",
+            //         "approvedLeave.start": startDateUnix.toString(),
+            //         "approvedLeave.end": endDateUnix.toString(),
+            //     },
+            //     {
+            //         $set: {"approvedLeave.$.status": "cancelled"}
+            //     }
+            // )
+            // .then(result => {
+            //     // console.log(result)
+            // })
+            // .catch(err => console.log(err))
         // })
         // .catch(err => console.log(err))
 

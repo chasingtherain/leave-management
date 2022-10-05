@@ -31,8 +31,7 @@ function DashboardPage() {
   return (
 
     <div>
-      <TeamCalendar/>
-      {/* <h1 className='text-xl my-6 text-center'>Staff's Remaining Annual Leave</h1>
+      <h1 className='text-xl my-6 text-center'>Staff's Remaining Annual Leave</h1>
       <Table headerType="dashboard"/>
       <div class="divider"></div> 
       <div className='flex flex-col justify-start items-center'>
@@ -43,8 +42,8 @@ function DashboardPage() {
               type="number"
               onChange={(e) => setLeaveCount(e.target.value)}
               className="input input-bordered input-secondary text-lg mx-2"
-              placeholder="10"
-              style={{width:'70px'}}/>
+              placeholder="5"
+              style={{width:'75px'}}/>
               days of annual leave left
           </p>
         </div>
@@ -52,7 +51,7 @@ function DashboardPage() {
           className='btn'
           onClick={handleReminderClick}
           >Send Reminder</button>
-      </div> */}
+      </div>
     </div>
   )
 }

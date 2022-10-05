@@ -20,7 +20,7 @@ function Table({headerType}) {
     const entitlementTableHeader = ["Leave Type 假性",`Entitlement Rollover\n年额带过 (${currentYear-1})`, `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用", "Bring Over to Next Year?\n带到明年? ","Note 备注"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
-    const dashboardTableHeader = ["Name","Email","No. of Annual Leave left","No. of Sick Leave Used"]
+    const dashboardTableHeader = ["Name","Email","No. of Annual Leave left"]
     
     const changeLogData = [
         ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
@@ -212,7 +212,6 @@ function Table({headerType}) {
                         <td>{user.name}</td>
                         <td>{user.email}</td>
                         <td>{user.leave[0].entitlement - user.leave[0].used}</td>
-                        <td>{user.leave[2].used}</td>
                     </tr>)
             case "entitlement":
                 return currentUserLeave.map((leave,index) => 

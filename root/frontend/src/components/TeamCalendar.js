@@ -8,6 +8,8 @@ import { useMainContext } from '../hooks/useMainContext'
 function TeamCalendar() {
     const {teamCalendar} = useMainContext()
     console.log(teamCalendar)
+    const approvedTeamLeave = teamCalendar.filter(entry => entry.status === "approved")
+    console.log(approvedTeamLeave)
     moment.tz.setDefault('Asia/Singapore')
     const localizer = momentLocalizer(moment)
 
@@ -26,7 +28,7 @@ function TeamCalendar() {
         <div className="flex flex-col justify-start items-center mt-[3%]">
             <Calendar
             localizer={localizer}
-            events={teamCalendar}
+            events={approvedTeamLeave}
             startAccessor="start"
             endAccessor="end"
             showAllEvents

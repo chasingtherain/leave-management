@@ -21,6 +21,7 @@ import LoggedInRoute from "./components/private/LoggedInRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 import SetWorkdayPage from "./pages/SetWorkdayPage";
 import DashboardPage from "./pages/DashboardPage";
+import TeamCalendarPage from "./pages/TeamCalendarPage";
 
 function App() {
   const {authState, currentUser} = useMainContext()
@@ -47,6 +48,9 @@ function App() {
             </Route>
             <Route path = '/profile' element={<LoggedInRoute/>}>
               <Route path = '/profile' element={<ProfilePage/>}/>
+            </Route>
+            <Route path = '/team' element={<LoggedInRoute/>}>
+              <Route path = '/team' element={<TeamCalendarPage/>}/>
             </Route>
 
             {/* admin routes */}
