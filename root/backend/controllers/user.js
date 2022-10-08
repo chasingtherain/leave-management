@@ -265,12 +265,9 @@ exports.cancelLeaveRequest = (req,res) => {
             .then(result => {
                 // update team leave record to cancelled
                 console.log("deleting from team calendar")
-                TeamCalendar.deleteOne(
-                    {
-                        team: "chengdu",
-                        "approvedLeave.start": startDate.toString(),
-                        "approvedLeave.end": endDate.toString(),
-                    }
+                TeamCalendar.updateOne(
+                    {team: "chengdu"},
+                    {$pull: {approvedLeave: {start: startDate.toString(),end: endDate.toString()}}}
                 )
                 .catch(err => console.log("err deleting team calendar record",err))
             })
@@ -290,6 +287,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
+
     // update user's leave status to cancelled
     User.findOneAndUpdate( 
             {
@@ -306,8 +304,9 @@ exports.cancelLeaveRequest = (req,res) => {
             }
         )
         .then((result) => {
-            console.log(result)
+            // console.log(result)
             console.log("updated user's leave status to cancelled")
+            
             // update reporting's leave status
             User.findOneAndUpdate( 
                 {
