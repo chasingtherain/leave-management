@@ -162,10 +162,10 @@ exports.approveLeave = (req,res,next) => {
         )
     .then((user)=>{
         console.log(user)
-        console.log("user.save()",user.save())
         return user.save()
     })
     .then(() => {
+        // update team calendar
         const teamCalendarRecord = new TeamCalendarRecord({
             start: new Date(startDateUnix),
             end: new Date(endDateUnix),
@@ -187,7 +187,7 @@ exports.approveLeave = (req,res,next) => {
     })
     .then(record => {
         console.log("record created on team calendar")
-        console.log("record.save()",record.save())
+        return record.save()
     })
     .then(()=>{
         User.findOneAndUpdate( // update user's leave status to approved
@@ -210,48 +210,46 @@ exports.approveLeave = (req,res,next) => {
                 .then((outcome)=> {
                     // console.log(outcome)
                     console.log("subtracted from pending, added quotaUsed count")
+
+                    // send approval email 
+                    const approvalEmail = {
+                        to: staffEmail, //leave applier's email
+                        from: 'mfachengdu@gmail.com', // Change to your verified sender
+                        cc: [coveringEmail, reportingEmail],
+                        subject: `Leave Approved 休假请求已获批准 - ${dateRange}`,
+                        html: `
+                            <div>
+                                <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been approved.</p> 
+                                <p>Leave Details: </p>
+                                <p>Type: ${leaveType}</p>
+                                <p>Number of days: ${numOfDaysTaken} days</p>
+                                <p>Period: <strong>${dateRange}</strong></p>
+                            </div>
+                            <div>
+                                <p>您好 ${staffEmail}，您从${dateRange}的休假请求已获批准</p> 
+                                <p>信息：</p>
+                                <p>休假类型: ${leaveType}</p>
+                                <p>天数: ${numOfDaysTaken} days</p>
+                                <p>何时: <strong>${dateRange}</strong></p>
+                            </div>
+                        `
+                        }
+                    sendgridMail
+                        .send(approvalEmail) // email to inform user and covering of leave request
+                        .then(() => {
+                            res.status(200).send("approval email sent to user, covering and reporting")
+                            console.log('approval email sent to user and covering')
+                        })
+                        .catch((error) => {
+                            console.error("sendgrid error during approval email: ", error)
+                            console.log("err: ", error.response.body)
+                        })
                 })
                 .catch(err => console.log(err))
-                
-                // console.log(result.leaveHistory)
                 console.log("status updated to approved on user's table")
             })
     })
     .catch((err)=> console.log(err))
-
-    // send approval email
-        const approvalEmail = {
-        to: staffEmail, //leave applier's email
-        from: 'mfachengdu@gmail.com', // Change to your verified sender
-        cc: [coveringEmail, reportingEmail],
-        subject: `Leave Approved 休假请求已获批准 - ${dateRange}`,
-        html: `
-            <div>
-                <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been approved.</p> 
-                <p>Leave Details: </p>
-                <p>Type: ${leaveType}</p>
-                <p>Number of days: ${numOfDaysTaken} days</p>
-                <p>Period: <strong>${dateRange}</strong></p>
-            </div>
-            <div>
-                <p>您好 ${staffEmail}，您从${dateRange}的休假请求已获批准</p> 
-                <p>信息：</p>
-                <p>休假类型: ${leaveType}</p>
-                <p>天数: ${numOfDaysTaken} days</p>
-                <p>何时: <strong>${dateRange}</strong></p>
-            </div>
-        `
-        }
-        sendgridMail
-            .send(approvalEmail) // email to inform user and covering of leave request
-            .then(() => {
-                res.status(200).send("approval email sent to user, covering and reporting")
-                console.log('approval email sent to user and covering')
-            })
-            .catch((error) => {
-                console.error("sendgrid error during approval email: ", error)
-                console.log("err: ", error.response.body)
-            })
 }
 
 exports.rejectLeave = (req,res,next) => {
