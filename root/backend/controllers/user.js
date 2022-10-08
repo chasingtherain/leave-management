@@ -249,13 +249,13 @@ exports.cancelLeaveRequest = (req,res) => {
     const timePeriod = leaveHistory[0].timePeriod
     const submittedOn = leaveHistory[0].submittedOn
     const leaveStatus = leaveHistory[0].status
-    const startDateUnix = new Date(+(leaveHistory[0].startDateUnix))
-    const endDateUnix = new Date(+(leaveHistory[0].endDateUnix))
-    console.log("req body: ", req.body,"startDateUnix: ", startDateUnix.toString(),"endDateUnix: ", endDateUnix.toString())
-    const leaveRequestId = leaveHistory[0]._id
-    const leaveRequestTimestamp = leaveHistory[0].timestamp
+    const startDate = new Date(+(leaveHistory[0].startDateUnix))
+    const endDate = new Date(+(leaveHistory[0].endDateUnix))
+    const startDateUnix = leaveHistory[0].startDateUnix
+    const endDateUnix = leaveHistory[0].endDateUnix
+    // console.log("req body: ", req.body)
 
-    if (leaveStatus === "approved"){
+    if (leaveStatus === "approved") {
         User
             .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
                 { // update pending and entitlement count after cancellation
@@ -263,7 +263,16 @@ exports.cancelLeaveRequest = (req,res) => {
                 }
             )
             .then(result => {
-                console.log(result.leave[0])
+                // update team leave record to cancelled
+                console.log("deleting from team calendar")
+                TeamCalendar.deleteOne(
+                    {
+                        team: "chengdu",
+                        "approvedLeave.start": startDate.toString(),
+                        "approvedLeave.end": endDate.toString(),
+                    }
+                )
+                .catch(err => console.log("err deleting team calendar record",err))
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
@@ -275,76 +284,54 @@ exports.cancelLeaveRequest = (req,res) => {
                 }
             )
             .then(result => {
-                console.log(result.leave[0])
+                console.log("updated pending and entitlement count after cancellation")
+                // console.log(result)
+
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
-
-    // User
-    //     .findOneAndUpdate( // update user's leave status
-    //         {
-    //             _id: userId, 
-    //             "leaveHistory.startDateUnix": startDateUnix,
-    //             "leaveHistory.leaveType": leaveType,
-    //             "leaveHistory.timePeriod": timePeriod,
-    //             "leaveHistory.quotaUsed": quotaUsed,
-    //             "leaveHistory.status": leaveStatus,
-    //             "leaveHistory.submittedOn": submittedOn,
-    //         },
-    //         {
-    //             $set: {"leaveHistory.$.status": "cancelled" }
-    //         }
-    //     )
-    //     .then(() => {
-            // update team leave record to cancelled
-            TeamCalendar.deleteOne(
-                {
-                    team: "chengdu",
-                    "approvedLeave.start": startDateUnix.toString(),
-                    "approvedLeave.end": endDateUnix.toString(),
-                }
-            )
-            .then(result => {
-                // console.log(result)
-            })
-            .catch(err => console.log(err))
-
-            // TeamCalendar.findOneAndUpdate(
-            //     {
-            //         team: "chengdu",
-            //         "approvedLeave.start": startDateUnix.toString(),
-            //         "approvedLeave.end": endDateUnix.toString(),
-            //     },
-            //     {
-            //         $set: {"approvedLeave.$.status": "cancelled"}
-            //     }
-            // )
-            // .then(result => {
-            //     // console.log(result)
-            // })
-            // .catch(err => console.log(err))
-        // })
-        // .catch(err => console.log(err))
-
-    User
-        .findOneAndUpdate( // update reporting's leave status
+    // update user's leave status to cancelled
+    User.findOneAndUpdate( 
             {
-                email: reportingEmail, 
-                "staffLeave.leaveType": leaveType,
-                "staffLeave.timePeriod": timePeriod,
-                "staffLeave.startDateUnix": +startDateUnix,
-                "staffLeave.submittedOn": submittedOn,
-                "staffLeave.quotaUsed": quotaUsed,
-                "staffLeave.status": leaveStatus,
+                _id: userId, 
+                "leaveHistory.startDateUnix": startDateUnix,
+                "leaveHistory.leaveType": leaveType,
+                "leaveHistory.timePeriod": timePeriod,
+                "leaveHistory.quotaUsed": quotaUsed,
+                "leaveHistory.status": leaveStatus,
+                "leaveHistory.submittedOn": submittedOn,
             },
             {
-                $set: {"staffLeave.$.status": "cancelled" }
+                $set: {"leaveHistory.$.status": "cancelled" }
             }
         )
         .then((result) => {
-            // console.log(result)
-            res.send("updated reporting's leave status to cancelled")
+            console.log(result)
+            console.log("updated user's leave status to cancelled")
+            // update reporting's leave status
+            User.findOneAndUpdate( 
+                {
+                    email: reportingEmail, 
+                    "staffLeave.leaveType": leaveType,
+                    "staffLeave.timePeriod": timePeriod,
+                    "staffLeave.startDateUnix": +startDateUnix,
+                    "staffLeave.submittedOn": submittedOn,
+                    "staffLeave.quotaUsed": quotaUsed,
+                    "staffLeave.status": leaveStatus,
+                },
+                {
+                    $set: {"staffLeave.$.status": "cancelled" }
+                }
+            )
+            .then((result) => {
+                // console.log(result)
+                console.log("updated reporting's leave status to cancelled")
+                res.send("updated reporting's leave status to cancelled")
+            })
+            .catch(err => console.log("update staffLeave status err: ", err))
         })
-        .catch(err => console.log("update staffLeave status err: ", err))
+        .catch(err => console.log(err))
+    
+
 
 }
