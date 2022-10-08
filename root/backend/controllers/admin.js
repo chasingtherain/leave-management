@@ -403,6 +403,22 @@ exports.postUpdateUser = (req,res,next) => {
     res.status(200).send("update successful")
 }
 
+exports.getWorkDay = (req,res,next) => {
+    const userEmail = req.params.id
+    console.log("req.params: ", req.params)
+    Workday
+        .findOne({entity:"chengdu"})
+        .then(record => {
+            console.log(record)
+            res.status(200).json(
+                {
+                    holiday: record.holiday,
+                    workday: record.workday
+                })
+        })
+        .catch( err =>console.log("getWorkDay err:", err))
+}
+
 exports.setWorkDay = (req,res,next) => {
     const workDaySelection = req.body.workDaySelection
     const holidaySelection = req.body.holidaySelection
