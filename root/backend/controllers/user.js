@@ -253,13 +253,21 @@ exports.cancelLeaveRequest = (req,res) => {
     const endDate = new Date(+(leaveHistory[0].endDateUnix))
     const startDateUnix = leaveHistory[0].startDateUnix
     const endDateUnix = leaveHistory[0].endDateUnix
-    // console.log("req body: ", req.body)
 
-    if (leaveStatus === "approved") {
+    const getFirstDayOfYear = (year) => {return new Date(year, 0, 1)}
+      
+    // Current Year
+    const currentYear = new Date().getFullYear();
+    // current year's first day in unix
+    console.log(getFirstDayOfYear(currentYear).getTime());
+    const firstDayofCurrentYear = getFirstDayOfYear(currentYear).getTime()
+
+    if (leaveStatus === "approved" && startDate >= firstDayofCurrentYear) {
         User
             .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
-                { // update pending and entitlement count after cancellation
+                { // subtract used count after cancellation
                     $inc: {"leave.$.used": -quotaUsed},
+                    $set: {"leaveHistory.$.status": "cancelled" }
                 }
             )
             .then(result => {
@@ -272,6 +280,9 @@ exports.cancelLeaveRequest = (req,res) => {
                 .catch(err => console.log("err deleting team calendar record",err))
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
+    }
+    else if(leaveStatus === "approved" && startDate < firstDayofCurrentYear){
+        console.log("staff cancelled last year's leave!")
     }
     else{
         User

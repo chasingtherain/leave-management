@@ -256,7 +256,7 @@ exports.rejectLeave = (req,res,next) => {
     // update reporting's staffLeave
     // update staff's leaveHistory
     // send rejection email
-
+    
     const staffEmail = req.body.staffEmail
     const coveringEmail = req.body.coveringEmail
     const reportingEmail = req.body.reportingEmail
@@ -273,7 +273,7 @@ exports.rejectLeave = (req,res,next) => {
             $inc: {"leave.$.pending": -numOfDaysTaken},
         }
     )
-    .then(result => {
+    .then(() => {
         // update reporting's staffLeave to rejected
         return User.findOneAndUpdate(
             {
@@ -283,12 +283,12 @@ exports.rejectLeave = (req,res,next) => {
                 "staffLeave.quotaUsed": numOfDaysTaken,
                 "staffLeave.leaveType": leaveType,
                 "staffLeave.submittedOn": submittedOn,
-                "staffLeave.status": leaveStatus,
             },
             {$set: {"staffLeave.$.status": "rejected" }}
             )
     })
-    .then(()=>{
+    .then((res)=>{
+        console.log("update reporting's staffLeave to rejected: ", res)
         return User.findOneAndUpdate( // update user's leave status to rejected
         {
             email: staffEmail,
