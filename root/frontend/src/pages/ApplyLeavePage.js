@@ -12,8 +12,11 @@ import { useNavigate } from 'react-router-dom';
 function ApplyLeavePage() {
     
     const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
-    const leaveOptions = ["Annual Leave 年假", "Compassionate Leave 慈悲假"]
-    // const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name)) //uncomment after developing
+
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+
+    const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name))
 
     const navigate = useNavigate()
 
@@ -29,12 +32,11 @@ function ApplyLeavePage() {
             .filter(entry => entry.status === "pending" || entry.status === "approved")
             .map(entry => +(entry.startDateUnix)))
     const [applyBtnLoading, setApplyBtnLoading] = useState("")
-
+    console.log(currentUser.leave[0].prevYearEntitlement)
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
+
     const numOfSelectedLeave = userSelectedLeave[0].entitlement - userSelectedLeave[0].pending - userSelectedLeave[0].used// refers to how many days a user is entitled for selected leave type
     
-    const currentDate = new Date()
-
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
         e.preventDefault()

@@ -10,11 +10,13 @@ const sendgridMail = require('@sendgrid/mail')
 const jwt = require('jsonwebtoken')
 
 const date = new Date()
+const currentYear = date.getFullYear()
 
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const chengduLrsLeaveScheme = [
-    new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, prevYearEntitlement: 0, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
+    new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
+    new Leave({name: `Annual Leave 年额带过 (${currentYear-1})`, type:"prevYearAnnual", entitlement: 0, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: "Compassionate Leave 慈悲假", type:"compassionate", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Death of spouse, parents, children, parents-in-law: 3 days\n own/spouse's grandparents, own siblings: 1 day \n 配偶、父母、子女、岳父母死亡: 3天\n 自己/配偶的祖父母、自己的兄弟姐妹: 1天"}),
     new Leave({name: "Medical leave 病假", type:"medical", entitlement: 30, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: "Hospitalisation leave 住院假", type:"hospitalisation", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "As prescribed by doctor\n按医生规定"}),
@@ -384,9 +386,9 @@ exports.approveLeave = (req,res,next) => {
             console.log("updated staff's status to cancellation approved")
 
             // increment prevYearEntitlement count
-            return User.findOneAndUpdate({email: staffEmail, "leave.name":leaveType}, 
+            return User.findOneAndUpdate({email: staffEmail, "leave.name": `Annual Leave 年额带过 (${currentYear-1})`}, 
             { 
-                $inc: {"leave.$.prevYearEntitlement": numOfDaysTaken},
+                $inc: {"leave.$.entitlement": numOfDaysTaken},
             })
 
         })

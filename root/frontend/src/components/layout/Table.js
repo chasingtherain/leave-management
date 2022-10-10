@@ -17,7 +17,7 @@ function Table({headerType}) {
     const historyTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
     const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
     const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
-    const entitlementTableHeader = ["Leave Type 假性",`Entitlement Rollover\n年额带过 (${currentYear-1})`, `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用", "Bring Over to Next Year?\n带到明年? ","Note 备注"]
+    const entitlementTableHeader = ["Leave Type 假性", `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用","Note 备注"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
     const dashboardTableHeader = ["Name","Email","No. of Annual Leave left"]
@@ -240,12 +240,10 @@ function Table({headerType}) {
                 return currentUserLeave.map((leave,index) => 
                     <tr key={index}>
                         <td>{leave.name}</td>
-                        <td>{(leave.name === "Annual Leave 年假") ? leave.prevYearEntitlement : "-"}</td>
                         <td>{leave.entitlement}</td>
                         <td>{leave.pending}</td>
                         <td>{leave.used}</td>
-                        <td>{(leave.name === "Annual Leave 年假") ? leave.entitlement - leave.pending - leave.used + leave.prevYearEntitlement : leave.entitlement - leave.pending - leave.used}</td>
-                        <td>{(leave.rollover) ? "Yes" : "No"}</td>
+                        <td>{leave.entitlement - leave.pending - leave.used}</td>
                         <td><InfoBubble info={leave.note}/></td>
                     </tr>)
             case "request":
