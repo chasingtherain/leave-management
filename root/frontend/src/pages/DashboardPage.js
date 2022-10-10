@@ -10,22 +10,25 @@ function DashboardPage() {
   const [leaveCount, setLeaveCount] = useState()
 
   const handleReminderClick = () => {
-    const url = `${process.env.REACT_APP_BACKENDURL}/admin/send-reminder`
-    const targetEmailList = userList
-    .filter(staff => (staff.leave[0].entitlement - staff.leave[0].used) >= leaveCount 
-      && staff.isAdmin === "user")
-    .map(staff => staff.email)
+    
+    if(window.confirm(`Send reminder to staff with at least ${leaveCount} day(s) of annual leave left?`)){
+      const url = `${process.env.REACT_APP_BACKENDURL}/admin/send-reminder`
+      const targetEmailList = userList
+                              .filter(staff => (staff.leave[0].entitlement - staff.leave[0].used) >= leaveCount 
+                                && staff.isAdmin === "user")
+                              .map(staff => staff.email)
 
-    if(leaveCount){
-      axios
-        .post(url,{leaveCount: leaveCount, targetEmailList: targetEmailList})
-        .then((response)=> {
-          console.log(response)
-          toast.success("reminder email sent")
-        })
-        .catch(err => console.log(err))
+      if(leaveCount){
+        axios
+          .post(url,{leaveCount: leaveCount, targetEmailList: targetEmailList})
+          .then((response)=> {
+            console.log(response)
+            toast.success("reminder email sent")
+          })
+          .catch(err => console.log(err))
+      }
+      else return toast.error("Input was invalid or empty!")
     }
-    else return toast.error("Input was invalid or empty!")
   }
 
   return (
