@@ -43,6 +43,17 @@ export const MainContextProvider = ({ children }) => {
       .catch(err => console.log(err))
   }
 
+  const fetchWorkDay = async () => {
+    axios
+      .get(`${process.env.REACT_APP_BACKENDURL}/admin/get-work-day`)
+      .then(resp =>{ 
+        // console.log("fetchWorkDay: ", resp.data)
+        setWorkDaySelection(resp.data.workday)
+        setHolidaySelection(resp.data.holiday)
+      })
+      .catch(err => console.log(err))
+  }
+
   const fetchCurrentUserInfo = async (currentUser) =>{
       console.log("fetchCurrentUserInfo triggered")
       axios
@@ -71,6 +82,7 @@ export const MainContextProvider = ({ children }) => {
   useEffect(()=>{
     fetchUserList()
     fetchTeamCalendar()
+    fetchWorkDay()
     validateSession()
     console.log("use effect triggered")
   }, [])

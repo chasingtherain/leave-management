@@ -13,17 +13,6 @@ function TeamCalendar() {
     moment.tz.setDefault('Asia/Singapore')
     const localizer = momentLocalizer(moment)
 
-    console.log(new Date(2022, 8, 9))
-    
-    const events = [
-        {
-            id: 0,
-            title: 'Huangxi on leave',
-            start: new Date(2022, 8, 9),
-            end: new Date(2022, 8, 9),
-        },
-    ]
-
     return (
         <div className="flex flex-col justify-start items-center mt-[3%]">
             <Calendar

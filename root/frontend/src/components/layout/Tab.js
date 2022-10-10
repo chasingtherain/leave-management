@@ -8,7 +8,6 @@ function Tab() {
     const homePageTabs = ["Home 主页", "Entitlement 年额", "History 历史"]
     const approvalPageTabs = ["Pending", "Approved"]
     const location = useLocation()
-    console.log(location.pathname)
 
     const handleActiveTabClick = (event) => {
         setActiveTab(event.target.id)

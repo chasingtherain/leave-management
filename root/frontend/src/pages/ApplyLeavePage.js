@@ -32,10 +32,11 @@ function ApplyLeavePage() {
 
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
     const numOfSelectedLeave = userSelectedLeave[0].entitlement - userSelectedLeave[0].pending - userSelectedLeave[0].used// refers to how many days a user is entitled for selected leave type
+    
+    const currentDate = new Date()
 
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
-        const currentDate = new Date()
         e.preventDefault()
         setApplyBtnLoading("loading")
     
@@ -200,7 +201,7 @@ function ApplyLeavePage() {
                     dateFormat='dd MMM yyyy'
                     className='border-[1px] border-secondary w-28 h-10 rounded-sm' 
                     selected={startDate} 
-                    minDate={moment().dayOfYear(1)._d}
+                    minDate={moment().year(currentDate.getFullYear() - 1).dayOfYear(1)._d}
                     onChange={(date) => handleStartDateSelection(date)} 
                 />
             </div>

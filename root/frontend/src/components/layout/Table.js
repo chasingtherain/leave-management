@@ -58,7 +58,7 @@ function Table({headerType}) {
             const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
             
             axios
-                .post(url, {userId: currentUser._id, targetLeaveHistory: targetLeaveHistory, reportingEmail: currentUser.reportingEmail})
+                .post(url, {userId: currentUser._id, userEmail: currentUser.email, targetLeaveHistory: targetLeaveHistory, reportingEmail: currentUser.reportingEmail})
                 .then(resp => {
                     fetchCurrentUserInfo(currentUser)
                     console.log(resp)
@@ -139,10 +139,16 @@ function Table({headerType}) {
         switch (status) {
             case "approved":
                 return <span className='badge badge-success py-3 text-slate-50'>{status}</span>
+            case "cancellation approved":
+                return <span className='badge badge-success py-5 text-slate-50 whitespace-pre-line'>{"cancellation\napproved"}</span>
             case "cancelled":
                 return <span className='badge badge-warning py-3 text-slate-50'>{status}</span>
             case "pending":
                 return <span className='badge badge-info py-3 text-slate-50'>{status}</span>
+            case "pending cancellation":
+                return <span className='badge badge-info py-5 text-slate-50 whitespace-pre-line'>{"pending\ncancellation"}</span>
+            case "cancellation rejected":
+                return <span className='badge badge-error py-5 text-slate-50 whitespace-pre-line'>{"cancellation\nrejected"}</span>
             case "rejected":
                 return <span className='badge badge-error py-3 text-slate-50'>{status}</span>
             default:
@@ -242,7 +248,7 @@ function Table({headerType}) {
                                     {statusBadgeSelection(leave.status)}
                                 </td>
                                 <td>
-                                    {(leave.status !== "cancelled" && leave.status !== "rejected") ?
+                                    {(leave.status === "approved" || leave.status === "pending") ?
                                     <button 
                                         id={leave._id} 
                                         name={leave.leaveType}
@@ -256,7 +262,6 @@ function Table({headerType}) {
                             </tr>
                         )
                     : <td>No upcoming leave request / 暂时无请求</td>
-
             case "history":
                 return (currentUser.leaveHistory.filter(entry => entry.startDateUnix <= currentDateUnix).length) ?
                     currentUser.leaveHistory
@@ -274,7 +279,7 @@ function Table({headerType}) {
                                         {statusBadgeSelection(leave.status)}
                                     </td>
                                     <td>
-                                    {(leave.status !== "cancelled" && leave.status !== "rejected") ?
+                                    {(leave.status === "pending" || leave.status === "approved") ?
                                     <button 
                                         id={leave._id} 
                                         name={leave.leaveType}

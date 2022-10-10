@@ -15,6 +15,9 @@ const leaveSchema = new Schema({
         type: Number,
         required: true
     },
+    prevYearEntitlement:{
+        type: Number
+    },
     pending: {
         type: Number,
         required: true
