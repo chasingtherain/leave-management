@@ -245,6 +245,7 @@ exports.cancelLeaveRequest = (req,res) => {
     const reportingEmail = req.body.reportingEmail
     const userEmail = req.body.userEmail
     const leaveHistory = req.body.targetLeaveHistory
+    const staffName = leaveHistory[0].staffName
     const leaveType = leaveHistory[0].leaveType
     const quotaUsed = leaveHistory[0].quotaUsed
     const timePeriod = leaveHistory[0].timePeriod
@@ -257,15 +258,7 @@ exports.cancelLeaveRequest = (req,res) => {
 
     console.log("cancelLeaveRequest req.body: ", req.body)
 
-    const getFirstDayOfYear = (year) => {return new Date(year, 0, 1)}
-    // current date's UNIX 
     const currentDateUnix = new Date().getTime()
-    // Current Year
-    const currentYear = new Date().getFullYear();
-    // current year's first day in unix
-    console.log(getFirstDayOfYear(currentYear).getTime());
-    const firstDayofCurrentYear = getFirstDayOfYear(currentYear).getTime()
-
 
     if (leaveStatus === "approved" && currentDateUnix >= startDate) {
         // scenario: current year's leave was approved and consumed but staff cancelled it (i.e. applied date has passed)
@@ -276,6 +269,7 @@ exports.cancelLeaveRequest = (req,res) => {
             {
                 email: reportingEmail, 
                 "staffLeave.leaveType": leaveType,
+                "staffLeave.staffName": staffName,
                 "staffLeave.timePeriod": timePeriod,
                 "staffLeave.startDateUnix": +startDateUnix,
                 "staffLeave.submittedOn": submittedOn,
@@ -285,12 +279,13 @@ exports.cancelLeaveRequest = (req,res) => {
             {
                 $set: {"staffLeave.$.status": "pending cancellation" }
             })
-        .then(()=>{
+        .then((result)=>{
+            // console.log("RO's record: ", result.staffLeave.length)
             // update staff's leave status to pending cancellation
-            User.findOneAndUpdate( 
+
+            return User.findOneAndUpdate( 
                 {
-                    _id: userId, 
-                    "leaveHistory.startDateUnix": startDateUnix,
+                    email: userEmail, 
                     "leaveHistory.leaveType": leaveType,
                     "leaveHistory.timePeriod": timePeriod,
                     "leaveHistory.quotaUsed": quotaUsed,
@@ -302,7 +297,8 @@ exports.cancelLeaveRequest = (req,res) => {
                 }
             )
         })
-        .then(()=> {
+        .then((result)=> {
+            // console.log("user's leave record: ", result)
             // send cancellation approval email to reporting 
             const cancellationEmailToReporting = {
                 to: reportingEmail,
@@ -360,6 +356,22 @@ exports.cancelLeaveRequest = (req,res) => {
                     $inc: {"leave.$.pending": -quotaUsed},
                 }
             )
+            .then(()=>{
+                return User.findOneAndUpdate( 
+                    {
+                        _id: userId, 
+                        "leaveHistory.startDateUnix": startDateUnix,
+                        "leaveHistory.leaveType": leaveType,
+                        "leaveHistory.timePeriod": timePeriod,
+                        "leaveHistory.quotaUsed": quotaUsed,
+                        "leaveHistory.status": leaveStatus,
+                        "leaveHistory.submittedOn": submittedOn,
+                    },
+                    {
+                        $set: {"leaveHistory.$.status": "cancelled" }
+                    }
+                )
+            })
             .then(() => {
                 // update reporting's leave status
                 return User.findOneAndUpdate( 
@@ -378,7 +390,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .then((result)=> {
                 console.log("updated leave status to pending cancellation for both staff and RO")
-                // console.log(result)
+                res.send("updated leave status to pending cancellation for both staff and RO")
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }

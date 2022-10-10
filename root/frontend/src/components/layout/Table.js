@@ -160,9 +160,9 @@ function Table({headerType}) {
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "approval":
-                return (currentUser.staffLeave.filter(entry => entry.status === "pending")) ?
+                return (currentUser.staffLeave.filter(entry => entry.status === "pending" || entry.status === "pending cancellation")) ?
                     currentUser.staffLeave
-                        .filter(entry => entry.status === "pending")
+                        .filter(entry => entry.status === "pending" || entry.status === "pending cancellation")
                         .sort((a,b)=> a.startDateUnix - b.startDateUnix)
                         .map((subLeave,index) => 
                         <tr>
