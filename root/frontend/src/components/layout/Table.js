@@ -78,7 +78,7 @@ function Table({headerType}) {
         {
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/${action}-leave`
 
-            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange && entry.status === "pending"))
+            const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
             console.log("targetStaffLeave: ",targetStaffLeave)
             const leaveData = {
                 staffEmail: targetStaffLeave[0].staffEmail,
@@ -96,6 +96,7 @@ function Table({headerType}) {
                 staffName: targetStaffLeave[0].staffName
             }
             console.log("leaveData: ", leaveData)
+            console.log("url: ", url)
 
             axios
                 .post(url, leaveData)
@@ -194,7 +195,11 @@ function Table({headerType}) {
             case "approvalHistory":
                 return (currentUser.staffLeave.filter(entry => entry.status === "approved" || entry.status === "rejected")) ?
                  currentUser.staffLeave
-                    .filter(entry => entry.status === "approved" || entry.status === "rejected")
+                    .filter(entry => 
+                            entry.status === "approved" || 
+                            entry.status === "rejected" || 
+                            entry.status === "cancellation approved" ||
+                            entry.status === "cancellation rejected")
                     .sort((a,b)=> b.startDateUnix - a.startDateUnix)
                     .map((subLeave,index) => 
                     <tr>
@@ -223,11 +228,11 @@ function Table({headerType}) {
                 return currentUserLeave.map((leave,index) => 
                     <tr key={index}>
                         <td>{leave.name}</td>
-                        <td>{(leave.name === "Annual Leave 年假") ? 0 : "-"}</td>
+                        <td>{(leave.name === "Annual Leave 年假") ? leave.prevYearEntitlement : "-"}</td>
                         <td>{leave.entitlement}</td>
                         <td>{leave.pending}</td>
                         <td>{leave.used}</td>
-                        <td>{leave.entitlement - leave.pending - leave.used}</td>
+                        <td>{(leave.name === "Annual Leave 年假") ? leave.entitlement - leave.pending - leave.used + leave.prevYearEntitlement : leave.entitlement - leave.pending - leave.used}</td>
                         <td>{(leave.rollover) ? "Yes" : "No"}</td>
                         <td><InfoBubble info={leave.note}/></td>
                     </tr>)

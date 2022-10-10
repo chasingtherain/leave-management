@@ -143,17 +143,20 @@ exports.approveLeave = (req,res,next) => {
     const leaveStatus = req.body.leaveStatus
     const numOfDaysTaken = req.body.numOfDaysTaken
     const submittedOn = req.body.submittedOn
-    const startDateUnix = req.body.start
-    const endDateUnix = req.body.end
-    const startDate = new Date(+(startDateUnix))
-    const endDate = new Date(+(endDateUnix))
+    const startDateUnix = new Date(req.body.start).getTime()
+    const endDateUnix = new Date(req.body.end).getTime()
+    const startDate = req.body.start
+    const endDate = req.body.end
 
     const staffName = req.body.staffName
-
+    
     const getFirstDayOfYear = (year) => {return new Date(year, 0, 1)}
     const currentYear = new Date().getFullYear();
     const firstDayofCurrentYear = getFirstDayOfYear(currentYear).getTime()
     
+    console.log("req.body: ", req.body)
+    console.log(startDateUnix, startDate, firstDayofCurrentYear, startDateUnix >= firstDayofCurrentYear)
+
     if (leaveStatus === "pending"){
         // update reporting's staffLeave
         User.findOneAndUpdate(
@@ -169,14 +172,14 @@ exports.approveLeave = (req,res,next) => {
             {$set: {"staffLeave.$.status": "approved" }}
             )
         .then((user)=>{
-            console.log(user)
+            // console.log(user)
             return user.save()
         })
         .then(() => {
             // update team calendar
             const teamCalendarRecord = new TeamCalendarRecord({
-                start: new Date(startDateUnix),
-                end: new Date(endDateUnix),
+                start: startDate,
+                end: endDate,
                 startDateUnix: startDateUnix,
                 endDateUnix: endDateUnix,
                 staffName: staffName,
@@ -344,6 +347,7 @@ exports.approveLeave = (req,res,next) => {
         // scenario: staff wants to cancel an approved leave from the prev year
 
         if (leaveType !== "Annual Leave 年假"){
+            console.log("only annual leave from prev year can be cancelled!")
             return res.status(401).send("only annual leave from prev year can be cancelled!")
         }
 
@@ -431,14 +435,81 @@ exports.rejectLeave = (req,res,next) => {
     const submittedOn = req.body.submittedOn
     console.log(req.body)
 
-    // update pending count after rejection
-    User.findOneAndUpdate({email: staffEmail, "leave.name":leaveType}, 
-        { 
-            $inc: {"leave.$.pending": -numOfDaysTaken},
-        }
-    )
-    .then(() => {
-        // update reporting's staffLeave to rejected
+    if (leaveStatus === "pending"){
+        // update pending count after rejection
+        User.findOneAndUpdate({email: staffEmail, "leave.name":leaveType}, 
+            { 
+                $inc: {"leave.$.pending": -numOfDaysTaken},
+            }
+        )
+        .then(() => {
+            // update reporting's staffLeave to rejected
+            return User.findOneAndUpdate(
+                {
+                    email: reportingEmail,
+                    "staffLeave.staffEmail": staffEmail,
+                    "staffLeave.timePeriod": dateRange,
+                    "staffLeave.quotaUsed": numOfDaysTaken,
+                    "staffLeave.leaveType": leaveType,
+                    "staffLeave.submittedOn": submittedOn,
+                },
+                {$set: {"staffLeave.$.status": "rejected" }}
+                )
+        })
+        .then((res)=>{
+            console.log("update reporting's staffLeave to rejected: ", res)
+            return User.findOneAndUpdate( // update user's leave status to rejected
+            {
+                email: staffEmail,
+                "leaveHistory.leaveType": leaveType,
+                "leaveHistory.timePeriod": dateRange,
+                "leaveHistory.quotaUsed": numOfDaysTaken,
+                "leaveHistory.submittedOn": submittedOn,
+                "leaveHistory.status": leaveStatus,
+            },
+            {$set: {"leaveHistory.$.status": "rejected" }} // rejected
+            )
+        })
+        .then(()=> {
+            // send rejection email
+
+            const rejectionEmail = {
+            to: staffEmail, //leave applier's email
+            from: 'mfachengdu@gmail.com', // Change to your verified sender
+            cc: [coveringEmail, reportingEmail], // covering and reporting's email
+            subject: `Leave Rejected 休假请求已被拒绝 - ${dateRange}`,
+            html: `
+                <div>
+                    <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been rejected.</p> 
+                        <p>For more details, do speak to your reporting officer</p>
+                </div>
+                <div>
+                    <p>您好 ${staffEmail}，您从${dateRange}的休假请求已被拒绝</p> 
+                    <p>详细细节请问主管，谢谢</p> 
+
+                </div>
+            `
+            }
+            sendgridMail
+                .send(rejectionEmail) // email to inform user and covering of leave request
+                .then(() => {
+                    res.send("status updated to rejected on user and reporting officer's table")
+                    console.log('rejection email sent to user and covering')
+                })
+                .catch((error) => {
+                    console.error("sendgrid error during rejection email: ", error)
+                    console.log("err: ", error.response.body)
+                })
+        })
+        .catch(err => console.log("pending count adjustment for rejected leave err:", err))
+    }
+    
+    if(leaveStatus === "pending cancellation"){
+        // scenario: current year's leave was approved and consumed but staff cancelled it (i.e. applied date has passed)
+        // requires RO's approval to cancel past leave
+        // no leave adjustments required
+
+         // update reporting's staffLeave to rejected
         return User.findOneAndUpdate(
             {
                 email: reportingEmail,
@@ -448,55 +519,54 @@ exports.rejectLeave = (req,res,next) => {
                 "staffLeave.leaveType": leaveType,
                 "staffLeave.submittedOn": submittedOn,
             },
-            {$set: {"staffLeave.$.status": "rejected" }}
-            )
-    })
-    .then((res)=>{
-        console.log("update reporting's staffLeave to rejected: ", res)
-        return User.findOneAndUpdate( // update user's leave status to rejected
-        {
-            email: staffEmail,
-            "leaveHistory.leaveType": leaveType,
-            "leaveHistory.timePeriod": dateRange,
-            "leaveHistory.quotaUsed": numOfDaysTaken,
-            "leaveHistory.submittedOn": submittedOn,
-            "leaveHistory.status": leaveStatus,
-        },
-        {$set: {"leaveHistory.$.status": "rejected" }} // rejected
+            {$set: {"staffLeave.$.status": "cancellation rejected" }}
         )
-    })
-    .then(()=> {
-        // send rejection email
+        .then(()=>{
+            console.log("update reporting's staffLeave to cancellation rejected: ", res)
+            return User.findOneAndUpdate( // update user's leave status to cancellation rejected
+            {
+                email: staffEmail,
+                "leaveHistory.leaveType": leaveType,
+                "leaveHistory.timePeriod": dateRange,
+                "leaveHistory.quotaUsed": numOfDaysTaken,
+                "leaveHistory.submittedOn": submittedOn,
+                "leaveHistory.status": leaveStatus,
+            },
+            {$set: {"leaveHistory.$.status": "cancellation rejected" }} // cancellation rejected
+            )
+        })
+        .then(()=>{
+            // send cancellation rejected email
 
-        const rejectionEmail = {
-        to: staffEmail, //leave applier's email
-        from: 'mfachengdu@gmail.com', // Change to your verified sender
-        cc: [coveringEmail, reportingEmail], // covering and reporting's email
-        subject: `Leave Rejected 休假请求已被拒绝 - ${dateRange}`,
-        html: `
-            <div>
-                <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been rejected.</p> 
-                    <p>For more details, do speak to your reporting officer</p>
-            </div>
-            <div>
-                <p>您好 ${staffEmail}，您从${dateRange}的休假请求已被拒绝</p> 
-                <p>详细细节请问主管，谢谢</p> 
-
-            </div>
-        `
-        }
-        sendgridMail
-            .send(rejectionEmail) // email to inform user and covering of leave request
-            .then(() => {
-                res.send("status updated to rejected on user and reporting officer's table")
-                console.log('rejection email sent to user and covering')
-            })
-            .catch((error) => {
-                console.error("sendgrid error during rejection email: ", error)
-                console.log("err: ", error.response.body)
-            })
-    })
-    .catch(err => console.log("pending and entitlement count rollback for rejected leave err:", err))
+            const cancellationRejectedEmail = {
+                to: staffEmail, //leave applier's email
+                from: 'mfachengdu@gmail.com', // Change to your verified sender
+                cc: [coveringEmail, reportingEmail], // covering and reporting's email
+                subject: `Leave Cancellation Rejected 休假请求已被拒绝 - ${dateRange}`,
+                html: `
+                    <div>
+                        <p>Hi ${staffEmail}, your request to cancel leave from <strong>${dateRange}</strong> has been rejected.</p> 
+                            <p>For more details, do speak to your reporting officer</p>
+                    </div>
+                    <div>
+                        <p>您好 ${staffEmail}，您从${dateRange}的休假取消请求已被拒绝</p> 
+                        <p>详细细节请问主管，谢谢</p> 
+    
+                    </div>
+                `
+                }
+                sendgridMail
+                    .send(cancellationRejectedEmail) // email to inform user and covering of leave request
+                    .then(() => {
+                        res.send("status updated to cancellation rejected on user and reporting officer's table")
+                        console.log('rejection email sent to user and covering')
+                    })
+                    .catch((error) => {
+                        console.error("sendgrid error during cancellation rejection email: ", error)
+                        console.log("err: ", error.response.body)
+                    })
+        })
+    }
 
 }
 
