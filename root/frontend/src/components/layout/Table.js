@@ -1,12 +1,12 @@
 import axios from 'axios'
 import React from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
 import InfoBubble from './InfoBubble'
 import { toast } from 'react-toastify'
 
 function Table({headerType}) {
-    const {currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
+    const {activeTab, currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentYear = currentDate.getFullYear()
@@ -50,11 +50,23 @@ function Table({headerType}) {
 
         const targetLeaveHistory = currentUser.leaveHistory.filter(leaveRecord => leaveRecord._id === e.target.id)
 
+        let windowContent;
+        if(activeTab === "History 历史"){
+            windowContent = `
+                Your RO will be notified, cancel approved leave? 
+                您的主管得批准这取消操作，确认取消已用的休假？
+                `
+        }
+        else {
+            windowContent = `
+            Cancel leave?
+            确认取消以上的休假？ `
+        }
+        
         if(window.confirm(`
         leave id: ${e.target.id}
-
-        Cancel leave? 
-        确认取消以上的休假？ `)){
+        ${windowContent}`
+        )){
             const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
             
             axios
@@ -74,7 +86,7 @@ function Table({headerType}) {
         const dateRange = e.target.name
         const action = e.target.value
 
-        if(window.confirm(`${action} leave? `))
+        if (window.confirm(`${action} leave? `))
         {
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/${action}-leave`
 
