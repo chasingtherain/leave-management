@@ -258,14 +258,81 @@ exports.cancelLeaveRequest = (req,res) => {
     console.log("cancelLeaveRequest req.body: ", req.body)
 
     const getFirstDayOfYear = (year) => {return new Date(year, 0, 1)}
-      
+    // current date's UNIX 
+    const currentDateUnix = new Date().getTime()
     // Current Year
     const currentYear = new Date().getFullYear();
     // current year's first day in unix
     console.log(getFirstDayOfYear(currentYear).getTime());
     const firstDayofCurrentYear = getFirstDayOfYear(currentYear).getTime()
 
-    if (leaveStatus === "approved" && startDate >= firstDayofCurrentYear) {
+
+    if (leaveStatus === "approved" && currentDateUnix >= startDate) {
+        // scenario: current year's leave was approved and consumed but staff cancelled it (i.e. applied date has passed)
+        // requires RO's approval to cancel past leave
+
+        // update reporting's leave status to pending cancellation
+        User.findOneAndUpdate( 
+            {
+                email: reportingEmail, 
+                "staffLeave.leaveType": leaveType,
+                "staffLeave.timePeriod": timePeriod,
+                "staffLeave.startDateUnix": +startDateUnix,
+                "staffLeave.submittedOn": submittedOn,
+                "staffLeave.quotaUsed": quotaUsed,
+                "staffLeave.status": leaveStatus,
+            },
+            {
+                $set: {"staffLeave.$.status": "pending cancellation" }
+            })
+        .then(()=>{
+            // update staff's leave status to pending cancellation
+            User.findOneAndUpdate( 
+                {
+                    _id: userId, 
+                    "leaveHistory.startDateUnix": startDateUnix,
+                    "leaveHistory.leaveType": leaveType,
+                    "leaveHistory.timePeriod": timePeriod,
+                    "leaveHistory.quotaUsed": quotaUsed,
+                    "leaveHistory.status": leaveStatus,
+                    "leaveHistory.submittedOn": submittedOn,
+                },
+                {
+                    $set: {"leaveHistory.$.status": "pending cancellation" }
+                }
+            )
+        })
+        .then(()=> {
+            // send cancellation approval email to reporting 
+            const cancellationEmailToReporting = {
+                to: reportingEmail,
+                from: 'mfachengdu@gmail.com',
+                subject: `Cancellation of approved leave by ${userEmail} - ${startDate} to ${endDate} `,
+                html: `
+                    <div>
+                        <p>Hi ${reportingEmail}, </p> 
+                        <p>${userEmail} would like to cancel an approved leave request from ${startDate} to ${endDate}</p>
+                        <p>Log in to ${process.env.REACT_APP_FRONTENDURL} to approve or reject this cancellation request. Thank you. </p>
+                    </div>
+                `
+            }
+            sendgridMail
+                .send(cancellationEmailToReporting) // email to inform reporting of user's leave request
+                .then(() => {
+                    console.log('cancellation email for approved leave sent to RO')
+                    res.send("updated leave status to pending cancellation")
+                })
+                .catch((error) => {
+                    console.error("sendgrid error when sending cancellation email for approved leave to RO: ", error)
+                })
+        })
+        .catch(err => console.log("pending cancellation err:", err))
+    }
+
+    else if(leaveStatus === "approved" && currentDateUnix < startDate){
+        // scenario: leave was approved but not consumed yet (i.e. date has not passed)
+        // do not require RO to approve cancellation
+
         User
             .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
                 { // subtract used count after cancellation
@@ -283,33 +350,13 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
-    else if(leaveStatus === "approved" && startDate < firstDayofCurrentYear){
-        console.log("staff cancelled last year's leave!")
-
-        User.findOneAndUpdate( 
-            {
-                _id: userId, 
-                "leaveHistory.startDateUnix": startDateUnix,
-                "leaveHistory.leaveType": leaveType,
-                "leaveHistory.timePeriod": timePeriod,
-                "leaveHistory.quotaUsed": quotaUsed,
-                "leaveHistory.status": leaveStatus,
-                "leaveHistory.submittedOn": submittedOn,
-            },
-            {   // update staff's leave status to pending cancellation
-                $set: {"leaveHistory.$.status": "pending cancellation" }
-            }
-        )
-        .then(result => {
-
-            console.log(result)
-        })
-        .catch(err => console.log("pending and entitlement count rollback err:", err))
-    }
     else{
+        // scenario: leave was not approved and not consumed yet (i.e. date has not passed)
+        // do not require RO approval to cancel leave
+
         User
             .findOneAndUpdate({_id: userId, "leave.name":leaveType}, 
-                { // update pending and entitlement count after cancellation
+                { // update pending count after cancellation
                     $inc: {"leave.$.pending": -quotaUsed},
                 }
             )
@@ -326,7 +373,7 @@ exports.cancelLeaveRequest = (req,res) => {
                         "staffLeave.status": leaveStatus,
                     },
                     {
-                        $set: {"staffLeave.$.status": "pending cancellation" }
+                        $set: {"staffLeave.$.status": "cancelled" }
                     })
             })
             .then((result)=> {
@@ -335,77 +382,4 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
-
-    if (startDate >= firstDayofCurrentYear){
-        // update user's leave status to cancelled for current year leave cancellation
-        User.findOneAndUpdate( 
-                {
-                    _id: userId, 
-                    "leaveHistory.startDateUnix": startDateUnix,
-                    "leaveHistory.leaveType": leaveType,
-                    "leaveHistory.timePeriod": timePeriod,
-                    "leaveHistory.quotaUsed": quotaUsed,
-                    "leaveHistory.status": leaveStatus,
-                    "leaveHistory.submittedOn": submittedOn,
-                },
-                {
-                    $set: {"leaveHistory.$.status": "cancelled" }
-                }
-            )
-            .then((result) => {
-                // console.log(result)
-                console.log("updated user's leave status to cancelled")
-                
-                // update reporting's leave status
-                User.findOneAndUpdate( 
-                    {
-                        email: reportingEmail, 
-                        "staffLeave.leaveType": leaveType,
-                        "staffLeave.timePeriod": timePeriod,
-                        "staffLeave.startDateUnix": +startDateUnix,
-                        "staffLeave.submittedOn": submittedOn,
-                        "staffLeave.quotaUsed": quotaUsed,
-                        "staffLeave.status": leaveStatus,
-                    },
-                    {
-                        $set: {"staffLeave.$.status": "cancelled" }
-                    }
-                )
-                .then((result) => {
-                    // console.log(result)
-                    console.log("updated reporting's leave status to cancelled")
-                    res.send("updated reporting's leave status to cancelled")
-                })
-                .catch(err => console.log("update staffLeave status err: ", err))
-            })
-            .catch(err => console.log(err))
-    }
-
-    else {
-        // send cancellation approval email to reporting 
-        const cancellationEmailToReporting = {
-            to: reportingEmail,
-            from: 'mfachengdu@gmail.com',
-            subject: `Cancellation of approved leave by ${userEmail} - ${startDate} to ${endDate} `,
-            html: `
-                <div>
-                    <p>Hi ${reportingEmail}, </p> 
-                    <p>${userEmail} would like to cancel an approved leave request from ${startDate} to ${endDate}</p>
-                    <p>Log in to ${process.env.REACT_APP_FRONTENDURL} to approve or reject this cancellation request. Thank you. </p>
-                </div>
-            `
-            }
-            sendgridMail
-                .send(cancellationEmailToReporting) // email to inform reporting of user's leave request
-                .then(() => {
-                    console.log('cancellation email sent to reporting')
-                    res.send("updated leave status to pending cancellation")
-                })
-                .catch((error) => {
-                    console.error("sendgrid error when sending cancellation email to reporting: ", error)
-                })
-    }
-    
-
-
 }
