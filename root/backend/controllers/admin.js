@@ -659,7 +659,7 @@ exports.setWorkDay = (req,res,next) => {
         {upsert: true}
     )
     .then((result)=>{
-        console.log(result)
+        res.send("set work day successful")
     })
     .catch((err)=> console.log(err))
 
