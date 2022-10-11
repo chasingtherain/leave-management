@@ -385,7 +385,7 @@ exports.approveLeave = (req,res,next) => {
         .then((res)=>{
             console.log("updated staff's status to cancellation approved")
 
-            // increment prevYearEntitlement count
+            // increment Annual Leave 年额带过 count
             return User.findOneAndUpdate({email: staffEmail, "leave.name": `Annual Leave 年额带过 (${currentYear-1})`}, 
             { 
                 $inc: {"leave.$.entitlement": numOfDaysTaken},

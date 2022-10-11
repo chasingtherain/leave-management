@@ -13,14 +13,14 @@ function Table({headerType}) {
     const currentUserLeave = currentUser.leave
 
     // table headers
-    const requestTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
-    const historyTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "No. of calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Status 状态", "Action 更改" ]
-    const approvalTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status", "Action" ]
-    const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "No. of calendar days", "Submitted on", "Quota used", "Status" ]
+    const requestTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Document 文件", "Status 状态", "Action 更改" ]
+    const historyTableHeader = ["ID", "Leave Type 假性", "Period 时间段", "calendar days 工作日数", "Submitted on 提交日期", "Quota used 使用额", "Document 文件", "Status 状态", "Action 更改" ]
+    const approvalTableHeader = ["Staff", "Leave Type", "Period", "calendar days", "Submitted on", "Quota used", "Document 文件", "Status", "Action" ]
+    const approvalHistoryTableHeader = ["Staff", "Leave Type", "Period", "calendar days", "Submitted on", "Quota used", "Document 文件", "Status" ]
     const entitlementTableHeader = ["Leave Type 假性", `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用","Note 备注"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
-    const dashboardTableHeader = ["Name","Email","No. of Annual Leave left"]
+    const dashboardTableHeader = ["Name","Email","Annual Leave left"]
     
     const changeLogData = [
         ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
@@ -185,6 +185,7 @@ function Table({headerType}) {
                             <td>{subLeave.quotaUsed}</td>
                             <td>{subLeave.submittedOn}</td>
                             <td>{subLeave.quotaUsed}</td>
+                            <td>pdf</td>
                             <td>{statusBadgeSelection(subLeave.status)}</td>
                             <td>
                                 <button 
@@ -221,6 +222,7 @@ function Table({headerType}) {
                         <td>{subLeave.quotaUsed}</td>
                         <td>{subLeave.submittedOn}</td>
                         <td>{subLeave.quotaUsed}</td>
+                        <td>pdf</td>
                         <td>{statusBadgeSelection(subLeave.status)}</td>
                     </tr>
                 )
@@ -259,6 +261,7 @@ function Table({headerType}) {
                                 <td>{leave.quotaUsed}</td>
                                 <td>{leave.submittedOn}</td>
                                 <td>{leave.quotaUsed}</td>
+                                <td>pdf</td>
                                 <td>
                                     {statusBadgeSelection(leave.status)}
                                 </td>
@@ -290,6 +293,7 @@ function Table({headerType}) {
                                     <td>{leave.quotaUsed}</td>
                                     <td>{leave.submittedOn}</td>
                                     <td>{leave.quotaUsed}</td>
+                                    <td>pdf</td>
                                     <td>
                                         {statusBadgeSelection(leave.status)}
                                     </td>

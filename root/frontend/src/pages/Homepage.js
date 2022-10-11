@@ -22,7 +22,7 @@ function Homepage() {
                 </>)
             case "History 历史":
                 return (<>
-                    <h1 className='text-xl mt-20 mb-6 text-center'>Leave History 休假历史</h1>
+                    <h1 className='text-xl my-6 text-center'>Leave History 休假历史</h1>
                     <Table headerType="history"/>
                 </>)
             default:
