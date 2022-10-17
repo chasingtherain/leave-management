@@ -523,11 +523,11 @@ exports.rejectLeave = (req,res,next) => {
                 "staffLeave.leaveType": leaveType,
                 "staffLeave.submittedOn": submittedOn,
             },
-            {$set: {"staffLeave.$.status": "cancellation rejected" }}
+            {$set: {"staffLeave.$.status": "approved" }}
         )
         .then(()=>{
-            console.log("update reporting's staffLeave to cancellation rejected: ", res)
-            return User.findOneAndUpdate( // update user's leave status to cancellation rejected
+            console.log("update reporting's staffLeave back to approved: ", res)
+            return User.findOneAndUpdate( // update user's leave status back to approved to provide flexibility for cancellation reapplication
             {
                 email: staffEmail,
                 "leaveHistory.leaveType": leaveType,
@@ -536,7 +536,7 @@ exports.rejectLeave = (req,res,next) => {
                 "leaveHistory.submittedOn": submittedOn,
                 "leaveHistory.status": leaveStatus,
             },
-            {$set: {"leaveHistory.$.status": "cancellation rejected" }} // cancellation rejected
+            {$set: {"leaveHistory.$.status": "approved" }} 
             )
         })
         .then(()=>{
@@ -550,7 +550,7 @@ exports.rejectLeave = (req,res,next) => {
                 html: `
                     <div>
                         <p>Hi ${staffEmail}, your request to cancel leave from <strong>${dateRange}</strong> has been rejected.</p> 
-                            <p>For more details, do speak to your reporting officer</p>
+                            <p>For more details, please speak to your reporting officer</p>
                     </div>
                     <div>
                         <p>您好 ${staffEmail}，您从${dateRange}的休假取消请求已被拒绝</p> 
@@ -562,11 +562,11 @@ exports.rejectLeave = (req,res,next) => {
                 sendgridMail
                     .send(cancellationRejectedEmail) // email to inform user and covering of leave request
                     .then(() => {
-                        res.send("status updated to cancellation rejected on user and reporting officer's table")
-                        console.log('rejection email sent to user and covering')
+                        res.send("status updated back to approved on user and reporting officer's table")
+                        console.log('cancellation rejected email sent to user and covering')
                     })
                     .catch((error) => {
-                        console.error("sendgrid error during cancellation rejection email: ", error)
+                        console.error("sendgrid error during cancellation rejected email: ", error)
                         console.log("err: ", error.response.body)
                     })
         })
