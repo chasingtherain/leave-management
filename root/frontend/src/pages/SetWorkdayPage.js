@@ -4,27 +4,29 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import DatePanel from 'react-multi-date-picker/plugins/date_panel';
 import { useMainContext } from '../hooks/useMainContext';
+import Loading from '../components/Loading';
 function SetWorkdayPage() {
     const {holidaySelection, setHolidaySelection, workDaySelection, setWorkDaySelection} = useMainContext()
     const date = new Date()
     const datePanel = new DateObject()
 
-    const [activeUpdateButton, setActiveUpdateButton] = useState(true)
+    const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading, setUpdateBtnLoading] = useState()
+    const [isLoading, setIsLoading] = useState(false)
 
     console.log(new DateObject().add(2, "days"))
     console.log(datePanel.format('DD MMM YYYY'))
 
     const handleWorkDaySelection = (date) => {
         setWorkDaySelection(date)
-        setActiveUpdateButton(false)
+        setDisableUpdateButton(false)
         console.log(workDaySelection)
         console.log(date)
     }
 
     const handleHolidaySelection = (date) => {
         setHolidaySelection(date)
-        setActiveUpdateButton(false)
+        setDisableUpdateButton(false)
         console.log(date)
     }
 
@@ -36,14 +38,19 @@ function SetWorkdayPage() {
             entity: "chengdu" 
         }
         if(window.confirm("Update changes?")){
-            axios
-                .post(url, workDayData)
-                .then((res => {
-                    console.log(res)
-                    toast.success("Update successful")
-                }))
-                .catch(err => console.log(err))
-            setActiveUpdateButton(true)
+            setIsLoading(true)
+
+            setTimeout(()=> {
+                axios
+                    .post(url, workDayData)
+                    .then((res => {
+                        setIsLoading(false)
+                        console.log(res)
+                        toast.success("Update successful")
+                    }))
+                    .catch(err => console.log(err))
+            }, 1000)
+            setDisableUpdateButton(true)
         }
     }
 
@@ -80,13 +87,13 @@ function SetWorkdayPage() {
                 <button 
                     type="submit" 
                     className={`btn text-white px-32 text-center text-base font-semibold shadow-md rounded-lg mt-6 ${updateBtnLoading}`}
-                    disabled={activeUpdateButton}
+                    disabled={disableUpdateButton}
                     onClick={handleSubmitChange}
                 >
                     Update
                 </button>
         </div>
-
+        {isLoading && <Loading/>}
     </div>
     )
 }

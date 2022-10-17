@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useMainContext } from '../hooks/useMainContext'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import Loading from '../components/Loading'
 
 function UpdateUserInfoPage() {
     const {currentEditUser, fetchUserList, validateEmail} = useMainContext()
@@ -12,12 +13,14 @@ function UpdateUserInfoPage() {
     const [activeUpdateButton, setActiveUpdateButton] = useState(true)
     const [updateBtnLoading, setUpdateBtnLoading] = useState()
     const [deleteBtnLoading, setDeleteBtnLoading] = useState()
+    const [isLoading, setIsLoading] = useState(false)
 
     const navigate = useNavigate()
 
     const handleDeleteClick = () => {
         setDeleteBtnLoading("loading")
        if(window.confirm("Delete user?")){
+           setIsLoading(true)
            const deleteUserData = {
                email: currentEditUser.email
            }
@@ -25,6 +28,7 @@ function UpdateUserInfoPage() {
            axios
             .post(`${process.env.REACT_APP_BACKENDURL}/admin/delete-user`, deleteUserData)
             .then((resp) => {
+                setIsLoading(false)
                 console.log(resp)
                 fetchUserList()
                 navigate('/user-management')
@@ -61,6 +65,7 @@ function UpdateUserInfoPage() {
                 setUpdateBtnLoading("")
                 return toast.error("Invalid covering email!")
             }
+            setIsLoading(true)
             const updateData = {
                 userEmail: currentEditUser.email,
                 newReportingEmail: newReportingEmail,
@@ -70,6 +75,7 @@ function UpdateUserInfoPage() {
             axios
             .post(url, updateData)
             .then(resp => {
+                setIsLoading(false)
                 fetchUserList()
                 console.log(resp)
                 toast.success("Update successful")
@@ -140,6 +146,7 @@ function UpdateUserInfoPage() {
                         Delete
                 </button>
             </div>
+            {isLoading && <Loading/>}
         </form>
     )
 }

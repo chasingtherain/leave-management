@@ -4,6 +4,7 @@ import { useMainContext } from '../hooks/useMainContext'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../components/Loading';
 
 function CreateUserPage() {
     const {fetchUserList, isAdmin, validateEmail} = useMainContext()
@@ -14,10 +15,12 @@ function CreateUserPage() {
     const [reportingEmail, setReportingEmail] = useState()
     const [coveringEmail, setCoveringEmail] = useState()
     const [createUserBtnLoading, setCreateUserBtnLoading] = useState()
+    const [isLoading, setIsLoading] = useState(false)
 
     const navigate = useNavigate()
 
     const validateAndSubmitData = async (url, formData) => {
+        
         setCreateUserBtnLoading("loading")
         if(!validateEmail(email)){
             setCreateUserBtnLoading("")
@@ -44,9 +47,13 @@ function CreateUserPage() {
             return toast.error("Fill in all blanks!")
         }
 
+        // starts loading screen
+        setIsLoading(true)
+
         axios
             .post(url, formData)
             .then(result => {
+                setIsLoading(false)
                 if(result.status === 200) {
                     fetchUserList()
                     toast.success("User Created!")
@@ -109,6 +116,7 @@ function CreateUserPage() {
                     <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
                     <button type="submit" className={`btn mt-8 rounded-sm ${createUserBtnLoading}`}>Create User</button>
                 </form>
+                {isLoading && <Loading/>}
             </div>
         </div>
         )

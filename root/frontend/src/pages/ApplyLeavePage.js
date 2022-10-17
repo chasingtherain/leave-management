@@ -16,6 +16,7 @@ function ApplyLeavePage() {
     const currentDate = new Date()
 
     const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name))
+    const [isLoading, setIsLoading] = useState(false)
 
     const navigate = useNavigate()
 
@@ -40,7 +41,7 @@ function ApplyLeavePage() {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`
         e.preventDefault()
         setApplyBtnLoading("loading")
-    
+        
         if(!currentLeaveSelection){
             setApplyBtnLoading("")
             return toast.error("leave type not selected")
@@ -66,6 +67,10 @@ function ApplyLeavePage() {
             setApplyBtnLoading("")
             return toast.error("Checkbox not checked!")
         }
+        
+        // loads loading screen
+        setIsLoading(true)
+
         const applyLeaveFormData = {
             userId: currentUser._id,
             staffName: currentUser.name,
@@ -85,6 +90,7 @@ function ApplyLeavePage() {
         axios
             .post(url,applyLeaveFormData)
             .then((res) =>{
+                setIsLoading(false)
                 console.log(res)
                 if(res.status === 200) {
                     // call user API to get most updated info

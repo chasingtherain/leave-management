@@ -1,12 +1,14 @@
 import axios from 'axios'
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMainContext } from '../../hooks/useMainContext'
 import InfoBubble from './InfoBubble'
 import { toast } from 'react-toastify'
+import Loading from '../Loading'
 
 function Table({headerType}) {
     const {activeTab, currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
+    const [isLoading, setIsLoading] = useState(false)
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentYear = currentDate.getFullYear()
@@ -67,11 +69,12 @@ function Table({headerType}) {
         leave id: ${e.target.id}
         ${windowContent}`
         )){
+            setIsLoading(true)
             const url = `${process.env.REACT_APP_BACKENDURL}/user/cancelLeave`
-            
             axios
                 .post(url, {userId: currentUser._id, userEmail: currentUser.email, targetLeaveHistory: targetLeaveHistory, reportingEmail: currentUser.reportingEmail})
                 .then(resp => {
+                    setIsLoading(false)
                     fetchCurrentUserInfo(currentUser)
                     console.log(resp)
                     toast.success("Leave Cancelled")
@@ -88,6 +91,7 @@ function Table({headerType}) {
 
         if (window.confirm(`${action} leave? `))
         {
+            setIsLoading(true)
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/${action}-leave`
 
             const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
@@ -110,11 +114,11 @@ function Table({headerType}) {
             }
             console.log("leaveData: ", leaveData)
             console.log("url: ", url)
-
             axios
                 .post(url, leaveData)
                 .then(resp => {
                     console.log(resp)
+                    setIsLoading(false)
                     if (action === "Approve") toast.success(`Leave approved`)
                     else toast.success(`Leave rejected`)
 
@@ -170,11 +174,11 @@ function Table({headerType}) {
                 break;
         }
     }
-
+    console.log(currentUser.staffLeave.filter(entry => entry.status === "pending" || entry.status === "pending cancellation"))
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "approval":
-                return (currentUser.staffLeave.filter(entry => entry.status === "pending" || entry.status === "pending cancellation")) ?
+                return (currentUser.staffLeave.filter(entry => entry.status === "pending" || entry.status === "pending cancellation")).length ?
                     currentUser.staffLeave
                         .filter(entry => entry.status === "pending" || entry.status === "pending cancellation")
                         .sort((a,b)=> a.startDateUnix - b.startDateUnix)
@@ -205,9 +209,9 @@ function Table({headerType}) {
                                 </button>
                             </td>
                         </tr>
-                ) : <p className='text-center w-screen mt-8'>No pending leave applications</p>
+                ) : <td>No leave application to approve. Great!</td>
             case "approvalHistory":
-                return (currentUser.staffLeave.filter(entry => entry.status === "approved" || entry.status === "rejected")) ?
+                return (currentUser.staffLeave.filter(entry => entry.status === "approved" || entry.status === "rejected").length) ?
                  currentUser.staffLeave
                     .filter(entry => 
                             entry.status === "approved" || 
@@ -227,7 +231,7 @@ function Table({headerType}) {
                         <td>{statusBadgeSelection(subLeave.status)}</td>
                     </tr>
                 )
-                : <p className='text-center w-screen mt-8'>No approval leave history yet</p>
+                : <td>No approval leave history yet</td>
             case "change-log":
                 return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "dashboard":
@@ -352,6 +356,7 @@ function Table({headerType}) {
                 {userList.length > 0 && tableDataSelection(headerType)}
             </tbody>
         </table>
+        {isLoading && <Loading/>}
     </div>
     )
 }
