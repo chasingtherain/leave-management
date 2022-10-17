@@ -105,7 +105,8 @@ function Table({headerType}) {
                 endDateUnix: targetStaffLeave[0].endDateUnix,
                 start: new Date(targetStaffLeave[0].startDateUnix),
                 end: new Date(targetStaffLeave[0].endDateUnix),
-                staffName: targetStaffLeave[0].staffName
+                staffName: targetStaffLeave[0].staffName,
+                leaveClassification: targetStaffLeave[0].leaveClassification
             }
             console.log("leaveData: ", leaveData)
             console.log("url: ", url)

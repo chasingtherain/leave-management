@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Select from '../components/layout/Select'
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -14,7 +14,6 @@ function ApplyLeavePage() {
     const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
 
     const currentDate = new Date()
-    const currentYear = currentDate.getFullYear()
 
     const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name))
 
@@ -32,7 +31,7 @@ function ApplyLeavePage() {
             .filter(entry => entry.status === "pending" || entry.status === "approved")
             .map(entry => +(entry.startDateUnix)))
     const [applyBtnLoading, setApplyBtnLoading] = useState("")
-    console.log(currentUser.leave[0].prevYearEntitlement)
+
     const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
 
     const numOfSelectedLeave = userSelectedLeave[0].entitlement - userSelectedLeave[0].pending - userSelectedLeave[0].used// refers to how many days a user is entitled for selected leave type
@@ -78,9 +77,9 @@ function ApplyLeavePage() {
             reportingEmail: currentUser.reportingEmail,
             remarks: remarks,
             leaveType: currentLeaveSelection,
-            numOfDaysTaken: numOfDaysApplied
-            // fileUpload: TBC
-            // status: pending, TBC
+            leaveClassification: startDateRadioSelection, // am, pm or full day
+            numOfDaysTaken: numOfDaysApplied,
+            file: uploadedFileData
         }
         console.log("applyLeaveFormData: ", applyLeaveFormData)
         axios
@@ -182,6 +181,14 @@ function ApplyLeavePage() {
 
     }
 
+    let uploadedFileData = new FormData()
+    const onFileChange = (e) => {
+
+        if(e.target.files[0]){
+            uploadedFileData.append('file',e.target.files[0])
+        }
+        console.log(uploadedFileData)
+    }
 
   return (
     <form className="w-full flex flex-col justify-start items-center" onSubmit={validateAndSubmitLeaveApplication}>
@@ -248,10 +255,11 @@ function ApplyLeavePage() {
                 <label htmlFor="upload" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
                 <p className='text-xs'> MC is compulsory / 病假单必上传</p>
                 <input 
-                    id='upload'
-                    name="upload"
+                    id='file'
+                    name="file"
                     type="file" 
                     className="text-center text-sm mt-2"
+                    onChange={onFileChange}
                 />
             </div>
             <div className="my-4">

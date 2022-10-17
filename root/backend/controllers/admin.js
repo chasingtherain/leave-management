@@ -17,17 +17,17 @@ sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 const chengduLrsLeaveScheme = [
     new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: `Annual Leave 年额带过 (${currentYear-1})`, type:"prevYearAnnual", entitlement: 0, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
-    new Leave({name: "Compassionate Leave 慈悲假", type:"compassionate", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Death of spouse, parents, children, parents-in-law: 3 days\n own/spouse's grandparents, own siblings: 1 day \n 配偶、父母、子女、岳父母死亡: 3天\n 自己/配偶的祖父母、自己的兄弟姐妹: 1天"}),
+    new Leave({name: "Compassionate Leave 丧假", type:"compassionate", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Death of spouse, parents, children, parents-in-law: 3 days\n own/spouse's grandparents, own siblings: 1 day \n 配偶、父母、子女、岳父母死亡: 3天\n 自己/配偶的祖父母、自己的兄弟姐妹: 1天"}),
     new Leave({name: "Medical leave 病假", type:"medical", entitlement: 30, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: "Hospitalisation leave 住院假", type:"hospitalisation", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "As prescribed by doctor\n按医生规定"}),
-    new Leave({name: "Marriage Leave", type:"marriage", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "For newly married staff\n新婚"}),
+    new Leave({name: "Marriage Leave 婚假", type:"marriage", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "For newly married staff\n新婚"}),
     new Leave({name: "Maternity leave 产假", type:"maternity", entitlement: 158, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "15 days have to be taken before delivery\n分娩前必须服用15天"}),
     new Leave({name: "Miscarriage Leave 流产假", type:"miscarriage", entitlement: 45, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Within 3 months of pregnancy: 30 days\nBetween 3 to 7 months: 45 days\n after 7 months: 15 days\n3个月内流产: 30天\n3至7个月内流产: 45天\n 7个月后流产: 15天"}),
     new Leave({name: "Natal Leave 受精相关假", type:"natal", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "As prescribed by doctor\n按医生规定"}),
     new Leave({name: "Paternity Leave 陪产假", type:"paternity", entitlement: 20, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Male staff has to take leave within first week of child's birth\n 员工(男)必须在孩子出生第一周内用"}),
     new Leave({name: "Unpaid Leave 无薪假", type:"unpaid", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: "Childcare Leave 育儿假", type:"childcare", entitlement: 10, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Only for staff with kids 3 years old and below\n仅限带 3 岁及以下儿童的员工"}),
-    new Leave({name: "Women's Day 妇女节假", type:"womenDay", entitlement: 0.5, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Can be taken on or after International Women's Day\n可在国际妇女节当天或之后休假"}),
+    new Leave({name: "Women's Day 三、八妇女节", type:"womenDay", entitlement: 0.5, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Can be taken on or after International Women's Day\n可在国际妇女节当天或之后休假"}),
 ]
 
 exports.postCreateUser = (req,res,next) => {
@@ -149,6 +149,7 @@ exports.approveLeave = (req,res,next) => {
     const endDateUnix = new Date(req.body.end).getTime()
     const startDate = req.body.start
     const endDate = req.body.end
+    const leaveClassification = req.body.leaveClassification
 
     const staffName = req.body.staffName
     
@@ -159,7 +160,8 @@ exports.approveLeave = (req,res,next) => {
     console.log("req.body: ", req.body)
     console.log(startDateUnix, startDate, firstDayofCurrentYear, startDateUnix >= firstDayofCurrentYear)
 
-    if (leaveStatus === "pending"){
+    if (leaveStatus === "pending"){ //scenario: normal leave application flow
+
         // update reporting's staffLeave
         User.findOneAndUpdate(
             {
@@ -185,7 +187,7 @@ exports.approveLeave = (req,res,next) => {
                 startDateUnix: startDateUnix,
                 endDateUnix: endDateUnix,
                 staffName: staffName,
-                title: `${staffName} on leave`,
+                title: `${staffName} ${leaveClassification} leave`,
                 status: "approved"
             })
             // console.log("teamCalendarRecord:", teamCalendarRecord)
@@ -227,7 +229,7 @@ exports.approveLeave = (req,res,next) => {
                         // send approval email 
                         const approvalEmail = {
                             to: staffEmail, //leave applier's email
-                            from: 'mfachengdu@gmail.com', // Change to your verified sender
+                            from: 'mfachengdu@gmail.com',
                             cc: [coveringEmail, reportingEmail],
                             subject: `Leave Approved 休假请求已获批准 - ${dateRange}`,
                             html: `
@@ -320,7 +322,7 @@ exports.approveLeave = (req,res,next) => {
             // send cancellation approval email 
             const cancellationApprovalEmail = {
                 to: staffEmail, //leave applier's email
-                from: 'mfachengdu@gmail.com', // Change to your verified sender
+                from: 'mfachengdu@gmail.com',
                 cc: [coveringEmail, reportingEmail],
                 subject: `Leave Cancellation Approved 休假请求取消已获批准 - ${dateRange}`,
                 html: `

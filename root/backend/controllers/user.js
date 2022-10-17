@@ -107,9 +107,11 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         const coveringEmail = req.body.coveringEmail
         const reportingEmail = req.body.reportingEmail
         const staffName = req.body.staffName
+        const file = req.body.file
         const remarks = req.body.remarks
         const leaveType = req.body.leaveType
         const numOfDaysTaken = req.body.numOfDaysTaken
+        const leaveClassification = req.body.leaveClassification
         const dateOfApplication = moment(req.body.dateOfApplication).format("DD MMM YYYY")
         const startDate = moment(req.body.startDate).format("DD MMM YYYY")
         const endDate = moment(req.body.endDate).format("DD MMM YYYY")
@@ -130,6 +132,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 quotaUsed: numOfDaysTaken,
                 coveringEmail: coveringEmail,
                 reportingEmail: reportingEmail,
+                leaveClassification: leaveClassification,
                 remarks: remarks,
                 status: "pending",
                 year: date.getFullYear()
@@ -165,6 +168,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 staffName: req.body.staffName,
                 submittedOn: dateOfApplication,
                 quotaUsed: numOfDaysTaken,
+                leaveClassification: leaveClassification,
                 remarks: remarks,
                 status: "pending",
                 year: date.getFullYear()

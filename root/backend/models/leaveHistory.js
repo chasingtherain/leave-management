@@ -46,6 +46,10 @@ const leaveHistorySchema = new Schema({
         type: String,
         required: true
     },
+    leaveClassification: {
+        type: String,
+        required: true
+    },
     remarks: {
         type: String,
         required: true

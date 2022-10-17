@@ -112,7 +112,7 @@ exports.postChangePassword = (req,res,next) => {
         .then(result => {
             sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
             const msg = {
-            to: 'junpeng94@gmail.com', // Change to your recipient
+            to: email, // Change to your recipient
             from: 'mfachengdu@gmail.com', // Change to your verified sender
             subject: 'Password Reset',
             html: `
