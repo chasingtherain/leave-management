@@ -13,6 +13,22 @@ function TeamCalendar() {
     moment.tz.setDefault('Asia/Singapore')
     const localizer = momentLocalizer(moment)
 
+    const eventPropGetter = (event) => {
+        let backgroundColor;
+        console.log(event)
+        switch (event.title) {
+            case "Holiday 公休":
+                backgroundColor = '#37C399'
+                break;
+            case "Workday 补休":
+                backgroundColor = '#F77272'
+                break;
+            default:
+                backgroundColor = '#3ABEF8';
+        }
+        return { style: { backgroundColor } }
+    }
+
     return (
         <div className="flex flex-col justify-start items-center mt-[3%]">
             <Calendar
@@ -23,6 +39,7 @@ function TeamCalendar() {
             showAllEvents
             style={{ height: 700, width: "80%"}}
             view='month' views={['month']}
+            eventPropGetter={eventPropGetter}
             />
         </div>
     )
