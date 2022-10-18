@@ -156,19 +156,19 @@ function Table({headerType}) {
     const statusBadgeSelection = (status) => {
         switch (status) {
             case "approved":
-                return <span className='badge badge-success py-3 text-slate-50'>{status}</span>
+                return <span className='badge badge-success py-3 text-white font-semibold'>{status.toUpperCase()}</span>
             case "cancellation approved":
-                return <span className='badge badge-success py-5 text-slate-50 whitespace-pre-line'>{"cancellation\napproved"}</span>
+                return <span className='badge badge-success py-5 text-white font-semibold whitespace-pre-line'>{"CANCELLATION\nAPPROVED"}</span>
             case "cancelled":
-                return <span className='badge badge-warning py-3 text-slate-50'>{status}</span>
+                return <span className='badge badge-warning py-3 text-white font-semibold'>{status.toUpperCase()}</span>
             case "pending":
-                return <span className='badge badge-info py-3 text-slate-50'>{status}</span>
+                return <span className='badge badge-info py-3 text-white font-semibold'>{status.toUpperCase()}</span>
             case "pending cancellation":
-                return <span className='badge badge-info py-5 text-slate-50 whitespace-pre-line'>{"pending\ncancellation"}</span>
+                return <span className='badge badge-info py-5 text-white font-semibold whitespace-pre-line'>{"PENDING\nCANCELLATION"}</span>
             case "cancellation rejected":
-                return <span className='badge badge-error py-5 text-slate-50 whitespace-pre-line'>{"cancellation\nrejected"}</span>
+                return <span className='badge badge-error py-5 text-white font-semibold whitespace-pre-line'>{"cancellation\nrejected"}</span>
             case "rejected":
-                return <span className='badge badge-error py-3 text-slate-50'>{status}</span>
+                return <span className='badge badge-error py-3 text-white font-semibold'>{status.toUpperCase()}</span>
             default:
                 console.log("invalid status header provided!")
                 break;
