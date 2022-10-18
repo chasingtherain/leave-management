@@ -6,43 +6,50 @@ import DatePanel from 'react-multi-date-picker/plugins/date_panel';
 import { useMainContext } from '../hooks/useMainContext';
 import Loading from '../components/Loading';
 function SetWorkdayPage() {
-    const {holidaySelection, setHolidaySelection, workDaySelection, setWorkDaySelection} = useMainContext()
+    const {currentHolidaySelection, setCurrentHolidaySelection, currentWorkdaySelection, setCurrentWorkdaySelection} = useMainContext()
     const date = new Date()
     const datePanel = new DateObject()
 
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading, setUpdateBtnLoading] = useState()
     const [isLoading, setIsLoading] = useState(false)
+    const [initialHolidaySelection] = useState(currentHolidaySelection)
+    const [initialWorkdaySelection] = useState(currentWorkdaySelection)
+    const [removedHolidaySelection, setRemovedHolidaySelection] = useState()
+    const [removedWorkdaySelection, setRemovedWorkdaySelection] = useState()
+
+    
 
     console.log(new DateObject().add(2, "days"))
     console.log(datePanel.format('DD MMM YYYY'))
 
     const handleWorkDaySelection = (date) => {
-        setWorkDaySelection(date)
+        setCurrentWorkdaySelection(date)
         setDisableUpdateButton(false)
-        console.log(workDaySelection)
-        console.log(date)
     }
-
+    
     const handleHolidaySelection = (date) => {
-        setHolidaySelection(date)
+        setCurrentHolidaySelection(date)
         setDisableUpdateButton(false)
-        console.log(date)
     }
 
     const handleSubmitChange = () => {
         const url = `${process.env.REACT_APP_BACKENDURL}/admin/set-work-day`
-        const workDayData = {
-            workDaySelection: workDaySelection,
-            holidaySelection: holidaySelection,
+
+        const workdayData = {
+            initialWorkdaySelection: initialWorkdaySelection,
+            initialHolidaySelection: initialHolidaySelection,
+            currentWorkdaySelection: currentWorkdaySelection,
+            currentHolidaySelection: currentHolidaySelection,
             entity: "chengdu" 
         }
+        console.log(workdayData)
         if(window.confirm("Update changes?")){
             setIsLoading(true)
 
             setTimeout(()=> {
                 axios
-                    .post(url, workDayData)
+                    .post(url, workdayData)
                     .then((res => {
                         setIsLoading(false)
                         console.log(res)
@@ -64,10 +71,10 @@ function SetWorkdayPage() {
                 multiple
                 numberOfMonths={3}
                 format='DD MMM YYYY'
-                value={workDaySelection}
+                value={currentWorkdaySelection}
                 onChange={handleWorkDaySelection}
                 className=''
-                plugins={[<DatePanel position="left" sort="date" header={`Work Days (${workDaySelection.length})`}/>]} 
+                plugins={[<DatePanel position="left" sort="date" header={`Work Days (${currentWorkdaySelection.length})`}/>]} 
             />
         </div>
         <div className='flex flex-col justify-start items-center'>
@@ -77,9 +84,9 @@ function SetWorkdayPage() {
                     multiple
                     numberOfMonths={3}
                     format='DD MMM YYYY'
-                    value={holidaySelection}
+                    value={currentHolidaySelection}
                     onChange={handleHolidaySelection}
-                    plugins={[<DatePanel position="left" sort="date" header={`Off in lieu (${holidaySelection.length})`}/>]}
+                    plugins={[<DatePanel position="left" sort="date" header={`Off in lieu (${currentHolidaySelection.length})`}/>]}
                 />
         </div>
 

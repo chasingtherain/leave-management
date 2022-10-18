@@ -19,8 +19,8 @@ export const MainContextProvider = ({ children }) => {
 
   const [authState, setAuthState] = useState(false)
 
-  const [workDaySelection, setWorkDaySelection] = useState([])
-  const [holidaySelection, setHolidaySelection] = useState([])
+  const [currentWorkdaySelection, setCurrentWorkdaySelection] = useState([])
+  const [currentHolidaySelection, setCurrentHolidaySelection] = useState([])
 
   const fetchUserList = async () => {
     axios
@@ -48,8 +48,8 @@ export const MainContextProvider = ({ children }) => {
       .get(`${process.env.REACT_APP_BACKENDURL}/admin/get-work-day`)
       .then(resp =>{ 
         // console.log("fetchWorkDay: ", resp.data)
-        setWorkDaySelection(resp.data.workday)
-        setHolidaySelection(resp.data.holiday)
+        setCurrentWorkdaySelection(resp.data.workday)
+        setCurrentHolidaySelection(resp.data.holiday)
       })
       .catch(err => console.log(err))
   }
@@ -99,22 +99,22 @@ export const MainContextProvider = ({ children }) => {
       currentEditUser,
       currentLeaveSelection,
       currentUser,
-      holidaySelection,
+      currentHolidaySelection,
       isAdmin,
       sessionToken,
       teamCalendar,
       userList,
-      workDaySelection,
+      currentWorkdaySelection,
       fetchCurrentUserInfo,
       fetchUserList,
       setActiveTab,
       setCurrentEditUser,
       setCurrentLeaveSelection,
       setCurrentUser,
-      setHolidaySelection,
+      setCurrentHolidaySelection,
       setIsAdmin,
       setSessionToken,
-      setWorkDaySelection,
+      setCurrentWorkdaySelection,
       validateEmail
 
      }}>

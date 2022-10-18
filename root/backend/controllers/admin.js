@@ -649,11 +649,28 @@ exports.getWorkDay = (req,res,next) => {
 }
 
 exports.setWorkDay = (req,res,next) => {
-    const workDaySelection = req.body.workDaySelection
-    const holidaySelection = req.body.holidaySelection
+    const workDaySelection = req.body.currentWorkdaySelection
+    const holidaySelection = req.body.currentHolidaySelection
     const entity = req.body.entity
+    const initialWorkdaySelection = req.body.initialWorkdaySelection
+    const initialHolidaySelection = req.body. initialHolidaySelection
 
-    console.log("req.body: ", req.body)
+    console.log("removed work days: ", initialWorkdaySelection.filter(x => workDaySelection.includes(x) === false))
+    // console.log("new work days added: ", workDaySelection.filter(x => initialWorkdaySelection.includes(x) === false))
+
+    // console.log("removed holidays: ", initialHolidaySelection.filter(x => holidaySelection.includes(x) === false))
+    // console.log("new holidays added: ", holidaySelection.filter(x => initialHolidaySelection.includes(x) === false))
+
+    // run through original array and check which values are not found, and remove them from team calendar
+    const removedWorkdaySelection = initialWorkdaySelection.filter(x => workDaySelection.includes(x) === false) 
+    const removedHolidaySelection = initialHolidaySelection.filter(x => holidaySelection.includes(x) === false) // run through original array and check which values are not found
+
+    // add new values to team calendar
+    const newWorkdaysAdded = workDaySelection.filter(x => initialWorkdaySelection.includes(x) === false)
+    const newHolidaysAdded = holidaySelection.filter(x => initialHolidaySelection.includes(x) === false)
+
+    // console.log("req.body: ", req.body)
+
 
     Workday.findOneAndUpdate(
         {entity: entity},
@@ -661,6 +678,97 @@ exports.setWorkDay = (req,res,next) => {
         {upsert: true}
     )
     .then((result)=>{
+        // update team calendar
+
+        // loop through new work days added and create new records before pushing to db
+        const recordsOfNewWorkdaysAdded = []
+        for(i=0; i<newWorkdaysAdded.length;i++){
+            
+            const teamCalendarRecord = new TeamCalendarRecord({
+                start: new Date(newWorkdaysAdded[i]),
+                end: new Date(newWorkdaysAdded[i]),
+                startDateUnix: newWorkdaysAdded[i],
+                endDateUnix: newWorkdaysAdded[i],
+                staffName: "team calendar",
+                title: `Workday 补休`,
+                status: "approved"
+            })
+            recordsOfNewWorkdaysAdded.push(teamCalendarRecord)
+        }
+        console.log(recordsOfNewWorkdaysAdded)
+        // console.log("teamCalendarRecord:", teamCalendarRecord)
+
+        return TeamCalendar.findOneAndUpdate(
+            {team: "chengdu"},
+            {
+                $set: {"team": "chengdu"},
+                $push: {"approvedLeave": {$each: recordsOfNewWorkdaysAdded}}
+            },
+            {upsert: true}
+        )
+    })
+    .then((result)=>{
+        // update team calendar with newly added holidays
+
+        // loop through new holidays added and create new records before pushing to db
+        const recordsOfNewHolidaysAdded = []
+        for(i=0; i<newHolidaysAdded.length;i++){
+
+            const teamCalendarRecord = new TeamCalendarRecord({
+                start: new Date(newHolidaysAdded[i]),
+                end: new Date(newHolidaysAdded[i]),
+                startDateUnix: newHolidaysAdded[i],
+                endDateUnix: newHolidaysAdded[i],
+                staffName: "team calendar",
+                title: `Holiday 公休`,
+                status: "approved"
+            })
+            recordsOfNewHolidaysAdded.push(teamCalendarRecord)
+        }
+        console.log(recordsOfNewHolidaysAdded)
+        // console.log("teamCalendarRecord:", teamCalendarRecord)
+
+        return TeamCalendar.findOneAndUpdate(
+            {team: "chengdu"},
+            {
+                $set: {"team": "chengdu"},
+                $push: {"approvedLeave": {$each: recordsOfNewHolidaysAdded}}
+            },
+            {upsert: true}
+        )
+    })
+    .then(()=> {
+        if (removedWorkdaySelection.length){
+            // delete removed work days from team calendar
+            console.log("removedWorkdaySelection: ", removedWorkdaySelection)
+            console.log("deleting removed work days from team calendar")
+            for(i=0; i<removedWorkdaySelection.length;i++){
+                TeamCalendar.updateOne(
+                    {team: "chengdu","approvedLeave.staffName": "team calendar", "approvedLeave.startDateUnix": removedWorkdaySelection[i].toString()},
+                    {$pull: {approvedLeave: {startDateUnix: removedWorkdaySelection[i].toString(),endDateUnix: removedWorkdaySelection[i].toString()}}}
+                )
+                .then(()=>{
+                    console.log("successfully deleted from calendar")
+                })
+                .catch((err)=> console.log(err))
+            }
+            console.log("removedHolidaySelection: ", removedHolidaySelection)
+        }
+
+        if (removedHolidaySelection.length){
+            // delete removed holidays from team calendar
+            console.log("deleting removed work days from team calendar")
+            for(i=0; i<removedHolidaySelection.length;i++){
+                TeamCalendar.updateOne(
+                    {team: "chengdu","approvedLeave.staffName": "team calendar", "approvedLeave.startDateUnix": removedHolidaySelection[i].toString()},
+                    {$pull: {approvedLeave: {startDateUnix: removedHolidaySelection[i].toString(),endDateUnix: removedHolidaySelection[i].toString()}}}
+                )
+                .then(()=>{
+                    console.log("successfully deleted from calendar")
+                })
+                .catch((err)=> console.log(err))
+            }
+        }
         res.send("set work day successful")
     })
     .catch((err)=> console.log(err))
