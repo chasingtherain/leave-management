@@ -350,7 +350,44 @@ exports.cancelLeaveRequest = (req,res) => {
                 )
                 .catch(err => console.log("err deleting team calendar record",err))
             })
-            .catch(err => console.log("pending and entitlement count rollback err:", err))
+            .then(()=>{
+                // update user's leave history status
+                return User.findOneAndUpdate( 
+                    {
+                        _id: userId, 
+                        "leaveHistory.startDateUnix": startDateUnix,
+                        "leaveHistory.leaveType": leaveType,
+                        "leaveHistory.timePeriod": timePeriod,
+                        "leaveHistory.quotaUsed": quotaUsed,
+                        "leaveHistory.status": leaveStatus,
+                        "leaveHistory.submittedOn": submittedOn,
+                    },
+                    {
+                        $set: {"leaveHistory.$.status": "cancelled" }
+                    }
+                )
+            })
+            .then(() => {
+                // update reporting's leave status
+                return User.findOneAndUpdate( 
+                    {
+                        email: reportingEmail, 
+                        "staffLeave.leaveType": leaveType,
+                        "staffLeave.timePeriod": timePeriod,
+                        "staffLeave.startDateUnix": +startDateUnix,
+                        "staffLeave.submittedOn": submittedOn,
+                        "staffLeave.quotaUsed": quotaUsed,
+                        "staffLeave.status": leaveStatus,
+                    },
+                    {
+                        $set: {"staffLeave.$.status": "cancelled" }
+                    })
+            })
+            .then(()=>{
+                console.log("updated leave status to cancelled for both staff and RO")
+                res.send("updated leave status to cancelled for both staff and RO")
+            })
+            .catch(err => console.log("subtract used count after cancellation err:", err))
     }
     else{
         // scenario: leave was not approved and not consumed yet (i.e. date has not passed)
@@ -395,8 +432,8 @@ exports.cancelLeaveRequest = (req,res) => {
                     })
             })
             .then((result)=> {
-                console.log("updated leave status to pending cancellation for both staff and RO")
-                res.send("updated leave status to pending cancellation for both staff and RO")
+                console.log("updated leave status to cancelled for both staff and RO")
+                res.send("updated leave status to cancelled for both staff and RO")
             })
             .catch(err => console.log("pending and entitlement count rollback err:", err))
     }
