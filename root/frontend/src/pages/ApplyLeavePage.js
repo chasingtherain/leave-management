@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Select from '../components/layout/Select'
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import RadioSelection from '../components/layout/RadioSelection';
 import { useMainContext } from '../hooks/useMainContext';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../components/Loading';
 
 function ApplyLeavePage() {
     
-    const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
+    const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentLeaveSelection} = useMainContext()
 
     const currentDate = new Date()
 
-    const [leaveOptions, setLeaveOptions] = useState(currentUser.leave.map(leave => leave.name))
+    const [leaveOptions] = useState(currentUser.leave.map(leave => leave.name))
     const [isLoading, setIsLoading] = useState(false)
 
     const navigate = useNavigate()
@@ -87,6 +87,7 @@ function ApplyLeavePage() {
             file: uploadedFileData
         }
         console.log("applyLeaveFormData: ", applyLeaveFormData)
+        
         axios
             .post(url,applyLeaveFormData)
             .then((res) =>{
@@ -197,6 +198,7 @@ function ApplyLeavePage() {
     }
 
   return (
+    <>
     <form className="w-full flex flex-col justify-start items-center" onSubmit={validateAndSubmitLeaveApplication}>
         <div className='grid place-items-center mt-8 mb-3'>
             <p className='text-slate-600 text-3xl'>Apply <span className="text-sky-500">Leave</span> </p>
@@ -302,6 +304,8 @@ function ApplyLeavePage() {
                 Apply / 申请
             </button>
     </form>
+    {isLoading && <Loading/>}
+    </>
 
   )
 }

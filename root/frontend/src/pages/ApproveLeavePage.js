@@ -1,5 +1,4 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
 import Tab from '../components/layout/Tab'
 import Table from '../components/layout/Table'
 import { useMainContext } from '../hooks/useMainContext'

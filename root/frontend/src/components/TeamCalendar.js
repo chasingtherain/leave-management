@@ -16,11 +16,11 @@ function TeamCalendar() {
     const eventPropGetter = (event) => {
         let backgroundColor;
         console.log(event)
-        switch (event.title) {
-            case "Holiday 公休":
+        switch (event.type) {
+            case "holiday":
                 backgroundColor = '#37C399'
                 break;
-            case "Workday 补休":
+            case "workday":
                 backgroundColor = '#F77272'
                 break;
             default:

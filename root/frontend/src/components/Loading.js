@@ -4,7 +4,7 @@ import spinner from '../components/assets/spinner.gif'
 
 function Loading() {
   return (
-    <div style={{ position: "absolute", left:"0px", right:"0px", top:"0px", bottom:"0px", height: "100%", alignItems:"center", justifyContent:"center", zIndex: "998", backgroundColor: "#68AE9B", opacity: "0.8"}}>
+    <div style={{ position: "absolute", left:"0px", right:"0px", top:"0px", bottom:"0px", height: "120%", alignItems:"center", justifyContent:"center", zIndex: "998", backgroundColor: "#68AE9B", opacity: "0.8"}}>
         <img
         src={pandaslide}
         alt='Loading...'

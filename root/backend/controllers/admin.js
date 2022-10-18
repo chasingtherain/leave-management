@@ -184,6 +184,7 @@ exports.approveLeave = (req,res,next) => {
             const teamCalendarRecord = new TeamCalendarRecord({
                 start: startDate,
                 end: endDate,
+                type: "leave",
                 startDateUnix: startDateUnix,
                 endDateUnix: endDateUnix,
                 staffName: staffName,
@@ -687,6 +688,7 @@ exports.setWorkDay = (req,res,next) => {
             const teamCalendarRecord = new TeamCalendarRecord({
                 start: new Date(newWorkdaysAdded[i]),
                 end: new Date(newWorkdaysAdded[i]),
+                type: "workday",
                 startDateUnix: newWorkdaysAdded[i],
                 endDateUnix: newWorkdaysAdded[i],
                 staffName: "team calendar",
@@ -695,7 +697,7 @@ exports.setWorkDay = (req,res,next) => {
             })
             recordsOfNewWorkdaysAdded.push(teamCalendarRecord)
         }
-        console.log(recordsOfNewWorkdaysAdded)
+        console.log("recordsOfNewWorkdaysAdded: ", recordsOfNewWorkdaysAdded)
         // console.log("teamCalendarRecord:", teamCalendarRecord)
 
         return TeamCalendar.findOneAndUpdate(
@@ -717,6 +719,7 @@ exports.setWorkDay = (req,res,next) => {
             const teamCalendarRecord = new TeamCalendarRecord({
                 start: new Date(newHolidaysAdded[i]),
                 end: new Date(newHolidaysAdded[i]),
+                type: "holiday",
                 startDateUnix: newHolidaysAdded[i],
                 endDateUnix: newHolidaysAdded[i],
                 staffName: "team calendar",

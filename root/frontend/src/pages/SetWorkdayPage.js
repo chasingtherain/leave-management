@@ -11,13 +11,10 @@ function SetWorkdayPage() {
     const datePanel = new DateObject()
 
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
-    const [updateBtnLoading, setUpdateBtnLoading] = useState()
+    const [updateBtnLoading] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const [initialHolidaySelection] = useState(currentHolidaySelection)
     const [initialWorkdaySelection] = useState(currentWorkdaySelection)
-    const [removedHolidaySelection, setRemovedHolidaySelection] = useState()
-    const [removedWorkdaySelection, setRemovedWorkdaySelection] = useState()
-
     
 
     console.log(new DateObject().add(2, "days"))
