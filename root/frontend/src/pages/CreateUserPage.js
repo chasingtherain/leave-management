@@ -87,9 +87,9 @@ function CreateUserPage() {
             // co: co,
             coveringEmail: coveringEmail
         }
+        console.log(formData)
         validateAndSubmitData(url, formData)
     }
-
     return (
         <div>
             <div className='grid place-items-center mt-8 text-slate-600 text-3xl'>Create User</div>

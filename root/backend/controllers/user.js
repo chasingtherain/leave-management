@@ -344,8 +344,8 @@ exports.cancelLeaveRequest = (req,res) => {
             .then(result => {
                 // update team leave record to cancelled
                 console.log("deleting from team calendar")
-                TeamCalendar.updateOne(
-                    {team: "chengdu"},
+                return TeamCalendar.updateOne(
+                    {team: "chengdu", "approvedLeave.staffName": staffName, "approvedLeave.startDateUnix": startDateUnix},
                     {$pull: {approvedLeave: {start: startDate.toString(),end: endDate.toString()}}}
                 )
                 .catch(err => console.log("err deleting team calendar record",err))

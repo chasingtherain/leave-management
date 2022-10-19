@@ -57,8 +57,8 @@ exports.postCreateUser = (req,res,next) => {
                         isAdmin: isAdmin,
                         email: email,
                         password: hashedPassword,
-                        createdOn: createdOn,
-                        lastUpdatedOn: lastUpdatedOn,
+                        createdOn: moment(createdOn).format("YYYY/MM/DD H:mm:ss"),
+                        lastUpdatedOn: moment(lastUpdatedOn).format("YYYY/MM/DD H:mm:ss"),
                         // ro: ro,
                         reportingEmail: reportingEmail,
                         // co: co,
@@ -607,12 +607,12 @@ exports.postUpdateUser = (req,res,next) => {
     const newReportingEmail = req.body.newReportingEmail
     const newCoveringEmail = req.body.newCoveringEmail
     console.log("req.body: ", req.body)
-
+    const date = new Date()
     // update reporting's email
     if (newReportingEmail) {
         User.findOneAndUpdate(
             {email: userEmail,},
-            {$set: {"reportingEmail": newReportingEmail }}
+            {$set: {"reportingEmail": newReportingEmail, "lastUpdatedOn": moment(date).format("YYYY/MM/DD H:mm:ss")}}
         )
         .then((result)=>{
             // console.log(result)
@@ -623,7 +623,7 @@ exports.postUpdateUser = (req,res,next) => {
     if (newCoveringEmail) {
         User.findOneAndUpdate(
             {email: userEmail,},
-            {$set: {"coveringEmail": newCoveringEmail }}
+            {$set: {"coveringEmail": newCoveringEmail, "lastUpdatedOn": moment(date).format("YYYY/MM/DD H:mm:ss")}}
         )
         .then((result)=>{
             // console.log(result)

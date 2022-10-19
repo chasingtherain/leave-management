@@ -26,7 +26,7 @@ function ApplyLeavePage() {
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
     const [remarks, setRemarks] = useState("")
     const [numOfDaysApplied, setNumOfDaysApplied] = useState()
-    const [currentUserAppliedDates, setCurrentUserAppliedDates] = useState(
+    const [currentUserAppliedDates] = useState(
         // filters non-cancelled, non-rejected leave dates already applied by user
         currentUser.leaveHistory
             .filter(entry => entry.status === "pending" || entry.status === "approved")

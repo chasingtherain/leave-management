@@ -85,6 +85,7 @@ export const MainContextProvider = ({ children }) => {
     fetchWorkDay()
     validateSession()
     console.log("use effect triggered")
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const validateEmail = (email) => {

@@ -1,6 +1,5 @@
 import React from 'react'
 import pandaslide from '../components/assets/pandaslide.gif'
-import spinner from '../components/assets/spinner.gif'
 
 function Loading() {
   return (
