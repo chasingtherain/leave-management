@@ -308,7 +308,7 @@ exports.cancelLeaveRequest = (req,res) => {
             const cancellationEmailToReporting = {
                 to: reportingEmail,
                 from: 'mfachengdu@gmail.com',
-                subject: `Cancellation of approved leave by ${userEmail} - ${startDate} to ${endDate} `,
+                subject: `Cancellation of approved leave by ${userEmail}`,
                 html: `
                     <div>
                         <p>Hi ${reportingEmail}, </p> 
@@ -341,15 +341,16 @@ exports.cancelLeaveRequest = (req,res) => {
                 }
             )
             .then(result => {
-                // update team leave record to cancelled
+                // remove cancelled leave from team calendar
                 console.log("deleting from team calendar")
                 return TeamCalendar.updateOne(
                     {team: "chengdu", "approvedLeave.staffName": staffName, "approvedLeave.startDateUnix": startDateUnix},
-                    {$pull: {approvedLeave: {start: startDate.toString(),end: endDate.toString()}}}
+                    {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(), endDateUnix: endDateUnix.toString()}}}
                 )
                 .catch(err => console.log("err deleting team calendar record",err))
             })
-            .then(()=>{
+            .then((teamCalResult)=>{
+                console.log("teamCalResult: ", teamCalResult)
                 // update user's leave history status
                 return User.findOneAndUpdate( 
                     {

@@ -136,7 +136,7 @@ function ApplyLeavePage() {
     }
 
     const calculateNumOfBizDays = (start, end) => {
-        if ((start === end ) && startDateRadioSelection){
+        if ((start === end ) && startDateRadioSelection === "Full Day"){
             setNumOfDaysApplied(1)
         }
         else {
@@ -239,7 +239,7 @@ function ApplyLeavePage() {
             <input type="radio" id="AM" name="dateRangeRadio" className="radio-sm required" value="AM"/> AM
             <input type="radio" id="PM" name="dateRangeRadio" className="radio-sm required" value="PM"/> PM
         </div>
-        {numOfDaysApplied &&
+        {numOfDaysApplied >= 0 &&
         <>
             <p className='text-sm mt-3'>{`You have selected / 已选： ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
             {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of / 剩: {numOfSelectedLeave - numOfDaysApplied} day(s) of {currentLeaveSelection}</p>}

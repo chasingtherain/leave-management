@@ -271,6 +271,7 @@ exports.approveLeave = (req,res,next) => {
     
     if(leaveStatus === "pending cancellation" && startDateUnix >= firstDayofCurrentYear){
         // scenario: staff wants to cancel an approved leave from the current year
+        
         // update RO's leave record to cancellation approved
         User.findOneAndUpdate(
             {
@@ -315,12 +316,13 @@ exports.approveLeave = (req,res,next) => {
             console.log("adjusted quota used value")
             console.log("deleting from team calendar")
             return TeamCalendar.updateOne(
-                {team: "chengdu"},
-                {$pull: {approvedLeave: {start: startDate.toString(),end: endDate.toString()}}}
+                {team: "chengdu", "approvedLeave.staffName": staffName, "approvedLeave.startDateUnix": startDateUnix.toString()},
+                {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(),end: endDateUnix.toString()}}}
             )
             .catch(err => console.log("err deleting team calendar record",err))
         })
-        .then(()=> {
+        .then((teamCalResult)=> {
+            console.log(teamCalResult)
             // send cancellation approval email 
             const cancellationApprovalEmail = {
                 to: staffEmail, //leave applier's email
@@ -347,6 +349,7 @@ exports.approveLeave = (req,res,next) => {
                     console.log("err: ", error.response.body)
                 })
         })
+        .catch(err => console.log)
     }
 
     if(leaveStatus === "pending cancellation" && startDateUnix < firstDayofCurrentYear){

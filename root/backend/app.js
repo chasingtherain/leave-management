@@ -6,10 +6,12 @@ const mongoose = require('mongoose')
 const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session)
 const multer = require('multer')
-
-const MONGODB_URI = 'mongodb+srv://mfachengdu:iamsingaporean@cluster0.rbiadah.mongodb.net/leave-management?retryWrites=true&w=majority'
+const helmet = require('helmet')
+const compression = require('compression')
 
 require('dotenv').config()
+
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@cluster0.rbiadah.mongodb.net/${process.env.MONGODB_NAME}?retryWrites=true&w=majority`
 
 const app = express()
 const store = new MongoDBStore({
@@ -27,6 +29,8 @@ const authRoutes = require('./routes/auth')
 const { collection } = require('./models/user')
 
 app.use(cors())
+app.use(helmet())
+app.use(compression())
 app.use(multer().single('upload'))
 app.use(
     session({secret: "secret94", resave: false, saveUninitialized: false, store: store, cookie: { maxAge: 86400 }}))
@@ -46,7 +50,8 @@ mongoose
     .connect(MONGODB_URI)
     .then(client => {
         console.log("MongoDB connection via mongoose successful".green)
-        app.listen(8008)
+        app.listen(process.env.PORT || 8008)
+        console.log(`Server started on ${process.env.PORT}`.green)
     })
     .catch(err => {
         console.log(err)
