@@ -140,8 +140,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             console.log("leaveHistoryData: ",leaveHistoryData)
             const filterTargetLeaveType = user.leave.filter(leave => leaveType === leave.name)
 
-            // if user selected roll over leave, leave type will be "Annual Leave 年假"
-            const targetLeaveName = (leaveType.includes("年额带过")) ? "Annual Leave 年假" : filterTargetLeaveType[0].name
+            const targetLeaveName = filterTargetLeaveType[0].name
 
             return User.updateOne( 
                     {_id: userId, "leave.name": targetLeaveName}, 

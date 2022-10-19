@@ -176,7 +176,8 @@ exports.approveLeave = (req,res,next) => {
             {$set: {"staffLeave.$.status": "approved" }}
             )
         .then((user)=>{
-            // console.log(user)
+            console.log("updated reporting's staffLeave")
+            console.log(user)
             return user.save()
         })
         .then(() => {
