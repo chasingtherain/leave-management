@@ -58,8 +58,14 @@ export const MainContextProvider = ({ children }) => {
       console.log("fetchCurrentUserInfo triggered")
       axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getUser/${currentUser._id}`)
+      .then(resp =>{
+        if (resp.status !== 200) {
+          throw new Error("Failed to fetch current user info")
+        }
+        return resp
+      })
       .then(resp => {
-          // console.log(resp.data)
+          console.log(resp)
           setCurrentUser(resp.data)
       })
   }

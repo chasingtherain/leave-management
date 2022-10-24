@@ -13,12 +13,12 @@ function Navbar() {
         const resp = await axios.post(url)
         console.log(resp)
         if(resp.status === 200) {
-            toast.success("Log out successful")
+            toast.success("Log out successful / 已登出")
             sessionStorage.removeItem('leaveMgtToken')
             setCurrentUser(null)
             navigate('/login')
         }
-        else {toast.error("failed to log out")}
+        else {toast.error("failed to log out / 登出失败")}
     }
 
     const clearState = () => {
@@ -63,9 +63,9 @@ function Navbar() {
                             <li className='text-slate-800'>
                                 <Link to="/set-work-day" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Set Work Days</Link>
                             </li>
-                            <li className='text-slate-800'>
+                            {/* <li className='text-slate-800'>
                                 <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>)
                     }

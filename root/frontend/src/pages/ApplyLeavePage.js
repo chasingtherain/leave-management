@@ -44,28 +44,28 @@ function ApplyLeavePage() {
         
         if(!currentLeaveSelection){
             setApplyBtnLoading("")
-            return toast.error("leave type not selected")
+            return toast.error("leave type not selected / 未选择休假类型")
         }
         if(currentUserAppliedDates.includes(startDate)){
             setApplyBtnLoading("")
-            return toast.error("You have already applied leave on this day!")
+            return toast.error("You have already applied leave on this day / 您已经请了这一天的假期！")
         }
         if(startDate === undefined || endDate === undefined){
             setApplyBtnLoading("")
-            return toast.error("start and end date must be selected!")
+            return toast.error("start and end date must be selected / 必填开始和结束日期")
         }
         if(!startDateRadioSelection){
             setApplyBtnLoading("")
-            return toast.error("Please select AM, PM Leave or Full Day")
+            return toast.error("Please select AM, PM Leave or Full Day / 必填 AM, PM Leave or Full Day")
         }
         // user must have enough leave 
         if(numOfDaysApplied > numOfSelectedLeave){
             setApplyBtnLoading("")
-            return toast.error("Insufficient leave!")
+            return toast.error("Insufficient leave / 不够假")
         }
         if(!checkBoxStatus){
             setApplyBtnLoading("")
-            return toast.error("Checkbox not checked!")
+            return toast.error("Checkbox not checked! / 未选复选框")
         }
         
         // loads loading screen
@@ -84,7 +84,7 @@ function ApplyLeavePage() {
             leaveType: currentLeaveSelection,
             leaveClassification: startDateRadioSelection, // am, pm or full day
             numOfDaysTaken: numOfDaysApplied,
-            file: uploadedFileData
+            // file: uploadedFileData               file upload currently not supported
         }
         console.log("applyLeaveFormData: ", applyLeaveFormData)
         
@@ -188,14 +188,14 @@ function ApplyLeavePage() {
 
     }
 
-    let uploadedFileData = new FormData()
-    const onFileChange = (e) => {
+    // let uploadedFileData = new FormData()
+    // const onFileChange = (e) => {
 
-        if(e.target.files[0]){
-            uploadedFileData.append('file',e.target.files[0])
-        }
-        console.log(uploadedFileData)
-    }
+    //     if(e.target.files[0]){
+    //         uploadedFileData.append('file',e.target.files[0])
+    //     }
+    //     console.log(uploadedFileData)
+    // }
 
   return (
     <>
@@ -241,9 +241,9 @@ function ApplyLeavePage() {
         </div>
         {numOfDaysApplied >= 0 &&
         <>
-            <p className='text-sm mt-3'>{`You have selected / 已选： ${numOfDaysApplied} day(s) of ${currentLeaveSelection}.`}</p>
+            <p className='text-sm mt-3'>{`You have selected / 已选： ${numOfDaysApplied} day(s) of ${currentLeaveSelection}`}</p>
             {(numOfDaysApplied <= numOfSelectedLeave) && <p className='text-sm'>Balance of / 剩: {numOfSelectedLeave - numOfDaysApplied} day(s) of {currentLeaveSelection}</p>}
-            {(numOfDaysApplied > numOfSelectedLeave) && <p className='text-sm text-red-500'>Insufficient leave!</p>}
+            {(numOfDaysApplied > numOfSelectedLeave) && <p className='text-sm text-red-500'>Insufficient leave / 不够假!</p>}
         </>
         }
 
@@ -259,7 +259,7 @@ function ApplyLeavePage() {
                     onChange={(e) => setRemarks(e.target.value)}
                     ></textarea>
             </div>
-            <div className='ml-12'>
+            {/* <div className='ml-12'>
                 <label htmlFor="upload" className="text-lg font-weight-900 label -ml-1">Supporting documents / 证明</label>
                 <p className='text-xs'> MC is compulsory / 病假单必上传</p>
                 <input 
@@ -269,7 +269,7 @@ function ApplyLeavePage() {
                     className="text-center text-sm mt-2"
                     onChange={onFileChange}
                 />
-            </div>
+            </div> */}
             <div className="my-4">
                 <label htmlFor="reportingEmail" className="text-lg font-weight-900 -ml-1 label">RO email 主管邮件</label>
                 <input 

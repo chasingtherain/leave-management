@@ -192,7 +192,13 @@ exports.approveLeave = (req,res,next) => {
                 title: `${staffName} ${leaveClassification} leave`,
                 status: "approved"
             })
-            // console.log("teamCalendarRecord:", teamCalendarRecord)
+            teamCalendarRecord
+                .save()
+                .then((teamCalResult)=> {
+                    console.log(teamCalResult)
+                })
+                .catch(err => console.log(err))
+                
             return TeamCalendar.findOneAndUpdate(
                 {team: "chengdu"},
                 {
