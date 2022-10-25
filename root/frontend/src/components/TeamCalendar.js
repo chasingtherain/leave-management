@@ -9,7 +9,7 @@ function TeamCalendar() {
     const {teamCalendar} = useMainContext()
     console.log(teamCalendar)
     const approvedTeamLeave = teamCalendar.filter(entry => entry.status === "approved")
-    console.log(approvedTeamLeave)
+    console.log("approvedTeamLeave: ", approvedTeamLeave)
     moment.tz.setDefault('Asia/Singapore')
     const localizer = momentLocalizer(moment)
 

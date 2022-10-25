@@ -13,8 +13,8 @@ function SetWorkdayPage() {
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading] = useState()
     const [isLoading, setIsLoading] = useState(false)
-    const [initialHolidaySelection] = useState(currentHolidaySelection)
-    const [initialWorkdaySelection] = useState(currentWorkdaySelection)
+    const [initialHolidaySelection, setInitialHolidaySelection] = useState(currentHolidaySelection)
+    const [initialWorkdaySelection, setInitialWorkdaySelection] = useState(currentWorkdaySelection)
     
 
     console.log(new DateObject().add(2, "days"))
@@ -26,6 +26,7 @@ function SetWorkdayPage() {
     }
     
     const handleHolidaySelection = (date) => {
+        console.log("updated holiday dates: ", date)
         setCurrentHolidaySelection(date)
         setDisableUpdateButton(false)
     }
@@ -40,17 +41,20 @@ function SetWorkdayPage() {
             currentHolidaySelection: currentHolidaySelection,
             entity: "chengdu" 
         }
-        console.log(workdayData)
+        console.log("workdayData: ", workdayData)
         if(window.confirm("Update changes?")){
             setIsLoading(true)
-
+            
             setTimeout(()=> {
                 axios
-                    .post(url, workdayData)
-                    .then((res => {
-                        setIsLoading(false)
-                        console.log(res)
-                        toast.success("Update successful")
+                .post(url, workdayData)
+                .then((res => {
+                    setIsLoading(false)
+                    // set new initial workday and holiday after updated selection is successfully sent to server
+                    setInitialWorkdaySelection(currentWorkdaySelection)
+                    setInitialHolidaySelection(currentHolidaySelection)
+                    console.log(res)
+                    toast.success("Update successful")
                     }))
                     .catch(err => console.log(err))
             }, 1000)

@@ -664,12 +664,12 @@ exports.setWorkDay = (req,res,next) => {
     const holidaySelection = req.body.currentHolidaySelection
     const entity = req.body.entity
     const initialWorkdaySelection = req.body.initialWorkdaySelection
-    const initialHolidaySelection = req.body. initialHolidaySelection
-
+    const initialHolidaySelection = req.body.initialHolidaySelection
+    console.log("initialHolidaySelection: ", initialHolidaySelection, "holidaySelection: ",holidaySelection)
     console.log("removed work days: ", initialWorkdaySelection.filter(x => workDaySelection.includes(x) === false))
     // console.log("new work days added: ", workDaySelection.filter(x => initialWorkdaySelection.includes(x) === false))
 
-    // console.log("removed holidays: ", initialHolidaySelection.filter(x => holidaySelection.includes(x) === false))
+    console.log("removed holidays: ", initialHolidaySelection.filter(x => holidaySelection.includes(x) === false))
     // console.log("new holidays added: ", holidaySelection.filter(x => initialHolidaySelection.includes(x) === false))
 
     // run through original array and check which values are not found, and remove them from team calendar
@@ -689,6 +689,7 @@ exports.setWorkDay = (req,res,next) => {
         {upsert: true}
     )
     .then((result)=>{
+
         // update team calendar
 
         // loop through new work days added and create new records before pushing to db
@@ -738,7 +739,7 @@ exports.setWorkDay = (req,res,next) => {
             })
             recordsOfNewHolidaysAdded.push(teamCalendarRecord)
         }
-        console.log(recordsOfNewHolidaysAdded)
+        console.log("recordsOfNewHolidaysAdded: ", recordsOfNewHolidaysAdded)
         // console.log("teamCalendarRecord:", teamCalendarRecord)
 
         return TeamCalendar.findOneAndUpdate(
