@@ -66,7 +66,7 @@ function SetWorkdayPage() {
     <div className=''>
         <div className='flex flex-col justify-start items-center'>
             <h1 className='text-xl mt-6 text-center'>Work Days 补休</h1>
-            <p className='my-2 text-center'>The following weekends or rest days are work days in {date.getFullYear()}:</p>
+            <p className='my-2 text-center'>The following days are work days in {date.getFullYear()}:</p>
             <Calendar
                 
                 multiple

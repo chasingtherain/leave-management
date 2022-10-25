@@ -17,7 +17,7 @@ exports.postLogin = (req,res,next) => {
         .findOne({email: email})
         .then(user => {
             if(!user){
-                return res.status(400).send("email is not registered")
+                throw new Error("login: email is not registered") 
             }
             bcrypt
                 .compare(password, user.password)
@@ -26,6 +26,7 @@ exports.postLogin = (req,res,next) => {
                         console.log("password match!")
                         req.session.isLoggedIn = true;
                         req.session.user = user;
+
                         return req.session.save(err => {
                             console.log("session err: ", err)
                             // console.log(user)
@@ -60,7 +61,10 @@ exports.postLogin = (req,res,next) => {
                     res.status(401).send("password does not match")
                     console.log("password does not match")
                 })
-                .catch( err =>console.log(err))
+                .catch( err => {
+                    console.log(err)
+                    res.status(400).send("email is not registered")
+                })
         })
 }
 
@@ -147,24 +151,31 @@ exports.postUpdatePassword = (req,res,next) => {
     let currentUser;
     User.findOne({resetToken: userToken, resetTokenExpiration: {$gt: Date.now()}})
         .then((user) => {
+            if(!user){
+                throw new Error("update password: user not found") 
+            }
             currentUser = user
             return bcrypt.hash(updatedPassword,12)
         })
         .then((hashedPassword) => {
+            if(!hashedPassword){
+                throw new Error("update password: password hashing failed") 
+            }
             currentUser.password = hashedPassword
             currentUser.resetToken = undefined
             currentUser.resetTokenExpiration = undefined
             return currentUser.save()
         })
         .then((result) => {
+            if(!result){
+                throw new Error("update password: failed to update password") 
+            }
             console.log(result)
             res.status(200).send("password reset successful")
         })
         .catch(err => {
             if(!currentUser) res.status(402).send("token expired")
-            console.log("postUpdatePassword err: ", err)
             res.status(500).send("please contact engineer")
+            console.log("postUpdatePassword err: ", err)
         })
-
-    // res.status(200).send("sign out successful")
 }

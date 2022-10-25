@@ -47,7 +47,6 @@ exports.postCreateUser = (req,res,next) => {
             if(userDoc){
                 console.log(userDoc)
                 return res.status(499).send("email already exist")
-                // return res.redirect(`${process.env.FRONTENDURL}/create-user`)
             }
             return bcrypt
                 .hash(password, 12)
@@ -72,7 +71,9 @@ exports.postCreateUser = (req,res,next) => {
                 user
                     .save()
                     .then(result => {
-
+                        if (!result){
+                            throw new Error("create user: user creation failed") 
+                        }
                         const msg = {
                         to: email, 
                         from: 'mfachengdu@gmail.com', // Change to your verified sender
@@ -97,15 +98,13 @@ exports.postCreateUser = (req,res,next) => {
                                 console.error("sendgrid error: ", error)
                             })
                         console.log("user created")
+                        res.status(200).send(user)   
                     })
-                    .catch(err => {
-                        console.log(err)
-                    })
-                    res.status(200).send(user)   
                 })
         })
-        .catch(err => {
-            console.log(err)
+        .catch((err)=> {
+            console.log("failed to create user", err)
+            res.status(400).send("failed to create user", err)
         })
 
 
@@ -115,12 +114,16 @@ exports.postDeleteUser = (req,res,next) => {
     const email = req.body.email
     // console.log(req.body)
     User.deleteOne({email: email})
-        .then((result)=> {
-            console.log(result)
+        .then((user)=> {
+            if (!user){
+                throw new Error("delete user: did not find user record in db") 
+            }
+            console.log("user: ", user)
             res.send("user deleted")
         })
-        .catch(err => {
-            console.log(err)
+        .catch((err)=> {
+            console.log("failed to delete user", err)
+            res.status(400).send("failed to delete user", err)
         })
 
 
@@ -176,11 +179,17 @@ exports.approveLeave = (req,res,next) => {
             {$set: {"staffLeave.$.status": "approved" }}
             )
         .then((user)=>{
+            if (!user){
+                throw new Error("approve leave: did not find user record in db") 
+            }
             console.log("updated reporting's staffLeave")
             console.log(user)
             return user.save()
         })
-        .then(() => {
+        .then((user) => {
+            if (!user){
+                throw new Error("approve leave: failed to upder user record in db") 
+            }
             // update team calendar
             const teamCalendarRecord = new TeamCalendarRecord({
                 start: startDate,
@@ -209,11 +218,17 @@ exports.approveLeave = (req,res,next) => {
             )
         })
         .then(record => {
+            if (!record){
+                throw new Error("approve leave: failed to find team calendar record") 
+            }
             console.log("record created on team calendar")
             return record.save()
         })
-        .then(()=>{
-            User.findOneAndUpdate( // update user's leave status to approved
+        .then((result)=>{
+            if (!result){
+                throw new Error("approve leave: failed to add approved leave to team calendar") 
+            }
+            return User.findOneAndUpdate( // update user's leave status to approved
                 {
                     email: staffEmail,
                     "leaveHistory.leaveType": leaveType,
@@ -224,55 +239,61 @@ exports.approveLeave = (req,res,next) => {
                 },
                 {$set: {"leaveHistory.$.status": "approved" }}
                 )
-                .then((result)=>{
-                // update pending and quotaUsed count after rejection 
-                    User.findOneAndUpdate({email: staffEmail, "leave.name":leaveType}, 
-                    { 
-                        $inc: {"leave.$.pending": -numOfDaysTaken, "leave.$.used": numOfDaysTaken},
-                    })
-                    .then((outcome)=> {
-                        // console.log(outcome)
-                        console.log("subtracted from pending, added quotaUsed count")
-    
-                        // send approval email 
-                        const approvalEmail = {
-                            to: staffEmail, //leave applier's email
-                            from: 'mfachengdu@gmail.com',
-                            cc: [coveringEmail, reportingEmail],
-                            subject: `Leave Approved 休假请求已获批准 - ${dateRange}`,
-                            html: `
-                                <div>
-                                    <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been approved.</p> 
-                                    <p>Leave Details: </p>
-                                    <p>Type: ${leaveType}</p>
-                                    <p>Number of days: ${numOfDaysTaken} days</p>
-                                    <p>Period: <strong>${dateRange}</strong></p>
-                                </div>
-                                <div>
-                                    <p>您好 ${staffEmail}，您从${dateRange}的休假请求已获批准</p> 
-                                    <p>信息：</p>
-                                    <p>休假类型: ${leaveType}</p>
-                                    <p>天数: ${numOfDaysTaken} days</p>
-                                    <p>何时: <strong>${dateRange}</strong></p>
-                                </div>
-                            `
-                            }
-                        sendgridMail
-                            .send(approvalEmail) // email to inform user and covering of leave request
-                            .then(() => {
-                                res.status(200).send("approval email sent to user, covering and reporting")
-                                console.log('approval email sent to user and covering')
-                            })
-                            .catch((error) => {
-                                console.error("sendgrid error during approval email: ", error)
-                                console.log("err: ", error.response.body)
-                            })
-                    })
-                    .catch(err => console.log(err))
-                    console.log("status updated to approved on user's table")
+        })
+        .then((result) => {
+            if (!result){
+                throw new Error("approve leave: failed to update leave status to approved") 
+            }
+            // update pending and quotaUsed count after rejection 
+                return User.findOneAndUpdate({email: staffEmail, "leave.name":leaveType}, 
+                { 
+                    $inc: {"leave.$.pending": -numOfDaysTaken, "leave.$.used": numOfDaysTaken},
+                })
+            })
+        .then((result)=> {
+            if (!result){
+                throw new Error("approve leave: failed to adjust pending and used leave count") 
+            }
+            console.log("subtracted from pending, added quotaUsed count")
+
+            // send approval email 
+            const approvalEmail = {
+                to: staffEmail, //leave applier's email
+                from: 'mfachengdu@gmail.com',
+                cc: [coveringEmail, reportingEmail],
+                subject: `Leave Approved 休假请求已获批准 - ${dateRange}`,
+                html: `
+                    <div>
+                        <p>Hi ${staffEmail}, your leave from <strong>${dateRange}</strong> has been approved.</p> 
+                        <p>Leave Details: </p>
+                        <p>Type: ${leaveType}</p>
+                        <p>Number of days: ${numOfDaysTaken} days</p>
+                        <p>Period: <strong>${dateRange}</strong></p>
+                    </div>
+                    <div>
+                        <p>您好 ${staffEmail}，您从${dateRange}的休假请求已获批准</p> 
+                        <p>信息：</p>
+                        <p>休假类型: ${leaveType}</p>
+                        <p>天数: ${numOfDaysTaken} days</p>
+                        <p>何时: <strong>${dateRange}</strong></p>
+                    </div>
+                `
+                }
+            sendgridMail
+                .send(approvalEmail) // email to inform user and covering of leave request
+                .then(() => {
+                    res.status(200).send("approval email sent to user, covering and reporting")
+                    console.log('approval email sent to user and covering')
+                })
+                .catch((error) => {
+                    console.error("sendgrid error during approval email: ", error)
+                    console.log("err: ", error.response.body)
                 })
         })
-        .catch((err)=> console.log(err))
+        .catch((err)=> {
+            console.log("failed to approve leave", err)
+            res.status(400).send("failed to approve leave", err)
+        })
     }
     
     if(leaveStatus === "pending cancellation" && startDateUnix >= firstDayofCurrentYear){
@@ -291,7 +312,10 @@ exports.approveLeave = (req,res,next) => {
             },
             {$set: {"staffLeave.$.status": "cancellation approved" }}
             )
-        .then(()=>{
+        .then((user)=>{
+            if(!user){
+                throw new Error("approve leave(cancel approved): did not find user record in db") 
+            }
             console.log("updated RO's status to cancellation approved")
 
             // update user's leave status to cancellation approved
@@ -307,7 +331,10 @@ exports.approveLeave = (req,res,next) => {
             {$set: {"leaveHistory.$.status": "cancellation approved" }}
             )
         })
-        .then((res)=>{
+        .then((result)=>{
+            if(!result){
+                throw new Error("approve leave(cancel approved): failed to update status to cancellation approved") 
+            }
             console.log("updated staff's status to cancellation approved")
 
             // reduce quotaUsed count
@@ -317,7 +344,10 @@ exports.approveLeave = (req,res,next) => {
             })
 
         })
-        .then(()=> {
+        .then((result)=> {
+            if(!result){
+                throw new Error("approve leave(cancel approved): failed to adjust used count") 
+            }
             // remove from team leave record
             console.log("adjusted quota used value")
             console.log("deleting from team calendar")
@@ -325,9 +355,11 @@ exports.approveLeave = (req,res,next) => {
                 {team: "chengdu", "approvedLeave.staffName": staffName, "approvedLeave.startDateUnix": startDateUnix.toString()},
                 {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(),end: endDateUnix.toString()}}}
             )
-            .catch(err => console.log("err deleting team calendar record",err))
         })
         .then((teamCalResult)=> {
+            if(!teamCalResult){
+                throw new Error("approve leave(cancel approved): err deleting team calendar record") 
+            }
             console.log(teamCalResult)
             // send cancellation approval email 
             const cancellationApprovalEmail = {
@@ -355,7 +387,10 @@ exports.approveLeave = (req,res,next) => {
                     console.log("err: ", error.response.body)
                 })
         })
-        .catch(err => console.log)
+        .catch(err => {
+            res.status(400).send("failed to approve leave cancellation", err)
+            console.log("failed to approve leave cancellation", err)
+        })
     }
 
     if(leaveStatus === "pending cancellation" && startDateUnix < firstDayofCurrentYear){
@@ -379,7 +414,10 @@ exports.approveLeave = (req,res,next) => {
             },
             {$set: {"staffLeave.$.status": "cancellation approved" }}
             )
-        .then(()=>{
+        .then((user)=>{
+            if(!user){
+                throw new Error("approve leave(cancel approved leave from prev year): unable to find user") 
+            }
             console.log("updated RO's status to cancellation approved")
 
             // update user's leave status to cancellation approved
@@ -395,7 +433,10 @@ exports.approveLeave = (req,res,next) => {
             {$set: {"leaveHistory.$.status": "cancellation approved" }}
             )
         })
-        .then((res)=>{
+        .then((result)=>{
+            if(!result){
+                throw new Error("approve leave(cancel approved leave from prev year): failed to update user leave status to cancellation approved") 
+            }
             console.log("updated staff's status to cancellation approved")
 
             // increment Annual Leave 年额带过 count
@@ -405,7 +446,10 @@ exports.approveLeave = (req,res,next) => {
             })
 
         })
-        .then(()=> {
+        .then((result)=> {
+            if(!result){
+                throw new Error("approve leave(cancel approved leave from prev year): failed to update entitlement count") 
+            }
             // send cancellation approval email 
             const cancellationApprovalEmail = {
                 to: staffEmail, //leave applier's email
@@ -432,6 +476,10 @@ exports.approveLeave = (req,res,next) => {
                     console.log("err: ", error.response.body)
                 })
         })
+        .catch((err)=> {
+            console.log("failed to approve leave", err)
+            res.status(400).send("failed to approve leave", err)
+        })
     }
 }
 
@@ -457,7 +505,11 @@ exports.rejectLeave = (req,res,next) => {
                 $inc: {"leave.$.pending": -numOfDaysTaken},
             }
         )
-        .then(() => {
+        .then((user) => {
+            if(!user){
+                throw new Error("did not find user record in db while rejecting leave") 
+            }
+
             // update reporting's staffLeave to rejected
             return User.findOneAndUpdate(
                 {
@@ -471,8 +523,11 @@ exports.rejectLeave = (req,res,next) => {
                 {$set: {"staffLeave.$.status": "rejected" }}
                 )
         })
-        .then((res)=>{
-            console.log("update reporting's staffLeave to rejected: ", res)
+        .then((reportingOfficer)=>{
+            if(!reportingOfficer){
+                throw new Error("reject leave: did not find reporting officer record in db") 
+            }
+            
             return User.findOneAndUpdate( // update user's leave status to rejected
             {
                 email: staffEmail,
@@ -485,9 +540,12 @@ exports.rejectLeave = (req,res,next) => {
             {$set: {"leaveHistory.$.status": "rejected" }} // rejected
             )
         })
-        .then(()=> {
-            // send rejection email
+        .then((staff)=> {
+            if(!staff){
+                throw new Error("reject leave: could not find staff record in db") 
+            }
 
+            // send rejection email
             const rejectionEmail = {
             to: staffEmail, //leave applier's email
             from: 'mfachengdu@gmail.com', // Change to your verified sender
@@ -516,7 +574,10 @@ exports.rejectLeave = (req,res,next) => {
                     console.log("err: ", error.response.body)
                 })
         })
-        .catch(err => console.log("pending count adjustment for rejected leave err:", err))
+        .catch(err => {
+            console.log("pending count adjustment for rejected leave err:", err)
+            res.status(400).json("pending count adjustment for rejected leave err:", err)
+        })
     }
     
     if(leaveStatus === "pending cancellation"){
@@ -536,7 +597,10 @@ exports.rejectLeave = (req,res,next) => {
             },
             {$set: {"staffLeave.$.status": "approved" }}
         )
-        .then(()=>{
+        .then((reporting)=>{
+            if(!reporting){
+                throw new Error("reject leave (pending cancellation): could not find reporting officer record in db") 
+            }
             console.log("update reporting's staffLeave back to approved: ", res)
             return User.findOneAndUpdate( // update user's leave status back to approved to provide flexibility for cancellation reapplication
             {
@@ -550,9 +614,12 @@ exports.rejectLeave = (req,res,next) => {
             {$set: {"leaveHistory.$.status": "approved" }} 
             )
         })
-        .then(()=>{
-            // send cancellation rejected email
+        .then((staff)=>{
+            if(!staff){
+                throw new Error("reject leave (pending cancellation): could not find staff record in db") 
+            }
 
+            // send cancellation rejected email
             const cancellationRejectedEmail = {
                 to: staffEmail, //leave applier's email
                 from: 'mfachengdu@gmail.com', // Change to your verified sender
@@ -581,18 +648,22 @@ exports.rejectLeave = (req,res,next) => {
                         console.log("err: ", error.response.body)
                     })
         })
+        .catch(err => {
+            res.status(400).json("reject leave unsuccessful", err)
+            console.log("reject leave unsuccessful")
+        })
     }
 
 }
 
 exports.getUserInfoByEmail = (req,res,next) => {
     const userEmail = req.params.id
-    console.log("req.params: ", req.params)
+    // console.log("req.params: ", req.params)
     User
         .findOne({email: userEmail})
         .then(user => {
             if(!user){
-                return res.status(400).send("user not found")
+                throw new Error("did not find user record in db while updating user records") 
             }
             res.status(200).send(
                 {
@@ -609,7 +680,10 @@ exports.getUserInfoByEmail = (req,res,next) => {
                     staffLeave: user.staffLeave
                 })
         })
-        .catch( err =>console.log("getUserInfoByEmail err:", err))
+        .catch( err => {
+            // console.log("getUserInfoByEmail err:", err)
+            return res.status(400).send("user not found")
+        })
 }
 
 exports.postUpdateUser = (req,res,next) => {
@@ -625,9 +699,15 @@ exports.postUpdateUser = (req,res,next) => {
             {$set: {"reportingEmail": newReportingEmail, "lastUpdatedOn": moment(date).format("YYYY/MM/DD H:mm:ss")}}
         )
         .then((result)=>{
+            if(!result){
+                throw new Error("did not find user record in db while updating user records") 
+            }
             // console.log(result)
         })
-        .catch((err)=> console.log("update reporting email error: ", err))
+        .catch((err)=> {
+            // console.log("update reporting email error: ", err)
+            res.status(400).json("update reporting email error: ", err)
+        })
     }
     // update covering's email
     if (newCoveringEmail) {
@@ -636,27 +716,35 @@ exports.postUpdateUser = (req,res,next) => {
             {$set: {"coveringEmail": newCoveringEmail, "lastUpdatedOn": moment(date).format("YYYY/MM/DD H:mm:ss")}}
         )
         .then((result)=>{
+            if(!result){
+                throw new Error("did not find user record in db while updating user records") 
+            }
             // console.log(result)
         })
-        .catch((err)=> console.log("update covering email error: ", err))
+        .catch((err)=> {
+            // console.log("update covering email error: ", err)
+            res.status(400).json("update covering email error: ", err)
+        })
     }
     res.status(200).send("update successful")
 }
 
 exports.getWorkDay = (req,res,next) => {
     const userEmail = req.params.id
-    console.log("req.params: ", req.params)
+    // console.log("req.params: ", req.params)
     Workday
         .findOne({entity:"chengdu"})
         .then(record => {
-            // console.log(record)
+            if(!record){
+                throw new Error("getWorkDay: did not find team calendar record in db") 
+            }
             res.status(200).json(
                 {
                     holiday: record.holiday,
                     workday: record.workday
                 })
         })
-        .catch( err =>console.log("getWorkDay err:", err))
+        .catch( err => console.log("getWorkDay err:", err))
 }
 
 exports.setWorkDay = (req,res,next) => {
@@ -689,7 +777,9 @@ exports.setWorkDay = (req,res,next) => {
         {upsert: true}
     )
     .then((result)=>{
-
+        if(!result){
+            throw new Error("did not find team calendar record in db") 
+        } 
         // update team calendar
 
         // loop through new work days added and create new records before pushing to db
@@ -721,6 +811,9 @@ exports.setWorkDay = (req,res,next) => {
         )
     })
     .then((result)=>{
+        if(!result){
+            throw new Error("entity's team calendar record in db not found") 
+        } 
         // update team calendar with newly added holidays
 
         // loop through new holidays added and create new records before pushing to db
@@ -751,7 +844,10 @@ exports.setWorkDay = (req,res,next) => {
             {upsert: true}
         )
     })
-    .then(()=> {
+    .then((result)=> {
+        if(!result){
+            throw new Error("did not find team calendar record in db when adding record") 
+        } 
         if (removedWorkdaySelection.length){
             // delete removed work days from team calendar
             console.log("removedWorkdaySelection: ", removedWorkdaySelection)
@@ -785,11 +881,10 @@ exports.setWorkDay = (req,res,next) => {
         }
         res.send("set work day successful")
     })
-    .catch((err)=> console.log(err))
-
-    // save selections in a new collection
-    // return status 200
-
+    .catch((err)=> {
+        res.status(400).json("set work day unsuccessful")
+        console.log(err)
+    })
 }
 
 exports.postSendReminder = (req,res,next) => {

@@ -43,7 +43,8 @@ exports.getAllUsers = (req,res,next) => {
             // console.log(docs)
             res.status(200).send(docs)   
         } else {
-            console.log('Failed to retrieve the Course List: ' + err);
+            console.log('Failed to get all users: ' + err);
+            res.status(400).send('Failed to get all users: ' + err)
         }
     });
 }
@@ -52,8 +53,10 @@ exports.getTeamLeaveRecords = (req,res,next) => {
 
     TeamCalendar
         .findOne({entity: "chengdu"},)
-        .then(result => 
-            {
+        .then(result => {
+            if(!result){
+                throw new Error("get team leave: entity's team leave not found") 
+            }
                 // update names to big calendar format
                 // console.log("team record: ", result)
                 const newTeamLeave = result.approvedLeave.map(({
@@ -68,7 +71,10 @@ exports.getTeamLeaveRecords = (req,res,next) => {
             
             res.send(newTeamLeave)
             })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log("team cal error: ", err)
+            res.status(400).send("team cal error", err)
+        })
 }
 
 exports.getNumOfDaysApplied = (req,res,next) => {
@@ -79,6 +85,9 @@ exports.getNumOfDaysApplied = (req,res,next) => {
     Workday
         .findOne({entity: "chengdu"})
         .then(result => {
+            if(!result){
+                throw new Error("get num of leave days applied: failed to find entity's team cal record") 
+            }
             // console.log(result)
             const holidaySelection = result.holiday.map(timestamp => moment(timestamp).format("DD MMM YYYY"))
             const workdaySelection = result.workday.map(timestamp => moment(timestamp).format("DD MMM YYYY"))
@@ -98,7 +107,10 @@ exports.getNumOfDaysApplied = (req,res,next) => {
                 res.status(400).send("start date is bigger than end date")
             }
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log("get team leave: ", err)
+            res.status(400).json("get team leave: ", err) 
+        })
 }
 
 exports.postLeaveApplicationForm = (req,res,next) => {
@@ -147,15 +159,21 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                     {
                         $inc: {"leave.$.pending": numOfDaysTaken},
                     })
-            .then((result) => {
-                return User.updateOne(
-                    {_id: userId}, 
-                    {$push: {"leaveHistory": leaveHistoryData}}) // create leave history
-            })
         })
         .then((result) => {
-            // create subordinate leave for reporting officer
+            if(!result){
+                throw new Error("apply leave: failed to update user's pending count") 
+            }
+            return User.updateOne(
+                {_id: userId}, 
+                {$push: {"leaveHistory": leaveHistoryData}}) // create leave history
+        })
+        .then((result) => {
+            if(!result){
+                throw new Error("apply leave: failed to update user's leave history data") 
+            }
 
+            // create subordinate leave for reporting officer
             const staffLeaveData = {
                 staffEmail: userEmail,
                 coveringEmail: coveringEmail,
@@ -173,20 +191,22 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 year: date.getFullYear()
             }
 
-            User
-                .findOne({email: reportingEmail})
-                .then((user)=>{
-                    // if (!user) return res.status(400).send("reporting officer email not found in db")
-                    if (!user) return console.log("reporting officer email not found in db")
-                    User.updateOne(
-                        {email: reportingEmail},
-                        {$push: {"staffLeave": staffLeaveData}}
-                    )
-                    .then((result)=>{
-                        // console.log(result)
-                    })
-                    .catch(err => console.log("subordinate leave err: ", err))    
-                })
+            return User.findOne({email: reportingEmail})
+        })
+        .then((reportingOfficer)=>{
+            if(!reportingOfficer){
+                throw new Error("apply leave: reporting officer email not found in db") 
+            }
+            return User.updateOne(
+                {email: reportingEmail},
+                {$push: {"staffLeave": staffLeaveData}}
+            )
+        })
+        .then((result)=>{
+            if(!result){
+                throw new Error("apply leave: failed to update reporting officer's staff leave") 
+            }
+
             // send email to user, covering
             sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
@@ -239,10 +259,14 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             })
 
         res.status(200).send("leave application successful, email sent to user, covering and reporting officer") 
-        // create leave history details and push into User
+
         console.log("leave application successful")
-    })
-    .catch(err => console.log("postLeaveApplicationForm err: ", err))
+
+        })
+        .catch(err => {
+            res.status(400).send("postLeaveApplicationForm err: ", err)
+            console.log("postLeaveApplicationForm err: ", err)
+        })
 }
 
 exports.cancelLeaveRequest = (req,res) => {
@@ -285,6 +309,9 @@ exports.cancelLeaveRequest = (req,res) => {
                 $set: {"staffLeave.$.status": "pending cancellation" }
             })
         .then((result)=>{
+            if(!result){
+                throw new Error("cancel leave: failed to update RO's staffLeave to pending cancellation") 
+            }
             // console.log("RO's record: ", result.staffLeave.length)
             // update staff's leave status to pending cancellation
 
@@ -303,6 +330,9 @@ exports.cancelLeaveRequest = (req,res) => {
             )
         })
         .then((result)=> {
+            if(!result){
+                throw new Error("cancel leave: failed to update user's leave to pending cancellation") 
+            }
             // console.log("user's leave record: ", result)
             // send cancellation approval email to reporting 
             const cancellationEmailToReporting = {
@@ -327,7 +357,10 @@ exports.cancelLeaveRequest = (req,res) => {
                     console.error("sendgrid error when sending cancellation email for approved leave to RO: ", error)
                 })
         })
-        .catch(err => console.log("pending cancellation err:", err))
+        .catch(err => {
+            console.log("faild to cancel leave (pending cancellation) err:", err)
+            res.status(400).json("faild to cancel leave (pending cancellation) err:", err)
+        })
     }
 
     else if(leaveStatus === "approved" && currentDateUnix < startDate){
@@ -341,15 +374,20 @@ exports.cancelLeaveRequest = (req,res) => {
                 }
             )
             .then(result => {
+                if(!result){
+                    throw new Error("cancel leave: failed to update staff's used count") 
+                }
                 // remove cancelled leave from team calendar
                 console.log("deleting from team calendar")
                 return TeamCalendar.updateOne(
                     {team: "chengdu", "approvedLeave.staffName": staffName, "approvedLeave.startDateUnix": startDateUnix},
                     {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(), endDateUnix: endDateUnix.toString()}}}
                 )
-                .catch(err => console.log("err deleting team calendar record",err))
             })
             .then((teamCalResult)=>{
+                if(!teamCalResult){
+                    throw new Error("cancel leave: err deleting team calendar record") 
+                }
                 console.log("teamCalResult: ", teamCalResult)
                 // update user's leave history status
                 return User.findOneAndUpdate( 
@@ -367,7 +405,10 @@ exports.cancelLeaveRequest = (req,res) => {
                     }
                 )
             })
-            .then(() => {
+            .then((user) => {
+                if(!user){
+                    throw new Error("cancel leave: failed to update staff to cancelled") 
+                }
                 // update reporting's leave status
                 return User.findOneAndUpdate( 
                     {
@@ -383,11 +424,17 @@ exports.cancelLeaveRequest = (req,res) => {
                         $set: {"staffLeave.$.status": "cancelled" }
                     })
             })
-            .then(()=>{
+            .then((user)=>{
+                if(!user){
+                    throw new Error("cancel leave: failed to update RO's staffLeave to cancelled") 
+                }
                 console.log("updated leave status to cancelled for both staff and RO")
                 res.send("updated leave status to cancelled for both staff and RO")
             })
-            .catch(err => console.log("subtract used count after cancellation err:", err))
+            .catch(err => {
+                console.log("failed to cancel leave:", err)
+                res.status(400).json("failed to cancel leave:", err)
+            })
     }
     else{
         // scenario: leave was not approved and not consumed yet (i.e. date has not passed)
@@ -399,7 +446,10 @@ exports.cancelLeaveRequest = (req,res) => {
                     $inc: {"leave.$.pending": -quotaUsed},
                 }
             )
-            .then(()=>{
+            .then((user)=>{
+                if(!user){
+                    throw new Error("cancel leave: failed to update staff's pending leave count") 
+                }
                 return User.findOneAndUpdate( 
                     {
                         _id: userId, 
@@ -415,7 +465,10 @@ exports.cancelLeaveRequest = (req,res) => {
                     }
                 )
             })
-            .then(() => {
+            .then((user) => {
+                if(!user){
+                    throw new Error("cancel leave: failed to update staff's leave status to cancelled") 
+                }
                 // update reporting's leave status
                 return User.findOneAndUpdate( 
                     {
@@ -431,10 +484,16 @@ exports.cancelLeaveRequest = (req,res) => {
                         $set: {"staffLeave.$.status": "cancelled" }
                     })
             })
-            .then((result)=> {
+            .then((user)=> {
+                if(!user){
+                    throw new Error("cancel leave: failed to update RO's staffLeave status to cancelled") 
+                }
                 console.log("updated leave status to cancelled for both staff and RO")
                 res.send("updated leave status to cancelled for both staff and RO")
             })
-            .catch(err => console.log("pending and entitlement count rollback err:", err))
+            .catch(err => {
+                console.log("failed to cancel leave:", err)
+                res.status(400).json("failed to cancel leave:", err)
+            })
     }
 }
