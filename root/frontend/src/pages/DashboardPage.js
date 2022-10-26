@@ -25,7 +25,10 @@ function DashboardPage() {
             console.log(response)
             toast.success("reminder email sent")
           })
-          .catch(err => console.log(err))
+          .catch(err => {
+            console.log("err: ", err)
+            toast.warning("failed to send reminder")
+        })
       }
       else return toast.error("Input was invalid or empty!")
     }

@@ -81,7 +81,10 @@ function UpdateUserInfoPage() {
                 toast.success("Update successful")
                 navigate('/user-management')
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err)
+                toast.warning(`failed to update user info`)
+            })
 
         }
 

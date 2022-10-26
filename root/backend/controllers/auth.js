@@ -28,7 +28,6 @@ exports.postLogin = (req,res,next) => {
                         req.session.user = user;
 
                         return req.session.save(err => {
-                            console.log("session err: ", err)
                             // console.log(user)
                             const sessionTokenByServer = generateToken(user._id)
                             console.log(sessionTokenByServer)
@@ -54,7 +53,7 @@ exports.postLogin = (req,res,next) => {
                                             sessionToken: sessionTokenByServer
                                         })
                                 })
-                            .catch(err => console.log(err))
+                            .catch(err => console.log("session err: ", err))
 
                         })
                     }
@@ -69,14 +68,14 @@ exports.postLogin = (req,res,next) => {
 }
 
 exports.postLogout = (req,res,next) => {
-    console.log("before destroying: ", req.session)
+    // console.log("before destroying: ", req.session)
     if(req.session){
         req.session.destroy((err) => {
             if (err) throw err
             req.session = null
             res.status(200).send("sign out successful")
         })
-        console.log("after destroying: ", req.session)
+        // console.log("after destroying: ", req.session)
     }
 }
 
@@ -93,7 +92,6 @@ exports.postValidateSession = (req,res,next) => {
         })
         .catch(err => console.log(err))
 }
-
 
 exports.postChangePassword = (req,res,next) => {
     const email = req.body.email

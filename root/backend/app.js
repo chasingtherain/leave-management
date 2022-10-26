@@ -23,7 +23,6 @@ const store = new MongoDBStore({
 
 
 const adminRoutes = require('./routes/admin')
-const leaveRoutes = require('./routes/leave')
 const userRoutes = require('./routes/user')
 const authRoutes = require('./routes/auth')
 const { collection } = require('./models/user')
@@ -38,14 +37,9 @@ app.use(express.urlencoded({extended: true})) //Parse URL-encoded bodies
 app.use(express.json())
 
 app.use('/admin',adminRoutes)
-app.use('/leave',leaveRoutes)
 app.use('/user',userRoutes)
 app.use(authRoutes)
     
-app.get('/', (req,res)=> {
-    res.send("<h1>homepage</h1>")
-})
-
 mongoose
     .connect(MONGODB_URI)
     .then(client => {

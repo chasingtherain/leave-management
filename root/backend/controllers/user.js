@@ -73,7 +73,7 @@ exports.getTeamLeaveRecords = (req,res,next) => {
             })
         .catch(err => {
             console.log("team cal error: ", err)
-            res.status(400).send("team cal error", err)
+            res.status(400).send(`team cal error: ${err}`)
         })
 }
 
@@ -109,7 +109,7 @@ exports.getNumOfDaysApplied = (req,res,next) => {
         })
         .catch(err => {
             console.log("get team leave: ", err)
-            res.status(400).json("get team leave: ", err) 
+            res.status(400).json(`get team leave: ${err}`) 
         })
 }
 
@@ -127,28 +127,49 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         const dateOfApplication = moment(req.body.dateOfApplication).format("DD MMM YYYY")
         const startDate = moment(req.body.startDate).format("DD MMM YYYY")
         const endDate = moment(req.body.endDate).format("DD MMM YYYY")
-        console.log(req.body)
+        console.log("req.body: ", req.body)
+
+        // staff's leave history
+        const leaveHistoryData = new leaveHistory({
+            leaveType: leaveType,
+            timePeriod: `${startDate} - ${endDate}`,
+            startDateUnix: req.body.startDate,
+            endDateUnix: req.body.endDate,
+            staffName: req.body.staffName,
+            submittedOn: dateOfApplication,
+            quotaUsed: numOfDaysTaken,
+            coveringEmail: coveringEmail,
+            reportingEmail: reportingEmail,
+            leaveClassification: leaveClassification,
+            remarks: remarks,
+            status: "pending",
+            year: date.getFullYear()
+        })
+
+        // create subordinate leave for reporting officer
+        const staffLeaveData = {
+            staffEmail: userEmail,
+            coveringEmail: coveringEmail,
+            reportingEmail: reportingEmail,
+            leaveType: leaveType,
+            timePeriod: `${startDate} - ${endDate}`,
+            startDateUnix: req.body.startDate,
+            endDateUnix: req.body.endDate,
+            staffName: req.body.staffName,
+            submittedOn: dateOfApplication,
+            quotaUsed: numOfDaysTaken,
+            leaveClassification: leaveClassification,
+            remarks: remarks,
+            status: "pending",
+            year: date.getFullYear()
+        }
+        
     // find userid from mongodb
     User
         .findOne({_id: userId})
         .then(user => {
             if (!user) return res.status(400).send("user ID did not match db")
 
-            const leaveHistoryData = new leaveHistory({
-                leaveType: leaveType,
-                timePeriod: `${startDate} - ${endDate}`,
-                startDateUnix: req.body.startDate,
-                endDateUnix: req.body.endDate,
-                staffName: req.body.staffName,
-                submittedOn: dateOfApplication,
-                quotaUsed: numOfDaysTaken,
-                coveringEmail: coveringEmail,
-                reportingEmail: reportingEmail,
-                leaveClassification: leaveClassification,
-                remarks: remarks,
-                status: "pending",
-                year: date.getFullYear()
-            })
             console.log("leaveHistoryData: ",leaveHistoryData)
             const filterTargetLeaveType = user.leave.filter(leave => leaveType === leave.name)
 
@@ -172,25 +193,6 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             if(!result){
                 throw new Error("apply leave: failed to update user's leave history data") 
             }
-
-            // create subordinate leave for reporting officer
-            const staffLeaveData = {
-                staffEmail: userEmail,
-                coveringEmail: coveringEmail,
-                reportingEmail: reportingEmail,
-                leaveType: leaveType,
-                timePeriod: `${startDate} - ${endDate}`,
-                startDateUnix: req.body.startDate,
-                endDateUnix: req.body.endDate,
-                staffName: req.body.staffName,
-                submittedOn: dateOfApplication,
-                quotaUsed: numOfDaysTaken,
-                leaveClassification: leaveClassification,
-                remarks: remarks,
-                status: "pending",
-                year: date.getFullYear()
-            }
-
             return User.findOne({email: reportingEmail})
         })
         .then((reportingOfficer)=>{
@@ -229,7 +231,6 @@ exports.postLeaveApplicationForm = (req,res,next) => {
             sendgridMail
                 .send(emailToUserAndCovering) // email to inform user and covering of leave request
                 .then(() => {
-                    // res.status(200).send("email sent to user and covering")
                     console.log('email sent to user and covering')
                 })
                 .catch((error) => {
@@ -264,7 +265,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
 
         })
         .catch(err => {
-            res.status(400).send("postLeaveApplicationForm err: ", err)
+            res.status(400).send(`postLeaveApplicationForm err: ${err}`)
             console.log("postLeaveApplicationForm err: ", err)
         })
 }
@@ -358,8 +359,8 @@ exports.cancelLeaveRequest = (req,res) => {
                 })
         })
         .catch(err => {
-            console.log("faild to cancel leave (pending cancellation) err:", err)
-            res.status(400).json("faild to cancel leave (pending cancellation) err:", err)
+            console.log("failed to cancel leave (pending cancellation) err:", err)
+            res.status(400).json(`failed to cancel leave (pending cancellation) err: ${err}`)
         })
     }
 
@@ -433,7 +434,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .catch(err => {
                 console.log("failed to cancel leave:", err)
-                res.status(400).json("failed to cancel leave:", err)
+                res.status(400).json(`failed to cancel leave: ${err}`)
             })
     }
     else{
@@ -493,7 +494,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .catch(err => {
                 console.log("failed to cancel leave:", err)
-                res.status(400).json("failed to cancel leave:", err)
+                res.status(400).json(`failed to cancel leave: ${err}`)
             })
     }
 }

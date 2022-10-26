@@ -90,16 +90,19 @@ function ApplyLeavePage() {
         
         axios
             .post(url,applyLeaveFormData)
-            .then((res) =>{
+            .then((resp) =>{
                 setIsLoading(false)
-                console.log(res)
-                if(res.status === 200) {
+                console.log(resp)
+                if(resp.status === 200) {
                     // call user API to get most updated info
                     fetchCurrentUserInfo(currentUser)
                     setCurrentLeaveSelection("Annual Leave 年假")
                     toast.success("Leave application successful!")
                     navigate('/')
                 }
+                if(resp.status === 400){
+                    toast.warning("failed to apply leave")
+                  }
             })
             .catch(err => console.log(err))
         
@@ -147,9 +150,12 @@ function ApplyLeavePage() {
     
             axios
                 .post(`${process.env.REACT_APP_BACKENDURL}/user/numOfDays`, data)
-                .then(res => {
-                    // console.log(res)
-                    setNumOfDaysApplied(res.data.numOfDaysApplied)
+                .then(resp => {
+                    if(resp.status === 400){
+                        toast.warning("failed to call biz day calculator")
+                      }
+                    // console.log(resp)
+                    setNumOfDaysApplied(resp.data.numOfDaysApplied)
                 })
                 .catch(err =>{
                     console.log(err)

@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import axios from 'axios';
+import { toast } from 'react-toastify'
 export const MainContext = createContext()
 
 export const MainContextProvider = ({ children }) => {
@@ -27,9 +28,11 @@ export const MainContextProvider = ({ children }) => {
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getAllUsers`)
       .then(resp =>{ 
         setUserList(resp.data)
-        // console.log(resp)
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log("err: ", err)
+        toast.warning("failed to retrieve all users info")
+      })
   }
 
   const fetchTeamCalendar = async () => {
@@ -40,7 +43,10 @@ export const MainContextProvider = ({ children }) => {
         setTeamCalendar(resp.data)
         // console.log(resp)
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log("err: ", err)
+        toast.warning("failed to retrieve team calendar")
+      })
   }
 
   const fetchWorkDay = async () => {
@@ -51,7 +57,10 @@ export const MainContextProvider = ({ children }) => {
         setCurrentWorkdaySelection(resp.data.workday)
         setCurrentHolidaySelection(resp.data.holiday)
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log("err: ", err)
+        toast.warning("failed to retrieve work day data")
+      })
   }
 
   const fetchCurrentUserInfo = async (currentUser) =>{
@@ -59,14 +68,12 @@ export const MainContextProvider = ({ children }) => {
       axios
       .get(`${process.env.REACT_APP_BACKENDURL}/user/getUser/${currentUser._id}`)
       .then(resp =>{
-        if (resp.status !== 200) {
-          throw new Error("Failed to fetch current user info")
-        }
-        return resp
+        console.log(resp)
+        setCurrentUser(resp.data)
       })
-      .then(resp => {
-          console.log(resp)
-          setCurrentUser(resp.data)
+      .catch(err => {
+        console.log("err: ", err)
+        toast.warning("Failed to fetch current user info")
       })
   }
 

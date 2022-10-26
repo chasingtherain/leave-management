@@ -41,6 +41,7 @@ function SetWorkdayPage() {
             currentHolidaySelection: currentHolidaySelection,
             entity: "chengdu" 
         }
+        
         console.log("workdayData: ", workdayData)
         if(window.confirm("Update changes?")){
             setIsLoading(true)
@@ -56,7 +57,10 @@ function SetWorkdayPage() {
                     console.log(res)
                     toast.success("Update successful")
                     }))
-                    .catch(err => console.log(err))
+                    .catch(err => {
+                        console.log("err: ", err)
+                        toast.warning("Update failed")
+                    })
             }, 1000)
             setDisableUpdateButton(true)
         }

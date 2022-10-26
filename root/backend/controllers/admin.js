@@ -104,7 +104,7 @@ exports.postCreateUser = (req,res,next) => {
         })
         .catch((err)=> {
             console.log("failed to create user", err)
-            res.status(400).send("failed to create user", err)
+            res.status(400).send(`failed to create user ${err}`)
         })
 
 
@@ -123,7 +123,7 @@ exports.postDeleteUser = (req,res,next) => {
         })
         .catch((err)=> {
             console.log("failed to delete user", err)
-            res.status(400).send("failed to delete user", err)
+            res.status(400).send(`failed to delete user ${err}`)
         })
 
 
@@ -292,7 +292,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .catch((err)=> {
             console.log("failed to approve leave", err)
-            res.status(400).send("failed to approve leave", err)
+            res.status(400).send(`failed to approve leave: ${err}`)
         })
     }
     
@@ -333,7 +333,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((result)=>{
             if(!result){
-                throw new Error("approve leave(cancel approved): failed to update status to cancellation approved") 
+                throw new Error(`approve leave(cancel approved): failed to update status to cancellation approved, result: ${result}`) 
             }
             console.log("updated staff's status to cancellation approved")
 
@@ -352,8 +352,8 @@ exports.approveLeave = (req,res,next) => {
             console.log("adjusted quota used value")
             console.log("deleting from team calendar")
             return TeamCalendar.updateOne(
-                {team: "chengdu", "approvedLeave.staffName": staffName, "approvedLeave.startDateUnix": startDateUnix.toString()},
-                {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(),end: endDateUnix.toString()}}}
+                {team: "chengdu"},
+                {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(),endDateUnix: endDateUnix.toString(), staffName: staffName, type: "leave"}}}
             )
         })
         .then((teamCalResult)=> {
@@ -388,7 +388,7 @@ exports.approveLeave = (req,res,next) => {
                 })
         })
         .catch(err => {
-            res.status(400).send("failed to approve leave cancellation", err)
+            res.status(400).send( `failed to approve leave cancellation: ${err}`)
             console.log("failed to approve leave cancellation", err)
         })
     }
@@ -478,7 +478,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .catch((err)=> {
             console.log("failed to approve leave", err)
-            res.status(400).send("failed to approve leave", err)
+            res.status(400).send(`failed to approve leave: ${err}`)
         })
     }
 }
@@ -576,7 +576,7 @@ exports.rejectLeave = (req,res,next) => {
         })
         .catch(err => {
             console.log("pending count adjustment for rejected leave err:", err)
-            res.status(400).json("pending count adjustment for rejected leave err:", err)
+            res.status(400).json(`pending count adjustment for rejected leave err: ${err}`)
         })
     }
     
@@ -649,7 +649,7 @@ exports.rejectLeave = (req,res,next) => {
                     })
         })
         .catch(err => {
-            res.status(400).json("reject leave unsuccessful", err)
+            res.status(400).json(`reject leave unsuccessful: ${err}`)
             console.log("reject leave unsuccessful")
         })
     }
@@ -706,7 +706,7 @@ exports.postUpdateUser = (req,res,next) => {
         })
         .catch((err)=> {
             // console.log("update reporting email error: ", err)
-            res.status(400).json("update reporting email error: ", err)
+            res.status(400).json(`update reporting email error: ${err}`)
         })
     }
     // update covering's email
@@ -723,7 +723,7 @@ exports.postUpdateUser = (req,res,next) => {
         })
         .catch((err)=> {
             // console.log("update covering email error: ", err)
-            res.status(400).json("update covering email error: ", err)
+            res.status(400).json(`update covering email error: ${err}`)
         })
     }
     res.status(200).send("update successful")

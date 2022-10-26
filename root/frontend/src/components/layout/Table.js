@@ -44,7 +44,10 @@ function Table({headerType}) {
         .then(resp => {
             setCurrentEditUser(resp.data)
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log(err)
+            toast.warning(`failed to get user info by email`)
+        })
     }
 
     const handleCancelClick = (e) => {
@@ -74,10 +77,15 @@ function Table({headerType}) {
             axios
                 .post(url, {userId: currentUser._id, userEmail: currentUser.email, targetLeaveHistory: targetLeaveHistory, reportingEmail: currentUser.reportingEmail})
                 .then(resp => {
-                    setIsLoading(false)
-                    fetchCurrentUserInfo(currentUser)
-                    console.log(resp)
-                    toast.success("Leave Cancelled / 休假请求已取消")
+                    if(resp.status === 400){
+                        toast.warning("failed to cancel leave")
+                    }
+                    if(resp.status === 200){
+                        setIsLoading(false)
+                        fetchCurrentUserInfo(currentUser)
+                        console.log(resp)
+                        toast.success("Leave Cancelled / 休假请求已取消")
+                      }
                 })
                 .catch(err => console.log(err))
         }
@@ -117,14 +125,19 @@ function Table({headerType}) {
             axios
                 .post(url, leaveData)
                 .then(resp => {
-                    console.log(resp)
-                    setIsLoading(false)
-                    if (action === "Approve") toast.success(`Leave approved`)
-                    else toast.success(`Leave rejected`)
-
-                    fetchCurrentUserInfo(currentUser)
+                    if(resp.status === 200){
+                        console.log(resp)
+                        setIsLoading(false)
+                        if (action === "Approve") toast.success(`Leave approved`)
+                        else toast.success(`Leave rejected`)
+    
+                        fetchCurrentUserInfo(currentUser)
+                    }
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    toast.warning(`failed to ${action} leave`)
+                    console.log(err)
+                })
         }
     }
 
