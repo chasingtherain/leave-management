@@ -24,12 +24,6 @@ function Table({headerType}) {
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
     const dashboardTableHeader = ["Name","Email","Annual Leave left"]
     
-    const changeLogData = [
-        ["04.04.2022", "Update", ["role changed to:", " admin"] , "yunxi@mfa.sg"],
-        ["01.04.2022", "Add", ["new account added"] , "yunxi@mfa.sg"],
-        ["03.07.2022", "Delete", ["account X deleted"] , "yunxi@mfa.sg"],
-    ]
-    
     const handleEditClick = (event) => {
         // identify user's id, send user's data to update user info form
         // console.log(event.target.id)
@@ -83,7 +77,7 @@ function Table({headerType}) {
                     if(resp.status === 200){
                         setIsLoading(false)
                         fetchCurrentUserInfo(currentUser)
-                        console.log(resp)
+                        // console.log(resp)
                         toast.success("Leave Cancelled / 休假请求已取消")
                       }
                 })
@@ -103,7 +97,7 @@ function Table({headerType}) {
             const url = `${process.env.REACT_APP_BACKENDURL}/admin/${action}-leave`
 
             const targetStaffLeave = currentUser.staffLeave.filter(entry => (entry.staffEmail === staffEmail && entry.timePeriod === dateRange))
-            console.log("targetStaffLeave: ",targetStaffLeave)
+            // console.log("targetStaffLeave: ",targetStaffLeave)
             const leaveData = {
                 staffEmail: targetStaffLeave[0].staffEmail,
                 coveringEmail: targetStaffLeave[0].coveringEmail,
@@ -120,13 +114,13 @@ function Table({headerType}) {
                 staffName: targetStaffLeave[0].staffName,
                 leaveClassification: targetStaffLeave[0].leaveClassification
             }
-            console.log("leaveData: ", leaveData)
-            console.log("url: ", url)
+            // console.log("leaveData: ", leaveData)
+
             axios
                 .post(url, leaveData)
                 .then(resp => {
                     if(resp.status === 200){
-                        console.log(resp)
+                        // console.log(resp)
                         setIsLoading(false)
                         if (action === "Approve") toast.success(`Leave approved`)
                         else toast.success(`Leave rejected`)
@@ -187,7 +181,7 @@ function Table({headerType}) {
                 break;
         }
     }
-    console.log(currentUser.staffLeave.filter(entry => entry.status === "pending" || entry.status === "pending cancellation"))
+    
     const tableDataSelection = (headerType) => {
         switch (headerType) {
             case "approval":
@@ -243,8 +237,8 @@ function Table({headerType}) {
                     </tr>
                 )
                 : <td>No approval leave history yet</td>
-            case "change-log":
-                return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
+            // case "change-log":
+            //     return changeLogData.map((list, index) => <tr key={index}>{list.map(listItem => <td>{listItem}</td>)}</tr>)
             case "dashboard":
                 return userList
                     .filter(entry => entry.isAdmin === "user")

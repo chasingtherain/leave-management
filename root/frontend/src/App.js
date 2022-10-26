@@ -22,9 +22,10 @@ import NotFoundPage from "./pages/NotFoundPage";
 import SetWorkdayPage from "./pages/SetWorkdayPage";
 import DashboardPage from "./pages/DashboardPage";
 import TeamCalendarPage from "./pages/TeamCalendarPage";
+import LoginRoute from "./components/private/LoginRoute";
 
 function App() {
-  const {authState, currentUser} = useMainContext()
+  const {authState} = useMainContext()
   
   return (
     <>
@@ -33,12 +34,15 @@ function App() {
         <Router>
           <Navbar/>
           <Routes>
-            {!currentUser && <Route path = '/login' element={<LoginPage/>}/>}
             <Route path = '/change-password' element={<ChangePasswordPage/>}/>
             <Route path = '/set-new-password/:token' element={<SetNewPasswordPage/>}/>
             <Route path = '/*' element={<NotFoundPage/>}/>
 
             {/* logged in routes */}
+            <Route path = '/login' element={<LoginRoute/>}>
+              <Route path = '/login' element={<LoginPage/>}/>
+            </Route>
+
             <Route path = '/' element={<LoggedInRoute/>}>
               <Route path = '/' element={<Homepage/>}/>
             </Route>

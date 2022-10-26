@@ -206,12 +206,12 @@ function ApplyLeavePage() {
   return (
     <>
     <form className="w-full flex flex-col justify-start items-center" onSubmit={validateAndSubmitLeaveApplication}>
-        <div className='grid place-items-center mt-8 mb-3'>
+        <div className='grid place-items-center mt-6'>
             <p className='text-slate-600 text-3xl'>Apply <span className="text-sky-500">Leave</span> </p>
             <p className='text-slate-600 text-3xl'>请<span className="text-sky-500">假</span> </p>
         </div>
 
-        <div className="my-4 ml-8">
+        <div className="my-1 ml-8">
             <label htmlFor="remarks" className="text-lg font-weight-900 -ml-1 label">Leave Type</label>
             <Select options={leaveOptions}/>
             {leaveTypeMessage()}
@@ -254,7 +254,7 @@ function ApplyLeavePage() {
         }
 
 
-            <div className="my-4 mr-6">
+            <div className="my-1 mr-6">
                 <label htmlFor="remarks" className="text-lg font-weight-900 label">Remarks</label>
                 <textarea 
                     id="remarks" 
@@ -276,7 +276,7 @@ function ApplyLeavePage() {
                     onChange={onFileChange}
                 />
             </div> */}
-            <div className="my-4">
+            <div className="my-1">
                 <label htmlFor="reportingEmail" className="text-lg font-weight-900 -ml-1 label">RO email 主管邮件</label>
                 <input 
                     id="reportingEmail" 
@@ -286,7 +286,7 @@ function ApplyLeavePage() {
                     style={{ width:"250px" }} 
                     value={currentUser.reportingEmail}/>
             </div>
-            <div className="my-4">
+            <div className="my-1">
                 <label htmlFor="coveringEmail" className="text-lg font-weight-900 -ml-1 label">CO email 代办邮件</label>
                 <input 
                     id="coveringEmail" 
@@ -301,12 +301,12 @@ function ApplyLeavePage() {
                     <input type="checkbox" checked={checkBoxStatus} onClick={() => setCheckBoxStatus(!checkBoxStatus)} className="checkbox checkbox-primary mr-2" />
                 </label>
                 <div>   
-                    <p className="label-text whitespace-pre-line mb-2">{`I declare that my covering officer has agreed\nto cover my duties during my leave period.`}</p>
+                    <p className="label-text whitespace-pre-line mt-4 mb-2">{`I declare that my covering officer has agreed\nto cover my duties during my leave period.`}</p>
                     <p className="label-text">代办已答应在我休假的期间代班。</p>
                 </div>
 
             </div>
-            <button type="submit" className={`btn text-white mt-8 px-28 text-center text-base font-semibold shadow-md rounded-lg mt-4 ${applyBtnLoading}`}>
+            <button type="submit" className={`btn text-white mt-4 px-28 text-center text-base font-semibold shadow-md rounded-lg mt-4 ${applyBtnLoading}`}>
                 Apply / 申请
             </button>
     </form>

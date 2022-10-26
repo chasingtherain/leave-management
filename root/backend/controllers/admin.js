@@ -854,8 +854,12 @@ exports.setWorkDay = (req,res,next) => {
             console.log("deleting removed work days from team calendar")
             for(i=0; i<removedWorkdaySelection.length;i++){
                 TeamCalendar.updateOne(
-                    {team: "chengdu","approvedLeave.staffName": "team calendar", "approvedLeave.startDateUnix": removedWorkdaySelection[i].toString()},
-                    {$pull: {approvedLeave: {startDateUnix: removedWorkdaySelection[i].toString(),endDateUnix: removedWorkdaySelection[i].toString()}}}
+                    {team: "chengdu"},
+                    {$pull: {approvedLeave: {
+                        startDateUnix: removedWorkdaySelection[i].toString(),
+                        endDateUnix: removedWorkdaySelection[i].toString(),
+                        staffName: "team calendar"
+                    }}}
                 )
                 .then(()=>{
                     console.log("successfully deleted from calendar")
@@ -870,8 +874,13 @@ exports.setWorkDay = (req,res,next) => {
             console.log("deleting removed work days from team calendar")
             for(i=0; i<removedHolidaySelection.length;i++){
                 TeamCalendar.updateOne(
-                    {team: "chengdu","approvedLeave.staffName": "team calendar", "approvedLeave.startDateUnix": removedHolidaySelection[i].toString()},
-                    {$pull: {approvedLeave: {startDateUnix: removedHolidaySelection[i].toString(),endDateUnix: removedHolidaySelection[i].toString()}}}
+                    {team: "chengdu"},
+                    {$pull: {
+                        approvedLeave: {startDateUnix: removedHolidaySelection[i].toString(),
+                            endDateUnix: removedHolidaySelection[i].toString(),
+                            staffName: "team calendar"
+                        }
+                    }}
                 )
                 .then(()=>{
                     console.log("successfully deleted from calendar")

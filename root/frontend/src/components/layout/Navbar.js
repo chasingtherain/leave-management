@@ -1,24 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useMainContext } from '../../hooks/useMainContext'
+import Loading from '../Loading'
 
 function Navbar() {
     const {currentUser, setActiveTab, setCurrentUser, setCurrentLeaveSelection} = useMainContext()
     const url = `${process.env.REACT_APP_BACKENDURL}/logout`
     const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false)
 
-    const signOutCurrentUser = async () => {
-        const resp = await axios.post(url)
-        console.log(resp)
-        if(resp.status === 200) {
-            toast.success("Log out successful / 已登出")
-            sessionStorage.removeItem('leaveMgtToken')
-            setCurrentUser(null)
-            navigate('/login')
-        }
-        else {toast.error("failed to log out / 登出失败")}
+    const signOutCurrentUser = () => {
+        axios
+            .post(url)
+            .then((resp)=>{
+                setIsLoading(true)
+                if(resp.status === 200) {
+                    toast.success("Log out successful / 已登出")
+                    setIsLoading(false)
+                    sessionStorage.removeItem('leaveMgtToken')
+                    setCurrentUser(null)
+                    navigate('/login')
+                }
+                else {
+                    setIsLoading(false)
+                    toast.error("failed to log out / 登出失败")
+                }
+            })
+            .catch(err => {
+                toast.warning("failed to log out")
+                console.log("err: ", err)
+            })
     }
 
     const clearState = () => {
@@ -72,6 +85,7 @@ function Navbar() {
                     {/* if user is not signed in, log out will be hidden */}
                     {currentUser && <Link to="/login" className="text-lg mx-2 text-white cursor-pointer hover:text-gray-400" onClick={signOutCurrentUser}>Log Out</Link>}
                 </div>
+                {isLoading && <Loading/>}
         </div>
         )
 }

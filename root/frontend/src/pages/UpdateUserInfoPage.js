@@ -28,14 +28,13 @@ function UpdateUserInfoPage() {
            axios
             .post(`${process.env.REACT_APP_BACKENDURL}/admin/delete-user`, deleteUserData)
             .then((resp) => {
+                toast.success(`${currentEditUser.email}'s account deleted!`)
                 setIsLoading(false)
                 console.log(resp)
                 fetchUserList()
                 navigate('/user-management')
             })
             .catch(err => console.log(err))
-
-           alert(`${currentEditUser.email}'s account deleted!`)
        }
     }
 
