@@ -8,6 +8,7 @@ const MongoDBStore = require('connect-mongodb-session')(session)
 const multer = require('multer')
 const helmet = require('helmet')
 const compression = require('compression')
+const cronJob = require('../backend/cronjob')
 
 require('dotenv').config()
 
@@ -46,6 +47,7 @@ mongoose
         console.log("MongoDB connection via mongoose successful".green)
         app.listen(process.env.PORT || 8008)
         console.log(`Server started on ${process.env.PORT}`.green)
+        cronJob.runCronJob()
     })
     .catch(err => {
         console.log(err)
