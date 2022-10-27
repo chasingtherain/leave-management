@@ -6,8 +6,10 @@ const Leave = require('../backend/models/leave')
 const date = new Date()
 const currentYear = date.getFullYear()
 
-const updateUserEntitlement = () => {
 
+
+const updateUserEntitlement = () => {
+    
     User
         .find({isAdmin: "user"})
         .then(users => {

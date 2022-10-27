@@ -5,9 +5,9 @@ const TeamCalendar = require('../models/teamCalendar')
 const TeamCalendarRecord = require('../models/teamCalendarRecord')
 
 const bcrypt = require('bcryptjs')
-
 const sendgridMail = require('@sendgrid/mail')
 const jwt = require('jsonwebtoken')
+const io = require('../socket')
 
 const date = new Date()
 const currentYear = date.getFullYear()
@@ -204,9 +204,18 @@ exports.approveLeave = (req,res,next) => {
             teamCalendarRecord
                 .save()
                 .then((teamCalResult)=> {
-                    console.log(teamCalResult)
+                    if(!teamCalResult){
+                        throw new Error("failed to create team calendar record")
+                    }
+                    console.log("team calendar record created")
+
+                    // broadcast calendar record creation event to all users for dynamic calendar update
+                    io.getIO.emit('calendar', { action: 'create', calendarRecord: teamCalendarRecord})
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.log("err: ", err)
+                    res.status(400).send("failed to create team calendar record")
+                })
                 
             return TeamCalendar.findOneAndUpdate(
                 {team: "chengdu"},

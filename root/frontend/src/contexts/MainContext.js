@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState } from 'react'
 import axios from 'axios';
 import { toast } from 'react-toastify'
+import openSocket from 'socket.io-client'
+
 export const MainContext = createContext()
 
 export const MainContextProvider = ({ children }) => {
@@ -88,23 +90,24 @@ export const MainContextProvider = ({ children }) => {
         })
         .catch(err => console.log(err))
       }
-    setTimeout( () => setAuthState(true), 1000)
-    // setAuthState(true)
-}
+      setTimeout( () => setAuthState(true), 1000)
+      // setAuthState(true)
+  }
 
+const validateEmail = (email) => {
+  let regex = /\S+@\S+\.\S+/;
+  return regex.test(email); // returns true if email is valid
+}
   useEffect(()=>{
     fetchUserList()
     fetchTeamCalendar()
     fetchWorkDay()
     validateSession()
     console.log("use effect triggered")
+    openSocket(process.env.REACT_APP_BACKENDURL)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const validateEmail = (email) => {
-    let regex = /\S+@\S+\.\S+/;
-    return regex.test(email); // returns true if email is valid
-  }
 
   return (
     <MainContext.Provider value={{

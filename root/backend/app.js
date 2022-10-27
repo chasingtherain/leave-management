@@ -20,9 +20,6 @@ const store = new MongoDBStore({
     collection: 'sessions',
 })
 
-
-
-
 const adminRoutes = require('./routes/admin')
 const userRoutes = require('./routes/user')
 const authRoutes = require('./routes/auth')
@@ -44,10 +41,17 @@ app.use(authRoutes)
 mongoose
     .connect(MONGODB_URI)
     .then(client => {
+        const server = app.listen(process.env.PORT || 8008)
+        const io = require('./socket').init(server)
+
         console.log("MongoDB connection via mongoose successful".green)
-        app.listen(process.env.PORT || 8008)
         console.log(`Server started on ${process.env.PORT}`.green)
         cronJob.runCronJob()
+
+        io.on('connection', socket => {
+            console.log("client connected")
+        })
+
     })
     .catch(err => {
         console.log(err)
