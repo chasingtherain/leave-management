@@ -7,15 +7,13 @@ import { useMainContext } from '../hooks/useMainContext'
 
 function TeamCalendar() {
     const {teamCalendar} = useMainContext()
-    console.log(teamCalendar)
+
     const approvedTeamLeave = teamCalendar.filter(entry => entry.status === "approved")
-    console.log("approvedTeamLeave: ", approvedTeamLeave)
     moment.tz.setDefault('Asia/Singapore')
     const localizer = momentLocalizer(moment)
 
     const eventPropGetter = (event) => {
         let backgroundColor;
-        console.log(event)
         switch (event.type) {
             case "holiday":
                 backgroundColor = '#37C399'

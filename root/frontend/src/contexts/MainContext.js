@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useRef, useState } from 'react'
 import axios from 'axios';
 import { toast } from 'react-toastify'
 import openSocket from 'socket.io-client'
@@ -24,6 +24,8 @@ export const MainContextProvider = ({ children }) => {
 
   const [currentWorkdaySelection, setCurrentWorkdaySelection] = useState([])
   const [currentHolidaySelection, setCurrentHolidaySelection] = useState([])
+
+  const isFirstRender = useRef(true)
 
   const fetchUserList = async () => {
     axios
@@ -94,20 +96,50 @@ export const MainContextProvider = ({ children }) => {
       // setAuthState(true)
   }
 
-const validateEmail = (email) => {
-  let regex = /\S+@\S+\.\S+/;
-  return regex.test(email); // returns true if email is valid
-}
+  const openSocketConnection = (teamCalendar) => {
+      console.log("open socket fx executed!")
+      const socket = openSocket(process.env.REACT_APP_BACKENDURL)
+      socket.on('calendar', data => {
+        if(data.action === 'create'){
+          console.log("socket data", data)
+          console.log("team calendar (before addition): ", teamCalendar)
+          setTeamCalendar((teamCalendar) => [...teamCalendar, data.calendarRecord])
+          console.log("team calendar (after): ", teamCalendar)
+        }
+
+        if(data.action === 'delete'){
+          console.log("deleted data", data)
+          const deletedRecord = data.calendarRecord
+          const updatedCalendarRecord = teamCalendar.filter(record => 
+                                                              record.startDateUnix !== deletedRecord.startDateUnix &&
+                                                              record.endDateUnix !== deletedRecord.endDateUnix &&
+                                                              record.staffName !== deletedRecord.staffName
+                                                            )
+          console.log("team calendar (before addition): ", teamCalendar)
+          setTeamCalendar((updatedCalendarRecord) => [...updatedCalendarRecord])
+          console.log("team calendar (after): ", updatedCalendarRecord)
+        }
+      })
+    }
+
+  const validateEmail = (email) => {
+    let regex = /\S+@\S+\.\S+/;
+    return regex.test(email); // returns true if email is valid
+  }
+
   useEffect(()=>{
     fetchUserList()
     fetchTeamCalendar()
     fetchWorkDay()
     validateSession()
+
+    isFirstRender.current && openSocketConnection()
+    isFirstRender.current = false // prevent opening socket twice
+
     console.log("use effect triggered")
-    openSocket(process.env.REACT_APP_BACKENDURL)
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
 
   return (
     <MainContext.Provider value={{
@@ -124,6 +156,7 @@ const validateEmail = (email) => {
       currentWorkdaySelection,
       fetchCurrentUserInfo,
       fetchUserList,
+      openSocketConnection,
       setActiveTab,
       setCurrentEditUser,
       setCurrentLeaveSelection,

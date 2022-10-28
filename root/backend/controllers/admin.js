@@ -183,7 +183,7 @@ exports.approveLeave = (req,res,next) => {
                 throw new Error("approve leave: did not find user record in db") 
             }
             console.log("updated reporting's staffLeave")
-            console.log(user)
+            // console.log(user)
             return user.save()
         })
         .then((user) => {
@@ -210,7 +210,7 @@ exports.approveLeave = (req,res,next) => {
                     console.log("team calendar record created")
 
                     // broadcast calendar record creation event to all users for dynamic calendar update
-                    io.getIO.emit('calendar', { action: 'create', calendarRecord: teamCalendarRecord})
+                    io.getIO().emit('calendar', { action: 'create', calendarRecord: teamCalendarRecord})
                 })
                 .catch(err => {
                     console.log("err: ", err)

@@ -17,7 +17,7 @@ exports.postLogin = (req,res,next) => {
         .findOne({email: email})
         .then(user => {
             if(!user){
-                throw new Error("login: email is not registered") 
+                res.status(400).send("login: email is not registered") 
             }
             bcrypt
                 .compare(password, user.password)
