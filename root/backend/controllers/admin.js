@@ -368,7 +368,7 @@ exports.approveLeave = (req,res,next) => {
                 staffName: staffName
             }
             
-            // update client to delete in real time
+            // update client to delete cal record in real time
             io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
 
             return TeamCalendar.updateOne(
@@ -774,6 +774,7 @@ exports.setWorkDay = (req,res,next) => {
     const entity = req.body.entity
     const initialWorkdaySelection = req.body.initialWorkdaySelection
     const initialHolidaySelection = req.body.initialHolidaySelection
+
     console.log("initialHolidaySelection: ", initialHolidaySelection, "holidaySelection: ",holidaySelection)
     console.log("removed work days: ", initialWorkdaySelection.filter(x => workDaySelection.includes(x) === false))
     // console.log("new work days added: ", workDaySelection.filter(x => initialWorkdaySelection.includes(x) === false))
@@ -818,8 +819,13 @@ exports.setWorkDay = (req,res,next) => {
                 status: "approved"
             })
             recordsOfNewWorkdaysAdded.push(teamCalendarRecord)
+
+            // broadcast each calendar record creation event to all users for dynamic calendar update
+            io.getIO().emit('calendar', { action: 'create', calendarRecord: teamCalendarRecord})
         }
+
         console.log("recordsOfNewWorkdaysAdded: ", recordsOfNewWorkdaysAdded)
+
         // console.log("teamCalendarRecord:", teamCalendarRecord)
 
         return TeamCalendar.findOneAndUpdate(
@@ -852,6 +858,9 @@ exports.setWorkDay = (req,res,next) => {
                 status: "approved"
             })
             recordsOfNewHolidaysAdded.push(teamCalendarRecord)
+
+            // broadcast each calendar record creation event to all users for dynamic calendar update
+            io.getIO().emit('calendar', { action: 'create', calendarRecord: teamCalendarRecord})
         }
         console.log("recordsOfNewHolidaysAdded: ", recordsOfNewHolidaysAdded)
         // console.log("teamCalendarRecord:", teamCalendarRecord)
@@ -883,17 +892,29 @@ exports.setWorkDay = (req,res,next) => {
                     }}}
                 )
                 .then(()=>{
+            
                     console.log("successfully deleted from calendar")
                 })
                 .catch((err)=> console.log(err))
+
+                const deletedTeamCalendarRecord = 
+                {
+                    startDateUnix: removedWorkdaySelection[i].toString(), 
+                    endDateUnix: removedWorkdaySelection[i].toString(), 
+                    staffName: "team calendar"
+                }
+                // update client to delete cal record in real time
+                io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
             }
             console.log("removedHolidaySelection: ", removedHolidaySelection)
+
         }
 
         if (removedHolidaySelection.length){
             // delete removed holidays from team calendar
-            console.log("deleting removed work days from team calendar")
+            console.log("deleting removed holidays from team calendar")
             for(i=0; i<removedHolidaySelection.length;i++){
+                console.log("i: ", i)
                 TeamCalendar.updateOne(
                     {team: "chengdu"},
                     {$pull: {
@@ -907,6 +928,16 @@ exports.setWorkDay = (req,res,next) => {
                     console.log("successfully deleted from calendar")
                 })
                 .catch((err)=> console.log(err))
+
+                const deletedTeamCalendarRecord = 
+                {
+                    startDateUnix: removedHolidaySelection[i].toString(), 
+                    endDateUnix: removedHolidaySelection[i].toString(), 
+                    staffName: "team calendar"
+                }
+
+                // update client to delete cal record in real time
+                io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
             }
         }
         res.send("set work day successful")
