@@ -21,7 +21,7 @@ exports.getUser = (req,res,next) => {
             if(!user){
                 return res.status(400).send("user not found")
             }
-            res.status(200).send(
+            return res.status(200).send(
                 {
                     _id: user._id,
                     name: user.name,
@@ -43,10 +43,10 @@ exports.getAllUsers = (req,res,next) => {
     User.find((err, docs) => {
         if (!err) {
             // console.log(docs)
-            res.status(200).send(docs)   
+            return res.status(200).send(docs)   
         } else {
             console.log('Failed to get all users: ' + err);
-            res.status(400).send('Failed to get all users: ' + err)
+            return res.status(400).send('Failed to get all users: ' + err)
         }
     });
 }
@@ -71,11 +71,11 @@ exports.getTeamLeaveRecords = (req,res,next) => {
             
             // console.log(newTeamLeave)
             
-            res.send(newTeamLeave)
+            return res.send(newTeamLeave)
             })
         .catch(err => {
             console.log("team cal error: ", err)
-            res.status(400).send(`team cal error: ${err}`)
+            return res.status(400).send(`team cal error: ${err}`)
         })
 }
 
@@ -103,15 +103,15 @@ exports.getNumOfDaysApplied = (req,res,next) => {
                     inclusions: workdaySelection // count as business days
                 })
                 console.log(moment(startDate).format("DD MMM YYYY"), moment(endDate).format("DD MMM YYYY"), numOfDays)
-                res.status(200).send({numOfDaysApplied: numOfDays})
+                return res.status(200).send({numOfDaysApplied: numOfDays})
             }
             else{
-                res.status(400).send("start date is bigger than end date")
+                return res.status(400).send("start date is bigger than end date")
             }
         })
         .catch(err => {
             console.log("get team leave: ", err)
-            res.status(400).json(`get team leave: ${err}`) 
+            return res.status(400).json(`get team leave: ${err}`) 
         })
 }
 
@@ -261,13 +261,13 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 console.error("sendgrid error when sending to reporting: ", error)
             })
 
-        res.status(200).send("leave application successful, email sent to user, covering and reporting officer") 
+        return res.status(200).send("leave application successful, email sent to user, covering and reporting officer") 
 
         console.log("leave application successful")
 
         })
         .catch(err => {
-            res.status(400).send(`postLeaveApplicationForm err: ${err}`)
+            return res.status(400).send(`postLeaveApplicationForm err: ${err}`)
             console.log("postLeaveApplicationForm err: ", err)
         })
 }
@@ -354,7 +354,7 @@ exports.cancelLeaveRequest = (req,res) => {
                 .send(cancellationEmailToReporting) // email to inform reporting of user's leave request
                 .then(() => {
                     console.log('cancellation email for approved leave sent to RO')
-                    res.send("updated leave status to pending cancellation")
+                    return res.send("updated leave status to pending cancellation")
                 })
                 .catch((error) => {
                     console.error("sendgrid error when sending cancellation email for approved leave to RO: ", error)
@@ -362,7 +362,7 @@ exports.cancelLeaveRequest = (req,res) => {
         })
         .catch(err => {
             console.log("failed to cancel leave (pending cancellation) err:", err)
-            res.status(400).json(`failed to cancel leave (pending cancellation) err: ${err}`)
+            return res.status(400).json(`failed to cancel leave (pending cancellation) err: ${err}`)
         })
     }
 
@@ -446,11 +446,11 @@ exports.cancelLeaveRequest = (req,res) => {
                     throw new Error("cancel leave: failed to update RO's staffLeave to cancelled") 
                 }
                 console.log("updated leave status to cancelled for both staff and RO")
-                res.send("updated leave status to cancelled for both staff and RO")
+                return res.send("updated leave status to cancelled for both staff and RO")
             })
             .catch(err => {
                 console.log("failed to cancel leave:", err)
-                res.status(400).json(`failed to cancel leave: ${err}`)
+                return res.status(400).json(`failed to cancel leave: ${err}`)
             })
     }
     else{
@@ -506,11 +506,11 @@ exports.cancelLeaveRequest = (req,res) => {
                     throw new Error("cancel leave: failed to update RO's staffLeave status to cancelled") 
                 }
                 console.log("updated leave status to cancelled for both staff and RO")
-                res.send("updated leave status to cancelled for both staff and RO")
+                return res.send("updated leave status to cancelled for both staff and RO")
             })
             .catch(err => {
                 console.log("failed to cancel leave:", err)
-                res.status(400).json(`failed to cancel leave: ${err}`)
+                return res.status(400).json(`failed to cancel leave: ${err}`)
             })
     }
 }

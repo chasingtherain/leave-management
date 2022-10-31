@@ -17,7 +17,7 @@ exports.postLogin = (req,res,next) => {
         .findOne({email: email})
         .then(user => {
             if(!user){
-                res.status(400).send("login: email is not registered") 
+                return res.status(400).send("login: email is not registered") 
             }
             bcrypt
                 .compare(password, user.password)
@@ -37,7 +37,7 @@ exports.postLogin = (req,res,next) => {
                                 )
                                 .then(result => {
                                     // console.log(result.sessionToken)
-                                    res.status(200).send(
+                                    return res.status(200).send(
                                         {
                                             _id: user._id,
                                             name: user.name,
@@ -57,12 +57,12 @@ exports.postLogin = (req,res,next) => {
 
                         })
                     }
-                    res.status(401).send("password does not match")
+                    return res.status(401).send("password does not match")
                     console.log("password does not match")
                 })
                 .catch( err => {
                     console.log(err)
-                    res.status(400).send("email is not registered")
+                    return res.status(400).send("email is not registered")
                 })
         })
 }
@@ -73,7 +73,7 @@ exports.postLogout = (req,res,next) => {
         req.session.destroy((err) => {
             if (err) throw err
             req.session = null
-            res.status(200).send("sign out successful")
+            return res.status(200).send("sign out successful")
         })
         // console.log("after destroying: ", req.session)
     }
@@ -88,7 +88,7 @@ exports.postValidateSession = (req,res,next) => {
             if(!user){
                 return res.status(400).send("invalid token!")
             }
-            res.send(user)
+            return res.send(user)
         })
         .catch(err => console.log(err))
 }
@@ -131,7 +131,7 @@ exports.postChangePassword = (req,res,next) => {
             sendgridMail
                 .send(msg)
                 .then(() => {
-                    res.status(200).send("reset password email sent")
+                    return res.status(200).send("reset password email sent")
                     console.log('Email sent')
                 })
                 .catch((error) => {
@@ -169,11 +169,11 @@ exports.postUpdatePassword = (req,res,next) => {
                 throw new Error("update password: failed to update password") 
             }
             console.log(result)
-            res.status(200).send("password reset successful")
+            return res.status(200).send("password reset successful")
         })
         .catch(err => {
-            if(!currentUser) res.status(402).send("token expired")
-            res.status(500).send("please contact engineer")
+            if(!currentUser) return res.status(402).send("token expired")
+            return res.status(500).send("please contact engineer")
             console.log("postUpdatePassword err: ", err)
         })
 }

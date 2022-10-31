@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Calendar, DateObject } from "react-multi-date-picker"
+import { Calendar } from "react-multi-date-picker"
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import DatePanel from 'react-multi-date-picker/plugins/date_panel';
@@ -8,17 +8,12 @@ import Loading from '../components/Loading';
 function SetWorkdayPage() {
     const {currentHolidaySelection, setCurrentHolidaySelection, currentWorkdaySelection, setCurrentWorkdaySelection} = useMainContext()
     const date = new Date()
-    const datePanel = new DateObject()
 
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const [initialHolidaySelection, setInitialHolidaySelection] = useState(currentHolidaySelection)
     const [initialWorkdaySelection, setInitialWorkdaySelection] = useState(currentWorkdaySelection)
-    
-
-    console.log(new DateObject().add(2, "days"))
-    console.log(datePanel.format('DD MMM YYYY'))
 
     const handleWorkDaySelection = (date) => {
         setCurrentWorkdaySelection(date)
@@ -26,12 +21,15 @@ function SetWorkdayPage() {
     }
     
     const handleHolidaySelection = (date) => {
-        console.log("updated holiday dates: ", date)
+        // console.log("updated holiday dates: ", date)
         setCurrentHolidaySelection(date)
         setDisableUpdateButton(false)
     }
 
+    // console.log("currentWorkdaySelection: ",currentWorkdaySelection)
+    // console.log("currentHolidaySelection: ",currentHolidaySelection)
     const handleSubmitChange = () => {
+
         const url = `${process.env.REACT_APP_BACKENDURL}/admin/set-work-day`
 
         const workdayData = {
@@ -43,6 +41,7 @@ function SetWorkdayPage() {
         }
         
         console.log("workdayData: ", workdayData)
+
         if(window.confirm("Update changes?")){
             setIsLoading(true)
             
@@ -50,6 +49,7 @@ function SetWorkdayPage() {
                 axios
                 .post(url, workdayData)
                 .then((res => {
+
                     setIsLoading(false)
                     // set new initial workday and holiday after updated selection is successfully sent to server
                     setInitialWorkdaySelection(currentWorkdaySelection)
@@ -57,10 +57,14 @@ function SetWorkdayPage() {
                     console.log(res)
                     toast.success("Update successful")
                     }))
-                    .catch(err => {
-                        console.log("err: ", err)
-                        toast.warning("Update failed")
-                    })
+                .catch(err => {
+                    if(err.response.status === 400){
+                        setIsLoading(false)
+                        return toast.error("a day cannot be both a workday and holiday")
+                    }
+                    console.log("err: ", err)
+                    toast.warning("Update failed")
+                })
             }, 1000)
             setDisableUpdateButton(true)
         }
@@ -91,7 +95,11 @@ function SetWorkdayPage() {
                     format='DD MMM YYYY'
                     value={currentHolidaySelection}
                     onChange={handleHolidaySelection}
-                    plugins={[<DatePanel position="left" sort="date" header={`Off in lieu (${currentHolidaySelection.length})`}/>]}
+                    plugins={[<DatePanel 
+                                position="left" 
+                                sort="date" 
+                                header={`Off in lieu (${currentHolidaySelection.length})`}
+                            />]}
                 />
         </div>
 

@@ -98,13 +98,13 @@ exports.postCreateUser = (req,res,next) => {
                                 console.error("sendgrid error: ", error)
                             })
                         console.log("user created")
-                        res.status(200).send(user)   
+                        return res.status(200).send(user)   
                     })
                 })
         })
         .catch((err)=> {
             console.log("failed to create user", err)
-            res.status(400).send(`failed to create user ${err}`)
+            return res.status(400).send(`failed to create user ${err}`)
         })
 
 
@@ -119,11 +119,11 @@ exports.postDeleteUser = (req,res,next) => {
                 throw new Error("delete user: did not find user record in db") 
             }
             console.log("user: ", user)
-            res.send("user deleted")
+            return res.send("user deleted")
         })
         .catch((err)=> {
             console.log("failed to delete user", err)
-            res.status(400).send(`failed to delete user ${err}`)
+            return res.status(400).send(`failed to delete user ${err}`)
         })
 
 
@@ -132,7 +132,7 @@ exports.postDeleteUser = (req,res,next) => {
 exports.postCreateLeaveType = (req,res,next) => {
     console.log(req.body)
 
-    res.send("controller connected")
+    return res.send("controller connected")
 }
 
 exports.approveLeave = (req,res,next) => {
@@ -214,7 +214,7 @@ exports.approveLeave = (req,res,next) => {
                 })
                 .catch(err => {
                     console.log("err: ", err)
-                    res.status(400).send("failed to create team calendar record")
+                    return res.status(400).send("failed to create team calendar record")
                 })
                 
             return TeamCalendar.findOneAndUpdate(
@@ -291,7 +291,7 @@ exports.approveLeave = (req,res,next) => {
             sendgridMail
                 .send(approvalEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    res.status(200).send("approval email sent to user, covering and reporting")
+                    return res.status(200).send("approval email sent to user, covering and reporting")
                     console.log('approval email sent to user and covering')
                 })
                 .catch((error) => {
@@ -301,7 +301,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .catch((err)=> {
             console.log("failed to approve leave", err)
-            res.status(400).send(`failed to approve leave: ${err}`)
+            return res.status(400).send(`failed to approve leave: ${err}`)
         })
     }
     
@@ -400,7 +400,7 @@ exports.approveLeave = (req,res,next) => {
             sendgridMail
                 .send(cancellationApprovalEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    res.status(200).send("cancellation approval email sent to user, covering and reporting")
+                    return res.status(200).send("cancellation approval email sent to user, covering and reporting")
                     console.log('cancellation approval email sent to user and covering')
                 })
                 .catch((error) => {
@@ -409,7 +409,7 @@ exports.approveLeave = (req,res,next) => {
                 })
         })
         .catch(err => {
-            res.status(400).send( `failed to approve leave cancellation: ${err}`)
+            return res.status(400).send( `failed to approve leave cancellation: ${err}`)
             console.log("failed to approve leave cancellation", err)
         })
     }
@@ -489,7 +489,7 @@ exports.approveLeave = (req,res,next) => {
             sendgridMail
                 .send(cancellationApprovalEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    res.status(200).send("cancellation approval email sent to user, covering and reporting")
+                    return res.status(200).send("cancellation approval email sent to user, covering and reporting")
                     console.log('cancellation approval email sent to user and covering')
                 })
                 .catch((error) => {
@@ -499,7 +499,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .catch((err)=> {
             console.log("failed to approve leave", err)
-            res.status(400).send(`failed to approve leave: ${err}`)
+            return res.status(400).send(`failed to approve leave: ${err}`)
         })
     }
 }
@@ -587,7 +587,7 @@ exports.rejectLeave = (req,res,next) => {
             sendgridMail
                 .send(rejectionEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    res.send("status updated to rejected on user and reporting officer's table")
+                    return res.send("status updated to rejected on user and reporting officer's table")
                     console.log('rejection email sent to user and covering')
                 })
                 .catch((error) => {
@@ -597,7 +597,7 @@ exports.rejectLeave = (req,res,next) => {
         })
         .catch(err => {
             console.log("pending count adjustment for rejected leave err:", err)
-            res.status(400).json(`pending count adjustment for rejected leave err: ${err}`)
+            return res.status(400).json(`pending count adjustment for rejected leave err: ${err}`)
         })
     }
     
@@ -661,7 +661,7 @@ exports.rejectLeave = (req,res,next) => {
                 sendgridMail
                     .send(cancellationRejectedEmail) // email to inform user and covering of leave request
                     .then(() => {
-                        res.send("status updated back to approved on user and reporting officer's table")
+                        return res.send("status updated back to approved on user and reporting officer's table")
                         console.log('cancellation rejected email sent to user and covering')
                     })
                     .catch((error) => {
@@ -670,7 +670,7 @@ exports.rejectLeave = (req,res,next) => {
                     })
         })
         .catch(err => {
-            res.status(400).json(`reject leave unsuccessful: ${err}`)
+            return res.status(400).json(`reject leave unsuccessful: ${err}`)
             console.log("reject leave unsuccessful")
         })
     }
@@ -686,7 +686,7 @@ exports.getUserInfoByEmail = (req,res,next) => {
             if(!user){
                 throw new Error("did not find user record in db while updating user records") 
             }
-            res.status(200).send(
+            return res.status(200).send(
                 {
                     _id: user._id,
                     name: user.name,
@@ -727,7 +727,7 @@ exports.postUpdateUser = (req,res,next) => {
         })
         .catch((err)=> {
             // console.log("update reporting email error: ", err)
-            res.status(400).json(`update reporting email error: ${err}`)
+            return res.status(400).json(`update reporting email error: ${err}`)
         })
     }
     // update covering's email
@@ -744,10 +744,10 @@ exports.postUpdateUser = (req,res,next) => {
         })
         .catch((err)=> {
             // console.log("update covering email error: ", err)
-            res.status(400).json(`update covering email error: ${err}`)
+            return res.status(400).json(`update covering email error: ${err}`)
         })
     }
-    res.status(200).send("update successful")
+    return res.status(200).send("update successful")
 }
 
 exports.getWorkDay = (req,res,next) => {
@@ -759,7 +759,7 @@ exports.getWorkDay = (req,res,next) => {
             if(!record){
                 throw new Error("getWorkDay: did not find team calendar record in db") 
             }
-            res.status(200).json(
+            return res.status(200).json(
                 {
                     holiday: record.holiday,
                     workday: record.workday
@@ -771,9 +771,18 @@ exports.getWorkDay = (req,res,next) => {
 exports.setWorkDay = (req,res,next) => {
     const workDaySelection = req.body.currentWorkdaySelection
     const holidaySelection = req.body.currentHolidaySelection
+
+    const formattedWorkdaySelection = workDaySelection.map(date => moment(date).format("YYYY/MM/DD"))
+    const formattedHolidaySelection = holidaySelection.map(date => moment(date).format("YYYY/MM/DD"))
+
     const entity = req.body.entity
     const initialWorkdaySelection = req.body.initialWorkdaySelection
     const initialHolidaySelection = req.body.initialHolidaySelection
+
+    console.log(formattedWorkdaySelection.some(workday => formattedHolidaySelection.includes(workday)))
+    if (formattedWorkdaySelection.some(workday => formattedHolidaySelection.includes(workday))){
+        return res.status(400).send("workday and holiday cannot be the same day")
+    }
 
     console.log("initialHolidaySelection: ", initialHolidaySelection, "holidaySelection: ",holidaySelection)
     console.log("removed work days: ", initialWorkdaySelection.filter(x => workDaySelection.includes(x) === false))
@@ -791,7 +800,6 @@ exports.setWorkDay = (req,res,next) => {
     const newHolidaysAdded = holidaySelection.filter(x => initialHolidaySelection.includes(x) === false)
 
     // console.log("req.body: ", req.body)
-
 
     Workday.findOneAndUpdate(
         {entity: entity},
@@ -940,10 +948,10 @@ exports.setWorkDay = (req,res,next) => {
                 io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
             }
         }
-        res.send("set work day successful")
+        return res.send("set work day successful")
     })
     .catch((err)=> {
-        res.status(400).json("set work day unsuccessful")
+        return res.status(400).json("set work day unsuccessful")
         console.log(err)
     })
 }
@@ -969,7 +977,7 @@ exports.postSendReminder = (req,res,next) => {
     sendgridMail
         .send(reminderEmail)
         .then(() => {
-            res.send("clear leave reminder email sent to user")
+            return res.send("clear leave reminder email sent to user")
             console.log('clear leave reminder email sent to user')
         })
         .catch((error) => {
