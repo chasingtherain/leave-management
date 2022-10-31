@@ -45,6 +45,10 @@ export const MainContextProvider = ({ children }) => {
       .then(resp =>{ 
         console.log("fetchTeamCalendar: ", resp.data)
         setTeamCalendar(resp.data)
+        
+        // opening connection here because socket function requires team calendar to work 
+        isFirstRender.current && openSocketConnection(resp.data)
+        isFirstRender.current = false // prevent opening socket twice
         // console.log(resp)
       })
       .catch(err => {
@@ -98,26 +102,31 @@ export const MainContextProvider = ({ children }) => {
 
   const openSocketConnection = (teamCalendar) => {
       console.log("open socket fx executed!")
+      console.log("teamcalendar", teamCalendar)
       const socket = openSocket(process.env.REACT_APP_BACKENDURL)
       socket.on('calendar', data => {
         if(data.action === 'create'){
-          console.log("socket data", data)
-          console.log("team calendar (before addition): ", teamCalendar)
+          // console.log("socket data", data)
+          // console.log("team calendar (before addition): ", teamCalendar)
           setTeamCalendar((teamCalendar) => [...teamCalendar, data.calendarRecord])
-          console.log("team calendar (after): ", teamCalendar)
+          // console.log("team calendar (after): ", teamCalendar)
         }
 
         if(data.action === 'delete'){
-          console.log("deleted data", data)
+          // console.log("deleted data", data)
           const deletedRecord = data.calendarRecord
-          const updatedCalendarRecord = teamCalendar.filter(record => 
-                                                              record.startDateUnix !== deletedRecord.startDateUnix &&
-                                                              record.endDateUnix !== deletedRecord.endDateUnix &&
-                                                              record.staffName !== deletedRecord.staffName
+          // console.log("deletedRecord: ", deletedRecord)
+          // console.log("teamCalendar: ", teamCalendar)
+          const deletedCalendarRecord = teamCalendar.filter(record => 
+                                                              (record.startDateUnix === deletedRecord.startDateUnix &&
+                                                              record.endDateUnix === deletedRecord.endDateUnix &&
+                                                              record.staffName === deletedRecord.staffName)
                                                             )
-          console.log("team calendar (before addition): ", teamCalendar)
-          setTeamCalendar((updatedCalendarRecord) => [...updatedCalendarRecord])
-          console.log("team calendar (after): ", updatedCalendarRecord)
+
+          // console.log("updatedCalendarRecord: ", teamCalendar.filter(record => record.id !== deletedCalendarRecord[0].id))
+          // console.log("team calendar (before deleting): ", teamCalendar)
+          setTeamCalendar((teamCalendar) => teamCalendar.filter(record => record.id !== deletedCalendarRecord[0].id))
+          // console.log("team calendar (after): ", teamCalendar)
         }
       })
     }
@@ -132,9 +141,6 @@ export const MainContextProvider = ({ children }) => {
     fetchTeamCalendar()
     fetchWorkDay()
     validateSession()
-
-    isFirstRender.current && openSocketConnection()
-    isFirstRender.current = false // prevent opening socket twice
 
     console.log("use effect triggered")
 

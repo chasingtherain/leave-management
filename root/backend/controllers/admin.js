@@ -360,6 +360,17 @@ exports.approveLeave = (req,res,next) => {
             // remove from team leave record
             console.log("adjusted quota used value")
             console.log("deleting from team calendar")
+
+            const deletedTeamCalendarRecord = 
+            {
+                startDateUnix: startDateUnix.toString(), 
+                endDateUnix: endDateUnix.toString(), 
+                staffName: staffName
+            }
+            
+            // update client to delete in real time
+            io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
+
             return TeamCalendar.updateOne(
                 {team: "chengdu"},
                 {$pull: {approvedLeave: {startDateUnix: startDateUnix.toString(),endDateUnix: endDateUnix.toString(), staffName: staffName, type: "leave"}}}
@@ -369,6 +380,7 @@ exports.approveLeave = (req,res,next) => {
             if(!teamCalResult){
                 throw new Error("approve leave(cancel approved): err deleting team calendar record") 
             }
+
             console.log(teamCalResult)
             // send cancellation approval email 
             const cancellationApprovalEmail = {

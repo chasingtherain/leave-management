@@ -8,6 +8,8 @@ const sendgridMail = require('@sendgrid/mail');
 const leaveHistory = require('../models/leaveHistory');
 const TeamCalendar = require('../models/teamCalendar')
 
+const io = require('../socket')
+
 const date = new Date()
 
 exports.getUser = (req,res,next) => {
@@ -386,13 +388,23 @@ exports.cancelLeaveRequest = (req,res) => {
                         startDateUnix: startDateUnix.toString(), 
                         endDateUnix: endDateUnix.toString(), 
                         staffName: staffName, 
-                        startDateUnix: startDateUnix}}}
+                    }}}
                 )
             })
             .then((teamCalResult)=>{
                 if(!teamCalResult){
                     throw new Error("cancel leave: err deleting team calendar record") 
                 }
+                const teamCalendarRecord = 
+                {
+                    startDateUnix: startDateUnix.toString(), 
+                    endDateUnix: endDateUnix.toString(), 
+                    staffName: staffName
+                }
+
+                // update client to delete in real time
+                io.getIO().emit('calendar', { action: 'delete', calendarRecord: teamCalendarRecord})
+
                 console.log("teamCalResult: ", teamCalResult)
                 // update user's leave history status
                 return User.findOneAndUpdate( 
@@ -442,7 +454,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
     }
     else{
-        // scenario: leave was not approved and not consumed yet (i.e. date has not passed)
+        // scenario: leave is still pending approval and not consumed yet (i.e. date has not passed)
         // do not require RO approval to cancel leave
 
         User
