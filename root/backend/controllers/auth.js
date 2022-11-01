@@ -71,7 +71,7 @@ exports.postLogout = (req,res,next) => {
     // console.log("before destroying: ", req.session)
     if(req.session){
         req.session.destroy((err) => {
-            if (err) throw err
+            if (err) res.status(400).send("failed to sign out")
             req.session = null
             return res.status(200).send("sign out successful")
         })

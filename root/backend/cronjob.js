@@ -9,7 +9,6 @@ const currentYear = date.getFullYear()
 
 
 const updateUserEntitlement = () => {
-    
     User
         .find({isAdmin: "user"})
         .then(users => {
