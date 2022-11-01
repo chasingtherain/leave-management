@@ -10,6 +10,11 @@ const generateToken = (id) => {
     return jwt.sign({id}, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '7d'})
 }
 
+exports.getHome = (req,res,next) => {
+    console.log("request received")
+    return res.status(200).send("homepage")
+}
+
 exports.postLogin = (req,res,next) => {
     const email = req.body.email
     const password = req.body.password
