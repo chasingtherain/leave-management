@@ -14,6 +14,7 @@ const currentYear = date.getFullYear()
 
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
+
 const chengduLrsLeaveScheme = [
     new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
     new Leave({name: `Annual Leave 年额带过 (${currentYear-1})`, type:"prevYearAnnual", entitlement: 0, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
@@ -985,4 +986,50 @@ exports.postSendReminder = (req,res,next) => {
         .catch((error) => {
             console.error("clear leave reminder email sendgrid error: ", error)
         })
+}
+
+exports.resetDatabaseToCleanSlate = (req,res,next) => {
+    const challengeToken = req.body.challengeToken
+    if(challengeToken !== "iamsingaporean"){
+        return res.status(400).send("denied by Thanos")
+    }
+
+    // reset team calendar's approved leave to []
+    TeamCalendar.findOneAndUpdate({team: "chengdu"},{$set: {"approvedLeave": []}},{upsert: true})
+    .then(record => {
+        if (!record){
+            return res.status(401).send("failed to reset TeamCalendar collection") 
+        }
+        console.log("team calendar db reset")
+
+        // drop all accounts except main admin
+        return User.find({}, (err, users) => {
+            if(err) return console.log("err: ", err)
+            if(users.length > 1){
+                users.forEach((user)=>{
+                    if(user.email !== "admin@mail.com"){
+                        return user.remove()
+                    }
+                })
+            }
+        })
+        .clone()
+        .then(()=> {
+            console.log("user db reset")
+                // set Workday's holiday and workday to []
+            Workday.findOneAndUpdate(
+                {entity: "chengdu"},
+                {$set: {"workday": [], "holiday": []}},
+                {upsert: true}
+            )
+            .then((result)=>{
+                if(!result){
+                    return res.status(400).send("failed to reset Workday collection")
+                }
+                console.log("work and holiday db reset")
+                return res.send("db reset complete")
+            })
+        })
+    })
+    .catch((err)=> console.log(err))
 }

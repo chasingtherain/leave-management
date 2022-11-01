@@ -23,6 +23,7 @@ import SetWorkdayPage from "./pages/SetWorkdayPage";
 import DashboardPage from "./pages/DashboardPage";
 import TeamCalendarPage from "./pages/TeamCalendarPage";
 import LoginRoute from "./components/private/LoginRoute";
+import ResetDatabasePage from "./pages/ResetDatabasePage";
 
 function App() {
   const {authState} = useMainContext()
@@ -81,6 +82,9 @@ function App() {
             </Route>
             <Route path = '/dashboard' element={<AdminRoute/>}>
               <Route path = '/dashboard' element={<DashboardPage/>}/>
+            </Route>
+            <Route path = '/clean-slate' element={<AdminRoute/>}>
+              <Route path = '/clean-slate' element={<ResetDatabasePage/>}/>
             </Route>
           </Routes>
         </Router>
