@@ -5,6 +5,7 @@ import axios from 'axios';
 import DatePanel from 'react-multi-date-picker/plugins/date_panel';
 import { useMainContext } from '../hooks/useMainContext';
 import Loading from '../components/Loading';
+
 function SetWorkdayPage() {
     const {currentHolidaySelection, setCurrentHolidaySelection, currentWorkdaySelection, setCurrentWorkdaySelection} = useMainContext()
     const date = new Date()
@@ -49,7 +50,6 @@ function SetWorkdayPage() {
                 axios
                 .post(url, workdayData)
                 .then((res => {
-
                     setIsLoading(false)
                     // set new initial workday and holiday after updated selection is successfully sent to server
                     setInitialWorkdaySelection(currentWorkdaySelection)
@@ -58,9 +58,10 @@ function SetWorkdayPage() {
                     toast.success("Update successful")
                     }))
                 .catch(err => {
+                    setIsLoading(false)
                     if(err.response.status === 400){
                         setIsLoading(false)
-                        return toast.error("a day cannot be both a workday and holiday")
+                        return toast.error("A day cannot be both a workday and holiday!")
                     }
                     console.log("err: ", err)
                     toast.warning("Update failed")

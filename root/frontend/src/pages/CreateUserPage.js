@@ -62,6 +62,7 @@ function CreateUserPage() {
             })
             .catch(err => {
                 console.log(err)
+                setIsLoading(false)
                 if (err.response.status === 499){
                     setCreateUserBtnLoading("")
                     toast.error("Email already exists on system!")

@@ -34,7 +34,10 @@ function UpdateUserInfoPage() {
                 fetchUserList()
                 navigate('/user-management')
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                setIsLoading(false)
+                console.log(err)
+            })
        }
     }
 
@@ -81,6 +84,7 @@ function UpdateUserInfoPage() {
                 navigate('/user-management')
             })
             .catch(err => {
+                setIsLoading(false)
                 console.log(err)
                 toast.warning(`failed to update user info`)
             })

@@ -890,6 +890,7 @@ exports.setWorkDay = (req,res,next) => {
             // delete removed work days from team calendar
             console.log("removedWorkdaySelection: ", removedWorkdaySelection)
             console.log("deleting removed work days from team calendar")
+
             for(i=0; i<removedWorkdaySelection.length;i++){
                 TeamCalendar.updateOne(
                     {team: "chengdu"},
@@ -905,24 +906,24 @@ exports.setWorkDay = (req,res,next) => {
                 })
                 .catch((err)=> console.log(err))
 
-                const deletedTeamCalendarRecord = 
+                const deletedWorkdayRecord = 
                 {
                     startDateUnix: removedWorkdaySelection[i].toString(), 
                     endDateUnix: removedWorkdaySelection[i].toString(), 
                     staffName: "team calendar"
                 }
                 // update client to delete cal record in real time
-                io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
+                io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedWorkdayRecord})
             }
-            console.log("removedHolidaySelection: ", removedHolidaySelection)
 
         }
 
         if (removedHolidaySelection.length){
+            console.log("removedHolidaySelection: ", removedHolidaySelection)
             // delete removed holidays from team calendar
             console.log("deleting removed holidays from team calendar")
             for(i=0; i<removedHolidaySelection.length;i++){
-                console.log("i: ", i)
+
                 TeamCalendar.updateOne(
                     {team: "chengdu"},
                     {$pull: {
@@ -937,7 +938,7 @@ exports.setWorkDay = (req,res,next) => {
                 })
                 .catch((err)=> console.log(err))
 
-                const deletedTeamCalendarRecord = 
+                const deletedHolidayRecord = 
                 {
                     startDateUnix: removedHolidaySelection[i].toString(), 
                     endDateUnix: removedHolidaySelection[i].toString(), 
@@ -945,14 +946,15 @@ exports.setWorkDay = (req,res,next) => {
                 }
 
                 // update client to delete cal record in real time
-                io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedTeamCalendarRecord})
+                io.getIO().emit('calendar', { action: 'delete', calendarRecord: deletedHolidayRecord})
+                console.log("deletedHolidayRecord: ", deletedHolidayRecord)
             }
         }
         return res.send("set work day successful")
     })
     .catch((err)=> {
-        return res.status(400).json("set work day unsuccessful")
-        console.log(err)
+        console.log("err: ", err)
+        return res.status(401).json("failed to set work day")
     })
 }
 

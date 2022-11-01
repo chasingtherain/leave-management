@@ -81,7 +81,11 @@ function Table({headerType}) {
                         toast.success("Leave Cancelled / 休假请求已取消")
                       }
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.log(err)
+                    setIsLoading(false)
+                    toast.error("failed to cancel leave / 取消休假请求失败")
+                })
         }
     }
 
@@ -129,6 +133,7 @@ function Table({headerType}) {
                     }
                 })
                 .catch(err => {
+                    setIsLoading(false)
                     toast.warning(`failed to ${action} leave`)
                     console.log(err)
                 })

@@ -104,6 +104,7 @@ export const MainContextProvider = ({ children }) => {
       console.log("open socket fx executed!")
       console.log("teamcalendar", teamCalendar)
       const socket = openSocket(process.env.REACT_APP_BACKENDURL)
+
       socket.on('calendar', data => {
         if(data.action === 'create'){
           // console.log("socket data", data)
@@ -115,17 +116,24 @@ export const MainContextProvider = ({ children }) => {
         if(data.action === 'delete'){
           // console.log("deleted data", data)
           const deletedRecord = data.calendarRecord
-          // console.log("deletedRecord: ", deletedRecord)
-          // console.log("teamCalendar: ", teamCalendar)
+          console.log("deletedRecord: ", deletedRecord)
+          console.log("teamCalendar: ", teamCalendar)
+
           const deletedCalendarRecord = teamCalendar.filter(record => 
                                                               (record.startDateUnix === deletedRecord.startDateUnix &&
                                                               record.endDateUnix === deletedRecord.endDateUnix &&
                                                               record.staffName === deletedRecord.staffName)
                                                             )
-
+          console.log("deletedCalendarRecord: ", deletedCalendarRecord)                                                      
           // console.log("updatedCalendarRecord: ", teamCalendar.filter(record => record.id !== deletedCalendarRecord[0].id))
           // console.log("team calendar (before deleting): ", teamCalendar)
-          setTeamCalendar((teamCalendar) => teamCalendar.filter(record => record.id !== deletedCalendarRecord[0].id))
+
+          if (deletedCalendarRecord.length){
+            setTeamCalendar((teamCalendar) => teamCalendar.filter(record => record.id !== deletedCalendarRecord[0].id))                                     
+          }
+          else{
+            window.location.reload();
+          }
           // console.log("team calendar (after): ", teamCalendar)
         }
       })

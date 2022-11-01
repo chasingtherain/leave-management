@@ -100,11 +100,12 @@ function ApplyLeavePage() {
                     toast.success("Leave application successful!")
                     navigate('/')
                 }
-                if(resp.status === 400){
-                    toast.warning("failed to apply leave")
-                  }
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                setIsLoading(false)
+                toast.warning("failed to apply leave / 申请失败")
+                console.log(err)
+            })
         
     }
 
