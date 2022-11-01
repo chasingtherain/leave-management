@@ -72,7 +72,7 @@ exports.postCreateUser = (req,res,next) => {
                     .save()
                     .then(result => {
                         if (!result){
-                            throw new Error("create user: user creation failed") 
+                            return res.status(401).send("create user: user creation failed") 
                         }
                         const msg = {
                         to: email, 
@@ -116,7 +116,7 @@ exports.postDeleteUser = (req,res,next) => {
     User.deleteOne({email: email})
         .then((user)=> {
             if (!user){
-                throw new Error("delete user: did not find user record in db") 
+                return res.status(400).send("delete user: did not find user record in db") 
             }
             console.log("user: ", user)
             return res.send("user deleted")
@@ -180,7 +180,7 @@ exports.approveLeave = (req,res,next) => {
             )
         .then((user)=>{
             if (!user){
-                throw new Error("approve leave: did not find user record in db") 
+                return res.status(401).send("approve leave: did not find user record in db") 
             }
             console.log("updated reporting's staffLeave")
             // console.log(user)
@@ -188,7 +188,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((user) => {
             if (!user){
-                throw new Error("approve leave: failed to upder user record in db") 
+                return res.status(401).send("approve leave: failed to upder user record in db") 
             }
             // update team calendar
             const teamCalendarRecord = new TeamCalendarRecord({
@@ -205,7 +205,7 @@ exports.approveLeave = (req,res,next) => {
                 .save()
                 .then((teamCalResult)=> {
                     if(!teamCalResult){
-                        throw new Error("failed to create team calendar record")
+                        return res.status(401).send("failed to create team calendar record")
                     }
                     console.log("team calendar record created")
 
@@ -228,14 +228,14 @@ exports.approveLeave = (req,res,next) => {
         })
         .then(record => {
             if (!record){
-                throw new Error("approve leave: failed to find team calendar record") 
+                return res.status(401).send("approve leave: failed to find team calendar record") 
             }
             console.log("record created on team calendar")
             return record.save()
         })
         .then((result)=>{
             if (!result){
-                throw new Error("approve leave: failed to add approved leave to team calendar") 
+                return res.status(401).send("approve leave: failed to add approved leave to team calendar") 
             }
             return User.findOneAndUpdate( // update user's leave status to approved
                 {
@@ -251,7 +251,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((result) => {
             if (!result){
-                throw new Error("approve leave: failed to update leave status to approved") 
+                return res.status(401).send("approve leave: failed to update leave status to approved") 
             }
             // update pending and quotaUsed count after rejection 
                 return User.findOneAndUpdate({email: staffEmail, "leave.name":leaveType}, 
@@ -261,7 +261,7 @@ exports.approveLeave = (req,res,next) => {
             })
         .then((result)=> {
             if (!result){
-                throw new Error("approve leave: failed to adjust pending and used leave count") 
+                return res.status(401).send("approve leave: failed to adjust pending and used leave count") 
             }
             console.log("subtracted from pending, added quotaUsed count")
 
@@ -323,7 +323,7 @@ exports.approveLeave = (req,res,next) => {
             )
         .then((user)=>{
             if(!user){
-                throw new Error("approve leave(cancel approved): did not find user record in db") 
+                return res.status(401).send("approve leave(cancel approved): did not find user record in db") 
             }
             console.log("updated RO's status to cancellation approved")
 
@@ -342,7 +342,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((result)=>{
             if(!result){
-                throw new Error(`approve leave(cancel approved): failed to update status to cancellation approved, result: ${result}`) 
+                return res.status(401).send(`approve leave(cancel approved): failed to update status to cancellation approved, result: ${result}`) 
             }
             console.log("updated staff's status to cancellation approved")
 
@@ -355,7 +355,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((result)=> {
             if(!result){
-                throw new Error("approve leave(cancel approved): failed to adjust used count") 
+                return res.status(401).send("approve leave(cancel approved): failed to adjust used count") 
             }
             // remove from team leave record
             console.log("adjusted quota used value")
@@ -378,7 +378,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((teamCalResult)=> {
             if(!teamCalResult){
-                throw new Error("approve leave(cancel approved): err deleting team calendar record") 
+                return res.status(401).send("approve leave(cancel approved): err deleting team calendar record") 
             }
 
             console.log(teamCalResult)
@@ -437,7 +437,7 @@ exports.approveLeave = (req,res,next) => {
             )
         .then((user)=>{
             if(!user){
-                throw new Error("approve leave(cancel approved leave from prev year): unable to find user") 
+                return res.status(401).send("approve leave(cancel approved leave from prev year): unable to find user") 
             }
             console.log("updated RO's status to cancellation approved")
 
@@ -456,7 +456,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((result)=>{
             if(!result){
-                throw new Error("approve leave(cancel approved leave from prev year): failed to update user leave status to cancellation approved") 
+                return res.status(401).send("approve leave(cancel approved leave from prev year): failed to update user leave status to cancellation approved") 
             }
             console.log("updated staff's status to cancellation approved")
 
@@ -469,7 +469,7 @@ exports.approveLeave = (req,res,next) => {
         })
         .then((result)=> {
             if(!result){
-                throw new Error("approve leave(cancel approved leave from prev year): failed to update entitlement count") 
+                return res.status(401).send("approve leave(cancel approved leave from prev year): failed to update entitlement count") 
             }
             // send cancellation approval email 
             const cancellationApprovalEmail = {
@@ -528,7 +528,7 @@ exports.rejectLeave = (req,res,next) => {
         )
         .then((user) => {
             if(!user){
-                throw new Error("did not find user record in db while rejecting leave") 
+                return res.status(401).send("did not find user record in db while rejecting leave") 
             }
 
             // update reporting's staffLeave to rejected
@@ -546,7 +546,7 @@ exports.rejectLeave = (req,res,next) => {
         })
         .then((reportingOfficer)=>{
             if(!reportingOfficer){
-                throw new Error("reject leave: did not find reporting officer record in db") 
+                return res.status(401).send("reject leave: did not find reporting officer record in db") 
             }
             
             return User.findOneAndUpdate( // update user's leave status to rejected
@@ -563,7 +563,7 @@ exports.rejectLeave = (req,res,next) => {
         })
         .then((staff)=> {
             if(!staff){
-                throw new Error("reject leave: could not find staff record in db") 
+                return res.status(401).send("reject leave: could not find staff record in db") 
             }
 
             // send rejection email
@@ -620,7 +620,7 @@ exports.rejectLeave = (req,res,next) => {
         )
         .then((reporting)=>{
             if(!reporting){
-                throw new Error("reject leave (pending cancellation): could not find reporting officer record in db") 
+                return res.status(401).send("reject leave (pending cancellation): could not find reporting officer record in db") 
             }
             console.log("update reporting's staffLeave back to approved: ", res)
             return User.findOneAndUpdate( // update user's leave status back to approved to provide flexibility for cancellation reapplication
@@ -637,7 +637,7 @@ exports.rejectLeave = (req,res,next) => {
         })
         .then((staff)=>{
             if(!staff){
-                throw new Error("reject leave (pending cancellation): could not find staff record in db") 
+                return res.status(401).send("reject leave (pending cancellation): could not find staff record in db") 
             }
 
             // send cancellation rejected email
@@ -684,7 +684,7 @@ exports.getUserInfoByEmail = (req,res,next) => {
         .findOne({email: userEmail})
         .then(user => {
             if(!user){
-                throw new Error("did not find user record in db while updating user records") 
+                return res.status(401).send("did not find user record in db while updating user records") 
             }
             return res.status(200).send(
                 {
@@ -721,7 +721,7 @@ exports.postUpdateUser = (req,res,next) => {
         )
         .then((result)=>{
             if(!result){
-                throw new Error("did not find user record in db while updating user records") 
+                return res.status(401).send("did not find user record in db while updating user records") 
             }
             // console.log(result)
         })
@@ -738,7 +738,7 @@ exports.postUpdateUser = (req,res,next) => {
         )
         .then((result)=>{
             if(!result){
-                throw new Error("did not find user record in db while updating user records") 
+                return res.status(401).send("did not find user record in db while updating user records") 
             }
             // console.log(result)
         })
@@ -757,7 +757,7 @@ exports.getWorkDay = (req,res,next) => {
         .findOne({entity:"chengdu"})
         .then(record => {
             if(!record){
-                throw new Error("getWorkDay: did not find team calendar record in db") 
+                return res.status(401).send("getWorkDay: did not find team calendar record in db") 
             }
             return res.status(200).json(
                 {
@@ -808,7 +808,7 @@ exports.setWorkDay = (req,res,next) => {
     )
     .then((result)=>{
         if(!result){
-            throw new Error("did not find team calendar record in db") 
+            return res.status(401).send("did not find team calendar record in db") 
         } 
         // update team calendar
 
@@ -847,7 +847,7 @@ exports.setWorkDay = (req,res,next) => {
     })
     .then((result)=>{
         if(!result){
-            throw new Error("entity's team calendar record in db not found") 
+            return res.status(401).send("entity's team calendar record in db not found") 
         } 
         // update team calendar with newly added holidays
 
@@ -884,7 +884,7 @@ exports.setWorkDay = (req,res,next) => {
     })
     .then((result)=> {
         if(!result){
-            throw new Error("did not find team calendar record in db when adding record") 
+            return res.status(401).send("did not find team calendar record in db when adding record") 
         } 
         if (removedWorkdaySelection.length){
             // delete removed work days from team calendar

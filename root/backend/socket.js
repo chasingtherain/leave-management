@@ -8,7 +8,7 @@ module.exports = {
 
     getIO: () => {
         if(!io){
-            throw new Error("socket.io not initialized")
+            return res.status(400).send("socket.io not initialized")
         }
         return io
     }

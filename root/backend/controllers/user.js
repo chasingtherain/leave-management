@@ -57,7 +57,7 @@ exports.getTeamLeaveRecords = (req,res,next) => {
         .findOne({entity: "chengdu"},)
         .then(result => {
             if(!result){
-                throw new Error("get team leave: entity's team leave not found") 
+                return res.status(401).send("get team leave: entity's team leave not found") 
             }
                 // update names to big calendar format
                 // console.log("team record: ", result)
@@ -88,7 +88,7 @@ exports.getNumOfDaysApplied = (req,res,next) => {
         .findOne({entity: "chengdu"})
         .then(result => {
             if(!result){
-                throw new Error("get num of leave days applied: failed to find entity's team cal record") 
+                return res.status(401).send("get num of leave days applied: failed to find entity's team cal record") 
             }
             // console.log(result)
             const holidaySelection = result.holiday.map(timestamp => moment(timestamp).format("DD MMM YYYY"))
@@ -185,7 +185,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         })
         .then((result) => {
             if(!result){
-                throw new Error("apply leave: failed to update user's pending count") 
+                return res.status(401).send("apply leave: failed to update user's pending count") 
             }
             return User.updateOne(
                 {_id: userId}, 
@@ -193,13 +193,13 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         })
         .then((result) => {
             if(!result){
-                throw new Error("apply leave: failed to update user's leave history data") 
+                return res.status(401).send("apply leave: failed to update user's leave history data") 
             }
             return User.findOne({email: reportingEmail})
         })
         .then((reportingOfficer)=>{
             if(!reportingOfficer){
-                throw new Error("apply leave: reporting officer email not found in db") 
+                return res.status(401).send("apply leave: reporting officer email not found in db") 
             }
             return User.updateOne(
                 {email: reportingEmail},
@@ -208,7 +208,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
         })
         .then((result)=>{
             if(!result){
-                throw new Error("apply leave: failed to update reporting officer's staff leave") 
+                return res.status(401).send("apply leave: failed to update reporting officer's staff leave") 
             }
 
             // send email to user, covering
@@ -313,7 +313,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
         .then((result)=>{
             if(!result){
-                throw new Error("cancel leave: failed to update RO's staffLeave to pending cancellation") 
+                return res.status(401).send("cancel leave: failed to update RO's staffLeave to pending cancellation") 
             }
             // console.log("RO's record: ", result.staffLeave.length)
             // update staff's leave status to pending cancellation
@@ -334,7 +334,7 @@ exports.cancelLeaveRequest = (req,res) => {
         })
         .then((result)=> {
             if(!result){
-                throw new Error("cancel leave: failed to update user's leave to pending cancellation") 
+                return res.status(401).send("cancel leave: failed to update user's leave to pending cancellation") 
             }
             // console.log("user's leave record: ", result)
             // send cancellation approval email to reporting 
@@ -378,7 +378,7 @@ exports.cancelLeaveRequest = (req,res) => {
             )
             .then(result => {
                 if(!result){
-                    throw new Error("cancel leave: failed to update staff's used count") 
+                    return res.status(401).send("cancel leave: failed to update staff's used count") 
                 }
                 // remove cancelled leave from team calendar
                 console.log("deleting from team calendar")
@@ -393,7 +393,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .then((teamCalResult)=>{
                 if(!teamCalResult){
-                    throw new Error("cancel leave: err deleting team calendar record") 
+                    return res.status(401).send("cancel leave: err deleting team calendar record") 
                 }
                 const teamCalendarRecord = 
                 {
@@ -424,7 +424,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .then((user) => {
                 if(!user){
-                    throw new Error("cancel leave: failed to update staff to cancelled") 
+                    return res.status(401).send("cancel leave: failed to update staff to cancelled") 
                 }
                 // update reporting's leave status
                 return User.findOneAndUpdate( 
@@ -443,7 +443,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .then((user)=>{
                 if(!user){
-                    throw new Error("cancel leave: failed to update RO's staffLeave to cancelled") 
+                    return res.status(401).send("cancel leave: failed to update RO's staffLeave to cancelled") 
                 }
                 console.log("updated leave status to cancelled for both staff and RO")
                 return res.send("updated leave status to cancelled for both staff and RO")
@@ -465,7 +465,7 @@ exports.cancelLeaveRequest = (req,res) => {
             )
             .then((user)=>{
                 if(!user){
-                    throw new Error("cancel leave: failed to update staff's pending leave count") 
+                    return res.status(401).send("cancel leave: failed to update staff's pending leave count") 
                 }
                 return User.findOneAndUpdate( 
                     {
@@ -484,7 +484,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .then((user) => {
                 if(!user){
-                    throw new Error("cancel leave: failed to update staff's leave status to cancelled") 
+                    return res.status(401).send("cancel leave: failed to update staff's leave status to cancelled") 
                 }
                 // update reporting's leave status
                 return User.findOneAndUpdate( 
@@ -503,7 +503,7 @@ exports.cancelLeaveRequest = (req,res) => {
             })
             .then((user)=> {
                 if(!user){
-                    throw new Error("cancel leave: failed to update RO's staffLeave status to cancelled") 
+                    return res.status(401).send("cancel leave: failed to update RO's staffLeave status to cancelled") 
                 }
                 console.log("updated leave status to cancelled for both staff and RO")
                 return res.send("updated leave status to cancelled for both staff and RO")

@@ -150,14 +150,14 @@ exports.postUpdatePassword = (req,res,next) => {
     User.findOne({resetToken: userToken, resetTokenExpiration: {$gt: Date.now()}})
         .then((user) => {
             if(!user){
-                throw new Error("update password: user not found") 
+                return res.status(401).send("update password: user not found") 
             }
             currentUser = user
             return bcrypt.hash(updatedPassword,12)
         })
         .then((hashedPassword) => {
             if(!hashedPassword){
-                throw new Error("update password: password hashing failed") 
+                return res.status(401).send("update password: password hashing failed") 
             }
             currentUser.password = hashedPassword
             currentUser.resetToken = undefined
@@ -166,7 +166,7 @@ exports.postUpdatePassword = (req,res,next) => {
         })
         .then((result) => {
             if(!result){
-                throw new Error("update password: failed to update password") 
+                return res.status(401).send("update password: failed to update password") 
             }
             console.log(result)
             return res.status(200).send("password reset successful")

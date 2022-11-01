@@ -49,7 +49,7 @@ const updateUserEntitlement = () => {
                     )
                 .then(resp => {
                     if(!resp) {
-                        throw new Error("Failed to reset staff's annual leave entitlement")
+                        return res.status(400).send("Failed to reset staff's annual leave entitlement")
                     }
                     console.log("successfully reset users' leave")
                 })
