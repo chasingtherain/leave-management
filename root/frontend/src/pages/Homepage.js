@@ -5,8 +5,7 @@ import Table from '../components/layout/Table'
 import { useMainContext } from '../hooks/useMainContext'
 
 function Homepage() {
-    const {activeTab} = useMainContext()
-    const childCareYear = new Date().getFullYear() - 2
+    const {activeTab, currentUser} = useMainContext()
 
     const activeTabSelection = (activeTab) => {
         switch (activeTab) {
@@ -34,10 +33,11 @@ function Homepage() {
     return (
     <div>
         <div className='flex justify-between'> 
-            <Tab/>
-            <Link to="/apply-leave">
-                <button className='btn bg-black rounded-md mt-6 mr-6 px-6 text-lg'>Apply Leave 申请休假</button>
-            </Link>
+            <Tab/>  
+            {currentUser.isAdmin === "admin" ? 
+                <button className='btn btn-disabled rounded-md mt-6 mr-6 px-6 text-lg'>Apply Leave 申请休假</button>
+            :   <Link to="/apply-leave"><button className='btn bg-black rounded-md mt-6 mr-6 px-6 text-lg'>Apply Leave 申请休假</button></Link>
+            }
         </div>
         {/* based on user action, display active tab in homepage */}
         {

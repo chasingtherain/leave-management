@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { useMainContext } from '../hooks/useMainContext';
 
 function LoginPage() {    
-        const {fetchUserList, setCurrentUser, sessionToken, setSessionToken, validateEmail} = useMainContext()
+        const {fetchUserList, setCurrentUser, setSessionToken, validateEmail} = useMainContext()
         const navigate = useNavigate()
         const [userEmail, setUserEmail] = useState("")
         const [userPassword, setUserPassword] = useState("")

@@ -32,19 +32,35 @@ function CreateUserPage() {
             return toast.error("Passwords don't match!")
         }
         
-        if(
-            name === undefined || name.length === 0 ||
-            email === undefined || email.length === 0 ||
-            password === undefined || password.length === 0 ||
-            confirmPassword === undefined || confirmPassword.length === 0 ||
-            // ro === undefined || ro.length === 0 ||
-            reportingEmail === undefined || reportingEmail.length === 0 ||
-            // co === undefined || co.length === 0 ||
-            coveringEmail === undefined || coveringEmail.length === 0 ||
-            isAdmin === undefined
-        ){
-            setCreateUserBtnLoading("")
-            return toast.error("Fill in all blanks!")
+
+
+        if(isAdmin === "admin"){
+            // admin acc creation check
+            if(
+                name === undefined || name.length === 0 ||
+                email === undefined || email.length === 0 ||
+                password === undefined || password.length === 0 ||
+                confirmPassword === undefined || confirmPassword.length === 0 ||
+                isAdmin === undefined
+            ){
+                setCreateUserBtnLoading("")
+                return toast.error("Fill in all blanks!")
+            }
+        }
+        else{
+            // user acc creation check
+            if(
+                name === undefined || name.length === 0 ||
+                email === undefined || email.length === 0 ||
+                password === undefined || password.length === 0 ||
+                confirmPassword === undefined || confirmPassword.length === 0 ||
+                reportingEmail === undefined || reportingEmail.length === 0 ||
+                coveringEmail === undefined || coveringEmail.length === 0 ||
+                isAdmin === undefined
+            ){
+                setCreateUserBtnLoading("")
+                return toast.error("Fill in all blanks!")
+            }
         }
 
         // starts loading screen
@@ -75,6 +91,7 @@ function CreateUserPage() {
         e.preventDefault()
         console.log("form data sending in progress")
         const url = `${process.env.REACT_APP_BACKENDURL}/admin/create-user`
+
         const formData = 
         {
             name: name,
@@ -83,10 +100,8 @@ function CreateUserPage() {
             password: password,
             createdOn: new Date(),
             lastUpdatedOn: new Date(),
-            // ro: ro,
-            reportingEmail: reportingEmail,
-            // co: co,
-            coveringEmail: coveringEmail
+            reportingEmail: (isAdmin === "admin") ? "-" : reportingEmail,
+            coveringEmail: (isAdmin === "admin") ? "-" : coveringEmail
         }
         console.log(formData)
         validateAndSubmitData(url, formData)
@@ -97,6 +112,8 @@ function CreateUserPage() {
 
             <div className="grid place-items-center">
                 <form className="form-control w-full max-w-xs" onSubmit={sendFormData}>
+                    <label className="label text-sm">Account Type</label>
+                    <RadioSelection radioType="accountTypeRadio" id="accountType"/>
                     <label className="label text-sm">Name</label>
                     <input type="text" className="input input-bordered w-full max-w-xs" name="name" onChange={(e) => setName(e.target.value)} value={name}/>
                     <label className="label text-sm">Email 邮箱</label>
@@ -105,16 +122,19 @@ function CreateUserPage() {
                     <input type="password" className="input input-bordered w-full max-w-xs" name="confirmPassword" onChange={(e) => setPassword(e.target.value)} value={password}/>
                     <label className="label text-sm">Confirm Password 二次确认密码</label>
                     <input type="password" className="input input-bordered w-full max-w-xs" name="email" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword}/>
-                    <label className="label text-sm">Account Type</label>
-                    <RadioSelection radioType="accountTypeRadio" id="accountType"/>
-                    {/* <label className="label text-sm">Reporting Officer 主管</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setRo(e.target.value)} value={ro}/> */}
-                    <label className="label text-sm">Reporting Officer Email 主管邮箱</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setReportingEmail(e.target.value)} value={reportingEmail}/>
-                    {/* <label className="label text-sm">Covering Officer 代办</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCo(e.target.value)} value={co}/> */}
-                    <label className="label text-sm">Covering Officer Email 代办邮箱</label>
-                    <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
+
+                    {isAdmin === "admin" ?
+                        <>
+                        </> 
+                        :
+                        <>
+                            <label className="label text-sm">Reporting Officer Email 主管邮箱</label>
+                            <input type="text" className="input input-bordered w-full max-w-xs" onChange={(e) => setReportingEmail(e.target.value)} value={reportingEmail}/>
+                            <label className="label text-sm">Covering Officer Email 代办邮箱</label>
+                            <input type="text" className="input input-bordered w-full max-w-xs" name="" onChange={(e) => setCoveringEmail(e.target.value)} value={coveringEmail}/>
+                        </>
+                    }
+                    
                     <button type="submit" className={`btn mt-8 rounded-sm ${createUserBtnLoading}`}>Create User</button>
                 </form>
                 {isLoading && <Loading/>}
