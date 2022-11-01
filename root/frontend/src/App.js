@@ -24,6 +24,9 @@ import DashboardPage from "./pages/DashboardPage";
 import TeamCalendarPage from "./pages/TeamCalendarPage";
 import LoginRoute from "./components/private/LoginRoute";
 import ResetDatabasePage from "./pages/ResetDatabasePage";
+import { disableReactDevTools } from '@fvilers/disable-react-devtools';
+
+if (process.env.NODE_ENV === 'production') { disableReactDevTools() }
 
 function App() {
   const {authState} = useMainContext()
