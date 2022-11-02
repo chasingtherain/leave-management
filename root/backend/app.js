@@ -26,6 +26,7 @@ const authRoutes = require('./routes/auth')
 const { collection } = require('./models/user')
 
 app.use(cors())
+app.options('*', cors())
 app.use(helmet())
 app.use(compression())
 app.use(multer().single('upload'))
