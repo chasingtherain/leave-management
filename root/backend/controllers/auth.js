@@ -136,11 +136,12 @@ exports.postChangePassword = (req,res,next) => {
             sendgridMail
                 .send(msg)
                 .then(() => {
+                    console.log('reset password email sent')
                     return res.status(200).send("reset password email sent")
-                    console.log('Email sent')
                 })
                 .catch((error) => {
                     console.error("sendgrid error: ", error)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
             
         })

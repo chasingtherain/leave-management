@@ -71,20 +71,26 @@ function Table({headerType}) {
             axios
                 .post(url, {userId: currentUser._id, userEmail: currentUser.email, targetLeaveHistory: targetLeaveHistory, reportingEmail: currentUser.reportingEmail})
                 .then(resp => {
-                    if(resp.status === 400){
-                        toast.warning("failed to cancel leave")
-                    }
                     if(resp.status === 200){
                         setIsLoading(false)
                         fetchCurrentUserInfo(currentUser)
                         // console.log(resp)
-                        toast.success("Leave Cancelled / 休假请求已取消")
+                        return toast.success("Leave Cancelled / 休假请求已取消")
                       }
                 })
                 .catch(err => {
-                    console.log(err)
-                    setIsLoading(false)
-                    toast.error("failed to cancel leave / 取消休假请求失败")
+                    if(err.status === 400){
+                        return toast.warning("failed to cancel leave")
+                    }
+                    else if (err.response.status === 488){
+                        setIsLoading(false)
+                        return toast.error("sendgrid email limit exceeded!")
+                    }
+                    else{
+                        console.log(err)
+                        setIsLoading(false)
+                        return toast.error("failed to cancel leave / 取消休假请求失败")
+                    }
                 })
         }
     }
@@ -133,9 +139,16 @@ function Table({headerType}) {
                     }
                 })
                 .catch(err => {
-                    setIsLoading(false)
-                    toast.warning(`failed to ${action} leave`)
-                    console.log(err)
+                    if (err.response.status === 488){
+                        setIsLoading(false)
+                        toast.warning(`sendgrid error!`)
+                        console.log(err)
+                    }
+                    else{
+                        setIsLoading(false)
+                        toast.warning(`failed to ${action} leave`)
+                        console.log(err)
+                    }
                 })
         }
     }

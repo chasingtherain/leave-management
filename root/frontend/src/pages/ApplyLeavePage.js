@@ -102,8 +102,14 @@ function ApplyLeavePage() {
                 }
             })
             .catch(err => {
-                setIsLoading(false)
-                toast.warning("failed to apply leave / 申请失败")
+                if (err.response.status === 488){
+                    setIsLoading(false)
+                    toast.error("sendgrid email limit exceeded!")
+                }
+                else{
+                    setIsLoading(false)
+                    toast.warning("failed to apply leave / 申请失败")
+                }
                 console.log(err)
             })
         

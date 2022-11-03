@@ -230,6 +230,7 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 </div>
             `
             }
+
             sendgridMail
                 .send(emailToUserAndCovering) // email to inform user and covering of leave request
                 .then(() => {
@@ -238,37 +239,37 @@ exports.postLeaveApplicationForm = (req,res,next) => {
                 .catch((error) => {
                     console.error("sendgrid error when sending to user/covering: ", error)
                     console.log("err: ", error.response.body)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
 
-        const emailToReporting = {
-        to: reportingEmail,
-        from: 'mfachengdu@gmail.com', // Change to your verified sender
-        subject: `Leave Application by ${userEmail} - ${startDate} to ${endDate} `,
-        html: `
-            <div>
-                <p>Hi ${reportingEmail}, </p> 
-                <p>${userEmail} would like to apply for ${numOfDaysTaken} days of <strong>${leaveType}</strong> from ${startDate} to ${endDate}</p>
-                <p>Log in to ${process.env.REACT_APP_FRONTENDURL} to approve or reject this request. Thank you. </p>
-            </div>
-        `
-        }
-        sendgridMail
-            .send(emailToReporting) // email to inform reporting of user's leave request
-            .then(() => {
-                console.log('email sent to reporting')
-            })
-            .catch((error) => {
-                console.error("sendgrid error when sending to reporting: ", error)
-            })
-
-        return res.status(200).send("leave application successful, email sent to user, covering and reporting officer") 
-
-        console.log("leave application successful")
-
+                const emailToReporting = {
+                    to: reportingEmail,
+                    from: 'mfachengdu@gmail.com', // Change to your verified sender
+                    subject: `Leave Application by ${userEmail} - ${startDate} to ${endDate} `,
+                    html: `
+                        <div>
+                            <p>Hi ${reportingEmail}, </p> 
+                            <p>${userEmail} would like to apply for ${numOfDaysTaken} days of <strong>${leaveType}</strong> from ${startDate} to ${endDate}</p>
+                            <p>Log in to ${process.env.FRONTENDURL} to approve or reject this request. Thank you. </p>
+                        </div>
+                    `
+                    }
+        
+                sendgridMail
+                    .send(emailToReporting) // email to inform reporting of user's leave request
+                    .then(() => {
+                        console.log('email sent to reporting')
+                        console.log("leave application successful")
+                        return res.status(200).send("leave application successful, email sent to user, covering and reporting officer") 
+                    })
+                    .catch((error) => {
+                        console.error("sendgrid error when sending to reporting: ", error)
+                        return res.status(488).send("sendgrid error: ", error)
+                    })
         })
         .catch(err => {
-            return res.status(400).send(`postLeaveApplicationForm err: ${err}`)
             console.log("postLeaveApplicationForm err: ", err)
+            return res.status(400).send(`postLeaveApplicationForm err: ${err}`)
         })
 }
 
@@ -358,6 +359,7 @@ exports.cancelLeaveRequest = (req,res) => {
                 })
                 .catch((error) => {
                     console.error("sendgrid error when sending cancellation email for approved leave to RO: ", error)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
         })
         .catch(err => {

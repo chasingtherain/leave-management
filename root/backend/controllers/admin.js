@@ -54,13 +54,14 @@ exports.postCreateUser = (req,res,next) => {
                 .hash(password, 12)
                 .then(hashedPassword => {
                     const createdOnDate = moment(createdOn)
+                    const lastUpdatedOnDate = moment(lastUpdatedOn)
                     const user = new User({
                         name: name,
                         isAdmin: isAdmin,
                         email: email,
                         password: hashedPassword,
                         createdOn: createdOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
-                        lastUpdatedOn: moment(lastUpdatedOn).format("YYYY/MM/DD H:mm:ss"),
+                        lastUpdatedOn: lastUpdatedOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
                         // ro: ro,
                         reportingEmail: reportingEmail,
                         // co: co,
@@ -94,16 +95,16 @@ exports.postCreateUser = (req,res,next) => {
                             </div>
                         `
                         }
-                        sendgridMail
+                        return sendgridMail
                             .send(msg)
                             .then(() => {
-                                console.log('acc creation email sent to user')
+                                console.log('acc creation email sent to user, user created')
+                                return res.status(200).send(user)  
                             })
                             .catch((error) => {
                                 console.error("sendgrid error: ", error)
+                                return res.status(488).send("sendgrid error: ", error)
                             })
-                        console.log("user created")
-                        return res.status(200).send(user)   
                     })
                 })
         })
@@ -296,12 +297,13 @@ exports.approveLeave = (req,res,next) => {
             sendgridMail
                 .send(approvalEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    return res.status(200).send("approval email sent to user, covering and reporting")
                     console.log('approval email sent to user and covering')
+                    return res.status(200).send("approval email sent to user, covering and reporting")
                 })
                 .catch((error) => {
                     console.error("sendgrid error during approval email: ", error)
                     console.log("err: ", error.response.body)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
         })
         .catch((err)=> {
@@ -405,17 +407,18 @@ exports.approveLeave = (req,res,next) => {
             sendgridMail
                 .send(cancellationApprovalEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    return res.status(200).send("cancellation approval email sent to user, covering and reporting")
                     console.log('cancellation approval email sent to user and covering')
+                    return res.status(200).send("cancellation approval email sent to user, covering and reporting")
                 })
                 .catch((error) => {
-                    console.error("sendgrid error during cancellation approval email: ", error)
+                    console.log("sendgrid error during cancellation approval email: ", error)
                     console.log("err: ", error.response.body)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
         })
         .catch(err => {
-            return res.status(400).send( `failed to approve leave cancellation: ${err}`)
             console.log("failed to approve leave cancellation", err)
+            return res.status(400).send( `failed to approve leave cancellation: ${err}`)
         })
     }
 
@@ -494,12 +497,13 @@ exports.approveLeave = (req,res,next) => {
             sendgridMail
                 .send(cancellationApprovalEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    return res.status(200).send("cancellation approval email sent to user, covering and reporting")
                     console.log('cancellation approval email sent to user and covering')
+                    return res.status(200).send("cancellation approval email sent to user, covering and reporting")
                 })
                 .catch((error) => {
                     console.error("sendgrid error during cancellation approval email: ", error)
                     console.log("err: ", error.response.body)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
         })
         .catch((err)=> {
@@ -592,12 +596,13 @@ exports.rejectLeave = (req,res,next) => {
             sendgridMail
                 .send(rejectionEmail) // email to inform user and covering of leave request
                 .then(() => {
-                    return res.send("status updated to rejected on user and reporting officer's table")
                     console.log('rejection email sent to user and covering')
+                    return res.send("status updated to rejected on user and reporting officer's table")
                 })
                 .catch((error) => {
                     console.error("sendgrid error during rejection email: ", error)
                     console.log("err: ", error.response.body)
+                    return res.status(488).send("sendgrid error: ", error)
                 })
         })
         .catch(err => {
@@ -666,17 +671,18 @@ exports.rejectLeave = (req,res,next) => {
                 sendgridMail
                     .send(cancellationRejectedEmail) // email to inform user and covering of leave request
                     .then(() => {
-                        return res.send("status updated back to approved on user and reporting officer's table")
                         console.log('cancellation rejected email sent to user and covering')
+                        return res.send("status updated back to approved on user and reporting officer's table")
                     })
                     .catch((error) => {
-                        console.error("sendgrid error during cancellation rejected email: ", error)
+                        console.log("sendgrid error during cancellation rejected email: ", error)
                         console.log("err: ", error.response.body)
+                        return res.status(488).send("sendgrid error: ", error)
                     })
         })
         .catch(err => {
-            return res.status(400).json(`reject leave unsuccessful: ${err}`)
             console.log("reject leave unsuccessful")
+            return res.status(400).json(`reject leave unsuccessful: ${err}`)
         })
     }
 
@@ -984,11 +990,12 @@ exports.postSendReminder = (req,res,next) => {
     sendgridMail
         .send(reminderEmail)
         .then(() => {
-            return res.send("clear leave reminder email sent to user")
             console.log('clear leave reminder email sent to user')
+            return res.send("clear leave reminder email sent to user")
         })
         .catch((error) => {
             console.error("clear leave reminder email sendgrid error: ", error)
+            return res.status(488).send("sendgrid error: ", error)
         })
 }
 

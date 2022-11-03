@@ -28,12 +28,17 @@ function ChangePasswordPage() {
             .then(resp => {
                 console.log(resp.message)
                 if(resp.status === 200) {
-                    toast.success("Check your email for next steps! / 后续步骤请检查您的邮件！")
                     navigate('/login')
+                    return toast.success("Check your email for next steps! / 后续步骤请检查您的邮件！")
                 }
             })
             .catch((err) => {
-                toast.error(err.response.data)
+                if (err.response.status === 488){
+                    return toast.error("sendgrid email limit exceeded!")
+                }
+                else{
+                    return toast.error(err.response.data)
+                }
             })
     }
     

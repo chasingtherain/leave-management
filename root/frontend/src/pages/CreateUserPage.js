@@ -79,7 +79,11 @@ function CreateUserPage() {
             .catch(err => {
                 console.log(err)
                 setIsLoading(false)
-                if (err.response.status === 499){
+                if (err.response.status === 488){
+                    setCreateUserBtnLoading("")
+                    toast.error("sendgrid email limit exceeded!")
+                }
+                else if (err.response.status === 499){
                     setCreateUserBtnLoading("")
                     toast.error("Email already exists on system!")
                 }
