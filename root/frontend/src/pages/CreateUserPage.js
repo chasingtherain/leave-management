@@ -20,7 +20,7 @@ function CreateUserPage() {
     const navigate = useNavigate()
 
     const validateAndSubmitData = async (url, formData) => {
-        
+
         setCreateUserBtnLoading("loading")
         if(!validateEmail(email)){
             setCreateUserBtnLoading("")
@@ -32,8 +32,6 @@ function CreateUserPage() {
             return toast.error("Passwords don't match!")
         }
         
-
-
         if(isAdmin === "admin"){
             // admin acc creation check
             if(
@@ -61,6 +59,11 @@ function CreateUserPage() {
                 setCreateUserBtnLoading("")
                 return toast.error("Fill in all blanks!")
             }
+        }
+
+        if(coveringEmail === reportingEmail){
+            setCreateUserBtnLoading("")
+            return toast.error("covering and reporting officer cannot be the same person!")
         }
 
         // starts loading screen
