@@ -83,6 +83,10 @@ function CreateUserPage() {
                     setCreateUserBtnLoading("")
                     toast.error("Email already exists on system!")
                 }
+                else{
+                    setCreateUserBtnLoading("")
+                    toast.error("Failed to create user")
+                }
             })
 
     }

@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs')
 const sendgridMail = require('@sendgrid/mail')
 const jwt = require('jsonwebtoken')
 const io = require('../socket')
+const moment = require('moment-timezone')
 
 const date = new Date()
 const currentYear = date.getFullYear()
@@ -42,7 +43,7 @@ exports.postCreateUser = (req,res,next) => {
     const reportingEmail = req.body.reportingEmail
     // const co = req.body.co
     const coveringEmail = req.body.coveringEmail
-    
+    console.log("createdOn: ", createdOn)
     User.findOne({email: email})
         .then(userDoc => {
             if(userDoc){
@@ -52,12 +53,13 @@ exports.postCreateUser = (req,res,next) => {
             return bcrypt
                 .hash(password, 12)
                 .then(hashedPassword => {
+                    const createdOnDate = moment(createdOn)
                     const user = new User({
                         name: name,
                         isAdmin: isAdmin,
                         email: email,
                         password: hashedPassword,
-                        createdOn: moment(createdOn).format("YYYY/MM/DD H:mm:ss"),
+                        createdOn: createdOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
                         lastUpdatedOn: moment(lastUpdatedOn).format("YYYY/MM/DD H:mm:ss"),
                         // ro: ro,
                         reportingEmail: reportingEmail,
