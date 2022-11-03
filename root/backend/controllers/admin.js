@@ -83,10 +83,12 @@ exports.postCreateUser = (req,res,next) => {
                             <div>
                                 <p>Welcome to LeavePlan </p> 
                                 <p> Click <a href="${process.env.FRONTENDURL}/login"> here </a> to start making leave plans!</p>
+                                <p> Click <a href="${process.env.FRONTENDURL}/change-password"> here </a> to change your password</p>
                             </div>
                             <div>
                                 <p>Welcome to LeavePlan </p> 
                                 <p> 点击 <a href="${process.env.FRONTENDURL}/login"> 此链接 </a> 开始申请休假</p>
+                                <p> 点击 <a href="${process.env.FRONTENDURL}/change-password"> 此链接 </a> 重置您的密码</p>
                             </div>
                         `
                         }
