@@ -11,9 +11,10 @@ import Loading from '../components/Loading';
 
 function ApplyLeavePage() {
     
-    const {currentUser, currentLeaveSelection, fetchCurrentUserInfo, setCurrentLeaveSelection} = useMainContext()
+    const {currentUser, currentLeaveEntitlement, currentLeaveSelection, fetchCurrentUserInfo, setCurrentLeaveSelection} = useMainContext()
 
     const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
 
     const [leaveOptions] = useState(currentUser.leave.map(leave => leave.name))
     const [isLoading, setIsLoading] = useState(false)
@@ -33,9 +34,11 @@ function ApplyLeavePage() {
             .map(entry => +(entry.startDateUnix)))
     const [applyBtnLoading, setApplyBtnLoading] = useState("")
 
-    const userSelectedLeave = currentUser.leave.filter((leaveType) => leaveType.name === currentLeaveSelection)
+    const userSelectedLeave = currentUser.leave.find((leaveType) => leaveType.name === currentLeaveSelection)
+    console.log("userSelectedLeave: ", userSelectedLeave)
 
-    const numOfSelectedLeave = userSelectedLeave[0].entitlement - userSelectedLeave[0].pending - userSelectedLeave[0].used// refers to how many days a user is entitled for selected leave type
+    const numOfSelectedLeave = // use .entitlemen if leave type is carry forward, else, fetch from leaveEntitlement
+        (userSelectedLeave.name === `Annual Leave 年额带过 (${currentYear-1})`) ? userSelectedLeave.entitlement : currentLeaveEntitlement.find(leave => leave.name === userSelectedLeave.name).entitlement - userSelectedLeave.pending - userSelectedLeave.used // refers to how many days a user is entitled for selected leave type
     
     const validateAndSubmitLeaveApplication = (e) => {
         const url = `${process.env.REACT_APP_BACKENDURL}/user/applyLeave`

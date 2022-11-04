@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import Loading from '../Loading'
 
 function Table({headerType}) {
-    const {activeTab, currentUser, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
+    const {activeTab, currentUser, currentLeaveEntitlement, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const [isLoading, setIsLoading] = useState(false)
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
@@ -264,16 +264,21 @@ function Table({headerType}) {
                     <tr key={index}>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
-                        <td>{user.leave[0].entitlement - user.leave[0].used}</td>
+                        {/* fetch from global entitlement collection */}
+                        <td>{currentLeaveEntitlement.find(record => record.name === "Annual Leave 年假").entitlement - user.leave[0].used}</td> 
                     </tr>)
             case "entitlement":
+                const fetchLeaveEntitlement = (leaveName) => {
+                    /* fetch from global entitlement collection */
+                    return currentLeaveEntitlement.find(record => record.name === leaveName).entitlement
+                }
                 return currentUserLeave.map((leave,index) => 
                     <tr key={index}>
                         <td>{leave.name}</td>
-                        <td>{leave.entitlement}</td>
+                        <td>{(leave.name === `Annual Leave 年额带过 (${currentYear-1})`) ? leave.entitlement : fetchLeaveEntitlement(leave.name)}</td>
                         <td>{leave.pending}</td>
                         <td>{leave.used}</td>
-                        <td>{leave.entitlement - leave.pending - leave.used}</td>
+                        <td>{(leave.name === `Annual Leave 年额带过 (${currentYear-1})`) ? leave.entitlement : fetchLeaveEntitlement(leave.name) - leave.pending - leave.used}</td>
                         <td><InfoBubble info={leave.note}/></td>
                     </tr>)
             case "request":

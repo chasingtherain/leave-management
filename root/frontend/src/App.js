@@ -25,6 +25,7 @@ import TeamCalendarPage from "./pages/TeamCalendarPage";
 import LoginRoute from "./components/private/LoginRoute";
 import ResetDatabasePage from "./pages/ResetDatabasePage";
 import { disableReactDevTools } from '@fvilers/disable-react-devtools';
+import SetLeaveEntitlementPage from "./pages/SetLeaveEntitlementPage";
 
 if (process.env.NODE_ENV === 'production') { disableReactDevTools() }
 
@@ -82,6 +83,9 @@ function App() {
             </Route>
             <Route path = '/set-work-day' element={<AdminRoute/>}>
               <Route path = '/set-work-day' element={<SetWorkdayPage/>}/>
+            </Route>
+            <Route path = '/set-leave-entitlement' element={<AdminRoute/>}>
+              <Route path = '/set-leave-entitlement' element={<SetLeaveEntitlementPage/>}/>
             </Route>
             <Route path = '/dashboard' element={<AdminRoute/>}>
               <Route path = '/dashboard' element={<DashboardPage/>}/>

@@ -40,4 +40,7 @@ router.post('/clean-slate', adminController.resetDatabaseToCleanSlate)
 // route is /admin/get-leave-entitlement
 router.get('/get-leave-entitlement', adminController.getLeaveEntitlement)
 
+// route is /admin/post-leave-entitlement
+router.post('/post-leave-entitlement', adminController.postLeaveEntitlement)
+
 module.exports = router

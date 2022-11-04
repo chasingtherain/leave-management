@@ -7,7 +7,7 @@ const leaveEntitlementSchema = new Schema({
         type: Array,
         required: true
     },
-    team: {
+    entity: {
         type: String,
         required: true
     }

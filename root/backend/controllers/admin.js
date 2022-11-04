@@ -56,6 +56,7 @@ exports.postCreateUser = (req,res,next) => {
                 .then(hashedPassword => {
                     const createdOnDate = moment(createdOn)
                     const lastUpdatedOnDate = moment(lastUpdatedOn)
+
                     const user = new User({
                         name: name,
                         isAdmin: isAdmin,
@@ -1047,7 +1048,7 @@ exports.resetDatabaseToCleanSlate = (req,res,next) => {
 }
 
 exports.getLeaveEntitlement = (req,res,next) => {
-
+    console.log("get leave entitlement endpoint called!")
     LeaveEntitlement
         .findOne({entity:"chengdu"})
         .then((record)=>{
@@ -1066,46 +1067,45 @@ exports.getLeaveEntitlement = (req,res,next) => {
                     {name: "Childcare Leave 育儿假", entitlement: 10},
                     {name: "Women's Day 三、八妇女节", entitlement: 0.5},
                 ]
-                LeaveEntitlement
-                    .findOne({entity:"chengdu"})
-                    .then(record => {
-                        if(!record){
-                            LeaveEntitlement.findOneAndUpdate(
-                                {team: "chengdu"},
-                                {
-                                    $set: {
-                                        "team": "chengdu",
-                                        "leaveEntitlement": defaultEntitlementValues
-                                    }
-                                },
-                                {upsert: true}
-                            )
-                            .then(()=>{
-                                console.log("successfully set defeault leave entitlement on db")
-                            })
-                            .catch((err)=>{
-                                console.log("err while setting default leave entitlement: ", err)
-                            })
-                        }
-                        console.log("returning leave entitlement value")
-                        return res.status(200).json({leaveEntitlement: record.leaveEntitlement})
-                    })
-                    .catch(err => console.log("getWorkDay err:", err))
-            }
 
-        })
-
-    Workday
-        .findOne({entity:"chengdu"})
-        .then(record => {
-            if(!record){
-                return res.status(401).send("getWorkDay: did not find team calendar record in db") 
-            }
-            return res.status(200).json(
-                {
-                    holiday: record.holiday,
-                    workday: record.workday
+                const defaultEntitlementValue = new LeaveEntitlement({
+                    "entity": "chengdu",
+                    "leaveEntitlement": defaultEntitlementValues
                 })
+
+                defaultEntitlementValue
+                    .save()
+                    .then(() => {
+                            console.log("returning leave entitlement value")
+                            return res.status(200).json({leaveEntitlement: defaultEntitlementValue.leaveEntitlement})
+                        }
+                    )
+                    .catch(err => console.log("getLeaveEntitlement err:", err))
+            }
+            return res.status(200).json({leaveEntitlement: record.leaveEntitlement})
         })
-        .catch( err => console.log("getWorkDay err:", err))
+        .catch(err => console.log("getLeaveEntitlement err:", err))
 }
+
+exports.postLeaveEntitlement = (req,res,next) => {
+    const updatedLeaveEntitlement = req.body.updatedLeaveEntitlement
+    console.log("post leave entitlement endpoint called!")
+
+    LeaveEntitlement
+        .findOneAndUpdate(
+            {entity:"chengdu"},
+            {$set: {leaveEntitlement: updatedLeaveEntitlement}},
+            {upsert: true}
+        )
+        .then((record)=>{
+            if(!record){
+                return res.status(400).json("did not find leave entitlement record in db")            
+            }
+            return res.status(200).send("leave entitlement updated")
+        })
+        .catch(err => {
+            console.log("postLeaveEntitlement err:", err)
+            return res.status(400).json(err)  
+        })
+}
+

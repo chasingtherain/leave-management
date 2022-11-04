@@ -6,19 +6,21 @@ import { useMainContext } from '../hooks/useMainContext'
 import TeamCalendar from '../components/TeamCalendar'
 
 function DashboardPage() {
-  const {userList} = useMainContext()
+  const {currentLeaveEntitlement, userList} = useMainContext()
   const [leaveCount, setLeaveCount] = useState()
 
+  console.log("userList: ", userList)
   const handleReminderClick = () => {
     
     if(window.confirm(`Send reminder to staff with at least ${leaveCount} day(s) of annual leave left?`)){
       const url = `${process.env.REACT_APP_BACKENDURL}/admin/send-reminder`
       const targetEmailList = userList
-                              .filter(staff => (staff.leave[0].entitlement - staff.leave[0].used) >= leaveCount 
+                              .filter(staff => (currentLeaveEntitlement.find(leave => leave.name === "Annual Leave 年假").entitlement - staff.leave[0].used) >= leaveCount 
                                 && staff.isAdmin === "user")
                               .map(staff => staff.email)
 
       if(leaveCount){
+        console.log("targetEmailList: ", targetEmailList)
         axios
           .post(url,{leaveCount: leaveCount, targetEmailList: targetEmailList})
           .then((response)=> {

@@ -25,6 +25,8 @@ export const MainContextProvider = ({ children }) => {
   const [currentWorkdaySelection, setCurrentWorkdaySelection] = useState([])
   const [currentHolidaySelection, setCurrentHolidaySelection] = useState([])
 
+  const [currentLeaveEntitlement, setCurrentLeaveEntitlement] = useState()
+
   const isFirstRender = useRef(true)
 
   const fetchUserList = async () => {
@@ -82,6 +84,19 @@ export const MainContextProvider = ({ children }) => {
       .catch(err => {
         console.log("err: ", err)
         toast.warning("Failed to fetch current user info")
+      })
+  }
+
+  const fetchLeaveEntitlement = () => {
+    axios
+      .get(`${process.env.REACT_APP_BACKENDURL}/admin/get-leave-entitlement`)
+      .then(resp =>{ 
+        console.log("resp from fetching leave entitlement: ", resp)
+        setCurrentLeaveEntitlement(resp.data.leaveEntitlement)
+      })
+      .catch(err => {
+        console.log("err: ", err)
+        toast.warning("failed to retrieve leave entitlement data")
       })
   }
 
@@ -148,6 +163,7 @@ export const MainContextProvider = ({ children }) => {
     fetchUserList()
     fetchTeamCalendar()
     fetchWorkDay()
+    fetchLeaveEntitlement()
     validateSession()
 
     console.log("use effect triggered")
@@ -163,6 +179,7 @@ export const MainContextProvider = ({ children }) => {
       currentLeaveSelection,
       currentUser,
       currentHolidaySelection,
+      currentLeaveEntitlement,
       isAdmin,
       sessionToken,
       teamCalendar,
