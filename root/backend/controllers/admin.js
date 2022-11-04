@@ -3,6 +3,7 @@ const Leave = require('../models/leave')
 const Workday = require('../models/workday')
 const TeamCalendar = require('../models/teamCalendar')
 const TeamCalendarRecord = require('../models/teamCalendarRecord')
+const LeaveEntitlement = require('../models/leaveEntitlement')
 
 const bcrypt = require('bcryptjs')
 const sendgridMail = require('@sendgrid/mail')
@@ -1043,4 +1044,68 @@ exports.resetDatabaseToCleanSlate = (req,res,next) => {
         })
     })
     .catch((err)=> console.log(err))
+}
+
+exports.getLeaveEntitlement = (req,res,next) => {
+
+    LeaveEntitlement
+        .findOne({entity:"chengdu"})
+        .then((record)=>{
+            if(!record){
+                const defaultEntitlementValues = [
+                    {name: "Annual Leave 年假", entitlement: 15},
+                    {name: "Compassionate Leave 丧假", entitlement: 3},
+                    {name: "Medical leave 病假", entitlement: 30},
+                    {name: "Hospitalisation leave 住院假", entitlement: 365},
+                    {name: "Marriage Leave 婚假", entitlement: 3},
+                    {name: "Maternity leave 产假", entitlement: 158},
+                    {name: "Miscarriage Leave 流产假", entitlement: 45},
+                    {name: "Natal Leave 受精相关假", entitlement: 365},
+                    {name: "Paternity Leave 陪产假", entitlement: 20},
+                    {name: "Unpaid Leave 无薪假", entitlement: 365},
+                    {name: "Childcare Leave 育儿假", entitlement: 10},
+                    {name: "Women's Day 三、八妇女节", entitlement: 0.5},
+                ]
+                LeaveEntitlement
+                    .findOne({entity:"chengdu"})
+                    .then(record => {
+                        if(!record){
+                            LeaveEntitlement.findOneAndUpdate(
+                                {team: "chengdu"},
+                                {
+                                    $set: {
+                                        "team": "chengdu",
+                                        "leaveEntitlement": defaultEntitlementValues
+                                    }
+                                },
+                                {upsert: true}
+                            )
+                            .then(()=>{
+                                console.log("successfully set defeault leave entitlement on db")
+                            })
+                            .catch((err)=>{
+                                console.log("err while setting default leave entitlement: ", err)
+                            })
+                        }
+                        console.log("returning leave entitlement value")
+                        return res.status(200).json({leaveEntitlement: record.leaveEntitlement})
+                    })
+                    .catch(err => console.log("getWorkDay err:", err))
+            }
+
+        })
+
+    Workday
+        .findOne({entity:"chengdu"})
+        .then(record => {
+            if(!record){
+                return res.status(401).send("getWorkDay: did not find team calendar record in db") 
+            }
+            return res.status(200).json(
+                {
+                    holiday: record.holiday,
+                    workday: record.workday
+                })
+        })
+        .catch( err => console.log("getWorkDay err:", err))
 }

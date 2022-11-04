@@ -34,7 +34,10 @@ router.post('/set-work-day', adminController.setWorkDay)
 // route is /admin/send-reminder
 router.post('/send-reminder', adminController.postSendReminder)
 
-// route is /admin/send-reminder
+// route is /admin/clean-slate
 router.post('/clean-slate', adminController.resetDatabaseToCleanSlate)
+
+// route is /admin/get-leave-entitlement
+router.get('/get-leave-entitlement', adminController.getLeaveEntitlement)
 
 module.exports = router

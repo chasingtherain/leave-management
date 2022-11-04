@@ -61,7 +61,8 @@ function CreateUserPage() {
             }
         }
 
-        if(coveringEmail === reportingEmail){
+        if(coveringEmail === reportingEmail && isAdmin !== "admin"){
+            // for user account creation, its not allowed to have the same CO and RO
             setCreateUserBtnLoading("")
             return toast.error("covering and reporting officer cannot be the same person!")
         }
