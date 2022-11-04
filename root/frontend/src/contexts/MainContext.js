@@ -186,6 +186,7 @@ export const MainContextProvider = ({ children }) => {
       userList,
       currentWorkdaySelection,
       fetchCurrentUserInfo,
+      fetchLeaveEntitlement,
       fetchUserList,
       openSocketConnection,
       setActiveTab,

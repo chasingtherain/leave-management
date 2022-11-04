@@ -2,6 +2,7 @@ const schedule = require('node-schedule');
 const colors = require('colors')
 const User = require('../backend/models/user')
 const Leave = require('../backend/models/leave')
+const LeaveEntitlement = require('../backend/models/leaveEntitlement')
 
 const date = new Date()
 const currentYear = date.getFullYear()
@@ -9,6 +10,15 @@ const currentYear = date.getFullYear()
 
 
 const updateUserEntitlement = () => {
+    let annualLeaveEntitlement;
+
+    LeaveEntitlement
+    .findOne({entity:"chengdu"})
+    .then((record)=> {
+        annualLeaveEntitlement = record.leaveEntitlement[0].entitlement
+    })
+    .catch(err => console.log("err: ", err))
+
     User
         .find({isAdmin: "user"})
         .then(users => {
@@ -16,12 +26,13 @@ const updateUserEntitlement = () => {
 
             // loop through user list and make adjustments to their leave entitlement
             for(i=0; i<userList.length;i++){
-                const annualLeaveEntitlement = userList[i].leave[0].entitlement
+
                 const pendingAnnualLeave = userList[i].leave[0].pending
                 const usedAnnualLeave = userList[i].leave[0].used
 
                 // carryForward will be applied to leave type: prevYearAnnual 
                 const carryForward = annualLeaveEntitlement - pendingAnnualLeave - usedAnnualLeave
+                console.log("carryForward: ", carryForward)
 
                 const chengduLrsLeaveScheme = [
                     new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
@@ -56,6 +67,9 @@ const updateUserEntitlement = () => {
                     console.log(err)
                 })
             }
+        })
+        .catch(err =>{
+            console.log("err: ", err)
         })
 }
 

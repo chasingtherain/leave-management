@@ -5,7 +5,7 @@ import { useMainContext } from '../hooks/useMainContext'
 import { toast } from 'react-toastify'
 
 function SetLeaveEntitlementPage() {
-    const {currentLeaveEntitlement} = useMainContext()
+    const {currentLeaveEntitlement, fetchLeaveEntitlement} = useMainContext()
     const[isLoading, setIsLoading] = useState(false)
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading, setUpdateBtnLoading] = useState()
@@ -52,6 +52,7 @@ function SetLeaveEntitlementPage() {
                 .then(resp => {
                         setUpdateBtnLoading(false)
                         setIsLoading(false)
+                        fetchLeaveEntitlement()
                         return toast.success("Leave Entitlement Updated")
                 })
                 .catch(err => {
