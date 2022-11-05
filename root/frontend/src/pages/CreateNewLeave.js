@@ -2,9 +2,10 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { useMainContext } from '../hooks/useMainContext'
 
 function CreateNewLeave() {
-
+    const {fetchCurrentUserInfo} = useMainContext()
     const [leaveName, setLeaveName] = useState()
     const [leaveNameInCN, setLeaveNameInCN] = useState()
     const [leaveEntitlement, setLeaveEntitlement] = useState()
@@ -38,6 +39,8 @@ function CreateNewLeave() {
         .then(resp => {
             console.log(resp)
             if(resp.status === 200) toast.success("New Leave Created!")
+            // fetch current user info
+            fetchCurrentUserInfo()
             navigate('/')
         })
         .catch(err => {

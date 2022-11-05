@@ -12,8 +12,7 @@ const leaveSchema = new Schema({
         required: true
     },
     entitlement:{
-        type: Number,
-        required: true
+        type: Number
     },
     pending: {
         type: Number,
@@ -34,6 +33,9 @@ const leaveSchema = new Schema({
     year: {
         type: Number,
         required: true
+    },
+    addedByUser: {
+        type: Boolean,
     }
    
 })

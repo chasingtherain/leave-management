@@ -144,7 +144,7 @@ exports.postCreateLeaveType = (req,res,next) => {
     const leaveEntitlement = req.body.leaveEntitlement
     const leaveRollOver = req.body.leaveRollOver
     const leaveNote = req.body.leaveNote
-    const userAdded = req.body.userAdded
+    const addedByUser = req.body.userAdded
 
     const newLeaveEntitlementData = {
         name: leaveName,
@@ -160,17 +160,38 @@ exports.postCreateLeaveType = (req,res,next) => {
                 // console.log("record: ", record)
                 return res.status(401).send("leave already exists!")
             }
-            LeaveEntitlement.findOneAndUpdate(
+            return LeaveEntitlement.findOneAndUpdate(
                 {entity: "chengdu"},
                 {$push: {"leaveEntitlement": newLeaveEntitlementData}},
                 {upsert: true}
             )
-            .then(()=> {
-                return res.send("new leave entitlement added")
-            })
-            .catch(err => {
+        })
+        .then((updateRecord)=> {
+            if(!updateRecord){
                 res.status(400).send("failed to add new leave")
-            })
+            }
+            const newLeaveEntitlementDataForUserDoc = new Leave({
+                name: leaveName, 
+                type:leaveSlug, 
+                entitlement: leaveEntitlement, 
+                pending: 0, 
+                used: 0, 
+                rollover: leaveRollOver, 
+                year: date.getFullYear(), 
+                note: leaveNote,
+                addedByUser: addedByUser
+            })            
+                
+            User
+                .updateMany({}, {$push: {"leave": newLeaveEntitlementDataForUserDoc}})
+                .then(()=> {
+                    console.log("added new leave to all users")
+                    res.send("added new leave to all users")
+                })
+                .catch((err)=> {
+                    console.log("err: ", err)
+                    res.status(400).send("failed to add leave to all users")
+                })
         })
         .catch(err => {
             console.log("failed to add new leave: ", err)
