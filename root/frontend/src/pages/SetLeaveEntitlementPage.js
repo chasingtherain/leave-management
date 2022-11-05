@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 
 function SetLeaveEntitlementPage() {
     const {currentLeaveEntitlement, fetchLeaveEntitlement} = useMainContext()
-    const[isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading, setUpdateBtnLoading] = useState()
     

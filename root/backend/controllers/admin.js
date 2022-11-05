@@ -138,9 +138,45 @@ exports.postDeleteUser = (req,res,next) => {
 }
 
 exports.postCreateLeaveType = (req,res,next) => {
-    console.log(req.body)
+    console.log("req.body: ", req.body)
+    const leaveName = req.body.leaveName
+    const leaveSlug = req.body.leaveSlug
+    const leaveEntitlement = req.body.leaveEntitlement
+    const leaveRollOver = req.body.leaveRollOver
+    const leaveNote = req.body.leaveNote
+    const userAdded = req.body.userAdded
 
-    return res.send("controller connected")
+    const newLeaveEntitlementData = {
+        name: leaveName,
+        entitlement: leaveEntitlement
+    }
+
+    LeaveEntitlement
+        .findOne(
+            {entity: "chengdu", "leaveEntitlement.name": leaveName},
+        )
+        .then((record)=>{
+            if(record){
+                // console.log("record: ", record)
+                return res.status(401).send("leave already exists!")
+            }
+            LeaveEntitlement.findOneAndUpdate(
+                {entity: "chengdu"},
+                {$push: {"leaveEntitlement": newLeaveEntitlementData}},
+                {upsert: true}
+            )
+            .then(()=> {
+                return res.send("new leave entitlement added")
+            })
+            .catch(err => {
+                res.status(400).send("failed to add new leave")
+            })
+        })
+        .catch(err => {
+            console.log("failed to add new leave: ", err)
+            res.status(400).send("failed to add new leave")
+        })
+
 }
 
 exports.approveLeave = (req,res,next) => {
