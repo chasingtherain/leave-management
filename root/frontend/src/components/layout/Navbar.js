@@ -79,9 +79,9 @@ function Navbar() {
                             <li className='text-slate-800'>
                                 <Link to="/set-leave-entitlement" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Set Entitlement</Link>
                             </li>
-                            {/* <li className='text-slate-800'>
+                            <li className='text-slate-800'>
                                 <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>
-                            </li> */}
+                            </li>
                         </ul>
                     </div>)
                     }

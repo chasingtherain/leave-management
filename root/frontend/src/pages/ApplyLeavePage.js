@@ -204,15 +204,6 @@ function ApplyLeavePage() {
 
     }
 
-    // let uploadedFileData = new FormData()
-    // const onFileChange = (e) => {
-
-    //     if(e.target.files[0]){
-    //         uploadedFileData.append('file',e.target.files[0])
-    //     }
-    //     console.log(uploadedFileData)
-    // }
-
   return (
     <>
     <form className="w-full flex flex-col justify-start items-center" onSubmit={validateAndSubmitLeaveApplication}>
