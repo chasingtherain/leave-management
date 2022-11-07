@@ -30,7 +30,8 @@ function CreateNewLeave() {
             leaveEntitlement: leaveEntitlement,
             leaveRollOver: "no",
             leaveNote: `${leaveNote}/${leaveNoteInCN}`,
-            userAdded: currentUser.email
+            userAdded: currentUser.email,
+            addedOn: new Date()
         }
         console.log("createLeaveFormData: ", createLeaveFormData)
 
@@ -38,10 +39,10 @@ function CreateNewLeave() {
         .post(`${process.env.REACT_APP_BACKENDURL}/admin/create-new-leave`, createLeaveFormData)
         .then(resp => {
             console.log(resp)
-            if(resp.status === 200) toast.success("New Leave Created!")
             // fetch current user info
             fetchCurrentUserInfo()
-            navigate('/')
+            navigate('/delete-leave-type')
+            window.location.reload()
         })
         .catch(err => {
             console.log("catch block: ", err)

@@ -9,6 +9,7 @@ function SetLeaveEntitlementPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [disableUpdateButton, setDisableUpdateButton] = useState(true)
     const [updateBtnLoading, setUpdateBtnLoading] = useState()
+    const [checkBoxStatus, setCheckBoxStatus] = useState(false)
     
     const handleUpdate = (e) => {
         setDisableUpdateButton(false)
@@ -37,6 +38,11 @@ function SetLeaveEntitlementPage() {
                     entitlement: +currentLeaveEntitlement[i].entitlement
                 })
             }
+        }
+
+        if(!checkBoxStatus){
+            setUpdateBtnLoading("")
+            return toast.error("Acknowledge checkbox not checked!")
         }
 
         if(window.confirm(`
@@ -86,6 +92,10 @@ function SetLeaveEntitlementPage() {
                             </div>
                 })}
                 <div className='grid col-span-3 mt-10'>
+                    <div className="flex items-center">
+                        <input type="checkbox" checked={checkBoxStatus} onClick={() => setCheckBoxStatus(!checkBoxStatus)} className="checkbox checkbox-primary mr-2" />
+                        <p className="label-text mt-4 mb-2">{`I confirm that CN government made amendments to their national leave policy and have run through these changes with CG.`}</p>
+                    </div>
                     <button 
                             type="submit" 
                             className={`btn btn-primary text-white px-24 text-center text-base font-semibold shadow-md rounded-lg mt-6 ${updateBtnLoading}`}

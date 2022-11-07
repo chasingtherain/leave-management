@@ -145,13 +145,14 @@ exports.postCreateLeaveType = (req,res,next) => {
     const leaveRollOver = req.body.leaveRollOver
     const leaveNote = req.body.leaveNote
     const addedByUser = req.body.userAdded
+    const addedOn = moment(req.body.addedOn)
 
     const newLeaveEntitlementData = {
         name: leaveName,
         entitlement: leaveEntitlement,
-        addedByUser: addedByUser
+        addedByUser: addedByUser,
+        addedOn: addedOn.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss")
     }
-    console.log("newLeaveEntitlementData: ", newLeaveEntitlementData)
 
     LeaveEntitlement
         .findOne(

@@ -23,7 +23,7 @@ function Table({headerType}) {
     const entitlementTableHeader = ["Leave Type 假性", `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用","Note 备注"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
-    const deleteLeaveTableHeader = ["Name", "Entitlement", "Added By", "Action"]
+    const deleteLeaveTableHeader = ["Name", "Entitlement", "Added By", "Added On", "Action"]
     const dashboardTableHeader = ["Name","Email","Annual Leave left"]
     
     const handleEditClick = (event) => {
@@ -384,6 +384,7 @@ function Table({headerType}) {
                                     <td>{leave.name}</td>
                                     <td>{leave.entitlement}</td>
                                     <td>{leave.addedByUser}</td>
+                                    <td>{leave.addedOn}</td>
                                     <td>
                                         <button 
                                             name={leave.name}
