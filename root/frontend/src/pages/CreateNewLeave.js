@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { useMainContext } from '../hooks/useMainContext'
 
 function CreateNewLeave() {
-    const {fetchCurrentUserInfo} = useMainContext()
+    const {currentUser, fetchCurrentUserInfo} = useMainContext()
     const [leaveName, setLeaveName] = useState()
     const [leaveNameInCN, setLeaveNameInCN] = useState()
     const [leaveEntitlement, setLeaveEntitlement] = useState()
@@ -30,7 +30,7 @@ function CreateNewLeave() {
             leaveEntitlement: leaveEntitlement,
             leaveRollOver: "no",
             leaveNote: `${leaveNote}/${leaveNoteInCN}`,
-            userAdded: true
+            userAdded: currentUser.email
         }
         console.log("createLeaveFormData: ", createLeaveFormData)
 

@@ -22,6 +22,7 @@ function Table({headerType}) {
     const entitlementTableHeader = ["Leave Type 假性", `Entitlement 年额 (${currentYear})`, "Pending 待批准", "Quota used 已用", "Available 可用","Note 备注"]
     const changeLogHeader = ["Time","Operation Type", "Changes made", "Changed by"]
     const userManagementTableHeader = ["Name","Email","Created on","Last updated on","Type","RO email","CO email","Action"]
+    const deleteLeaveTableHeader = ["Name", "Entitlement", "Added By", "Action"]
     const dashboardTableHeader = ["Name","Email","Annual Leave left"]
     
     const handleEditClick = (event) => {
@@ -172,6 +173,8 @@ function Table({headerType}) {
                 return historyTableHeader.map((headerName,index) => <th className='whitespace-pre-line' key={index}>{headerName}</th>)
             case "user-management":
                 return userManagementTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
+            case "delete-leave-type":
+                return deleteLeaveTableHeader.map((headerName,index) => <th key={index}>{headerName}</th>)
             default:
                 console.log("invalid table header provided!")
                 break;
@@ -343,6 +346,20 @@ function Table({headerType}) {
                         )
                 : 
                 <td>No leave history / 暂无历史</td>
+            case "delete-leave-type":
+                console.log(currentLeaveEntitlement, currentLeaveEntitlement.filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0)))
+                return (currentLeaveEntitlement.filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0))) ?
+                currentLeaveEntitlement
+                        .filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0))
+                        .map((leave,index)=>
+                                <tr key={index}>
+                                    <td>{leave.name}</td>
+                                    <td>{leave.entitlement}</td>
+                                    <td>{leave.addedByUser}</td>
+                                    <td>user action</td>
+                                </tr>
+                        )
+                : <td>No records</td>
             case "user-management":
                 return userList.map((list, index) => 
                         (

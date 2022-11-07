@@ -82,6 +82,9 @@ function Navbar() {
                             <li className='text-slate-800'>
                                 <Link to="/create-new-leave" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Create New Leave</Link>
                             </li>
+                            <li className='text-slate-800'>
+                                <Link to="/delete-leave-type" className="text-sm mx-2 cursor-pointer hover:text-gray-500">Delete Leave Type</Link>
+                            </li>
                         </ul>
                     </div>)
                     }

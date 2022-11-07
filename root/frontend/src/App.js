@@ -26,6 +26,7 @@ import LoginRoute from "./components/private/LoginRoute";
 import ResetDatabasePage from "./pages/ResetDatabasePage";
 import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 import SetLeaveEntitlementPage from "./pages/SetLeaveEntitlementPage";
+import DeleteLeaveType from "./pages/DeleteLeaveType";
 
 if (process.env.NODE_ENV === 'production') { disableReactDevTools() }
 
@@ -77,6 +78,12 @@ function App() {
             </Route>
             <Route path = '/create-new-leave' element={<AdminRoute/>}>
               <Route path = '/create-new-leave' element={<CreateNewLeave/>}/>
+            </Route>
+            <Route path = '/create-new-leave' element={<AdminRoute/>}>
+              <Route path = '/create-new-leave' element={<CreateNewLeave/>}/>
+            </Route>
+            <Route path = '/delete-leave-type' element={<AdminRoute/>}>
+              <Route path = '/delete-leave-type' element={<DeleteLeaveType/>}/>
             </Route>
             <Route path = '/approve-leave' element={<AdminRoute/>}>
               <Route path = '/approve-leave' element={<ApproveLeavePage/>}/>
