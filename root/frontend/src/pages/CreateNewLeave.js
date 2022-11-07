@@ -64,7 +64,7 @@ function CreateNewLeave() {
                         <label className="label text-sm">Leave Name (in CN)</label>
                         <input type="text" placeholder='e.g. 育儿假' className="input input-bordered w-full max-w-xs" onChange={(e)=> setLeaveNameInCN(e.target.value)}/>
                         <label className="label text-sm">Leave Entitlement</label>
-                        <input type="number" placeholder='e.g. 3' className="input input-bordered w-full max-w-xs" onChange={(e) => setLeaveEntitlement(e.target.value)}/>
+                        <input type="number" placeholder='e.g. 3' className="input input-bordered w-full max-w-xs" step="0.5" onChange={(e) => setLeaveEntitlement(e.target.value)}/>
                         <label className="label text-sm">Note to staff about leave type (in EN)</label>
                         <textarea 
                             id="note" 
