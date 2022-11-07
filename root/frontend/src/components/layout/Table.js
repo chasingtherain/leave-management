@@ -9,6 +9,7 @@ import Loading from '../Loading'
 function Table({headerType}) {
     const {activeTab, currentUser, currentLeaveEntitlement, fetchCurrentUserInfo, setCurrentEditUser, userList} = useMainContext()
     const [isLoading, setIsLoading] = useState(false)
+    const [userAddedLeaveType, setUserAddedLeaveType] = useState(currentLeaveEntitlement.filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0)))
     const currentDate = new Date()
     const currentDateUnix = currentDate.getTime()
     const currentYear = currentDate.getFullYear()
@@ -92,6 +93,34 @@ function Table({headerType}) {
                         setIsLoading(false)
                         return toast.error("failed to cancel leave / 取消休假请求失败")
                     }
+                })
+        }
+    }
+
+    const handleDeleteLeaveType = (e) => {
+        e.preventDefault()
+        
+
+        if(window.confirm(`
+        This action might lead to data inconsistencies if existing user 
+        has already applied ${e.target.name}
+
+        Delete leave?
+        `
+        )){
+            setIsLoading(true)
+            const url = `${process.env.REACT_APP_BACKENDURL}/admin/delete-leave-type`
+            axios
+                .post(url, {leaveName: e.target.name})
+                .then(resp => {
+                    if(resp.status === 200){
+                        setIsLoading(false)
+                        window.location.reload()
+                      }
+                })
+                .catch(err => {
+                    setIsLoading(false)
+                    return toast.warning("failed to delete leave type")
                 })
         }
     }
@@ -347,16 +376,21 @@ function Table({headerType}) {
                 : 
                 <td>No leave history / 暂无历史</td>
             case "delete-leave-type":
-                console.log(currentLeaveEntitlement, currentLeaveEntitlement.filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0)))
-                return (currentLeaveEntitlement.filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0))) ?
-                currentLeaveEntitlement
-                        .filter(record => (record.addedByUser ? record.addedByUser.length > 0 : 0))
+                console.log(currentLeaveEntitlement, userAddedLeaveType)
+                return (userAddedLeaveType) ?
+                userAddedLeaveType
                         .map((leave,index)=>
                                 <tr key={index}>
                                     <td>{leave.name}</td>
                                     <td>{leave.entitlement}</td>
                                     <td>{leave.addedByUser}</td>
-                                    <td>user action</td>
+                                    <td>
+                                        <button 
+                                            name={leave.name}
+                                            onClick={(e) => handleDeleteLeaveType(e)} 
+                                            className="btn btn-sm btn-error px-2 rounded-md text-white">Delete
+                                        </button>
+                                    </td>
                                 </tr>
                         )
                 : <td>No records</td>

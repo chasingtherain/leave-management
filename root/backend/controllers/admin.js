@@ -205,64 +205,36 @@ exports.postCreateLeaveType = (req,res,next) => {
 exports.postDeleteLeaveType = (req,res,next) => {
     console.log("req.body: ", req.body)
     const leaveName = req.body.leaveName
-    const leaveSlug = req.body.leaveSlug
-    const leaveEntitlement = req.body.leaveEntitlement
-    const leaveRollOver = req.body.leaveRollOver
-    const leaveNote = req.body.leaveNote
-    const addedByUser = req.body.userAdded
-
-    const newLeaveEntitlementData = {
-        name: leaveName,
-        entitlement: leaveEntitlement,
-        addedByUser: addedByUser,
-    }
-    console.log("newLeaveEntitlementData: ", newLeaveEntitlementData)
     
     LeaveEntitlement
-        .findOne(
+        .findOneAndUpdate(
             {entity: "chengdu", "leaveEntitlement.name": leaveName},
+            {$pull: {"leaveEntitlement": {"name":leaveName}}}
         )
-        .then((record)=>{
-            if(record){
-                // console.log("record: ", record)
-                return res.status(401).send("leave already exists!")
+        .then((record) =>{
+            console.log("record: ", record)
+            if(!record){
+                return res.status(400).send("did not find leave type")
             }
-            return LeaveEntitlement.findOneAndUpdate(
-                {entity: "chengdu"},
-                {$push: {"leaveEntitlement": newLeaveEntitlementData}},
-                {upsert: true}
-            )
-        })
-        .then((updateRecord)=> {
-            if(!updateRecord){
-                res.status(400).send("failed to add new leave")
-            }
-            const newLeaveEntitlementDataForUserDoc = new Leave({
-                name: leaveName, 
-                type:leaveSlug, 
-                entitlement: leaveEntitlement, 
-                pending: 0, 
-                used: 0, 
-                rollover: leaveRollOver, 
-                year: date.getFullYear(), 
-                note: leaveNote,
-                addedByUser: addedByUser
-            })            
-                
-            User
-                .updateMany({}, {$push: {"leave": newLeaveEntitlementDataForUserDoc}})
-                .then(()=> {
-                    console.log("added new leave to all users")
-                    res.send("added new leave to all users")
+            // delete leave type from all users
+            User.updateMany({}, {$pull: {"leave": {"name":leaveName}}})
+                .then((result)=> {
+                    if(!result){
+                        console.log("failed to delete leave type from all users")
+                    }
+                    console.log("result: ", result)
+                    console.log("deleted new leave to all users")
+                    return res.send("deleted new leave to all users")
                 })
                 .catch((err)=> {
                     console.log("err: ", err)
-                    res.status(400).send("failed to add leave to all users")
+                    return res.status(400).send("failed to add leave to all users")
                 })
+            
         })
         .catch(err => {
-            console.log("failed to add new leave: ", err)
-            res.status(400).send("failed to add new leave")
+            console.log("failed to delete leave type: ", err)
+            res.status(400).send("failed to delete leave type")
         })
 
 }
@@ -312,7 +284,7 @@ exports.approveLeave = (req,res,next) => {
             )
         .then((user)=>{
             if (!user){
-                return res.status(401).send("approve leave: did not find user record in db") 
+                return res.status(401).send("approve leave: did not find user result in db") 
             }
             console.log("updated reporting's staffLeave")
             // console.log(user)

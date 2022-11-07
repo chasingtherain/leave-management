@@ -43,4 +43,7 @@ router.get('/get-leave-entitlement', adminController.getLeaveEntitlement)
 // route is /admin/post-leave-entitlement
 router.post('/post-leave-entitlement', adminController.postLeaveEntitlement)
 
+// route is /admin/delete-leave-type
+router.post('/delete-leave-type', adminController.postDeleteLeaveType)
+
 module.exports = router
