@@ -17,22 +17,6 @@ const currentYear = date.getFullYear()
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 
-const chengduLrsLeaveScheme = [
-    new Leave({name: "Annual Leave 年假", type:"annual", entitlement: 15, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
-    new Leave({name: `Annual Leave 年额带过 (${currentYear-1})`, type:"prevYearAnnual", entitlement: 0, pending: 0, used: 0, rollover: true, year: date.getFullYear(), note: "NA / 无"}),
-    new Leave({name: "Compassionate Leave 丧假", type:"compassionate", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Death of spouse, parents, children, parents-in-law: 3 days\n own/spouse's grandparents, own siblings: 1 day \n 配偶、父母、子女、岳父母死亡: 3天\n 自己/配偶的祖父母、自己的兄弟姐妹: 1天"}),
-    new Leave({name: "Medical leave 病假", type:"medical", entitlement: 30, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "NA / 无"}),
-    new Leave({name: "Hospitalisation leave 住院假", type:"hospitalisation", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "As prescribed by doctor\n按医生规定"}),
-    new Leave({name: "Marriage Leave 婚假", type:"marriage", entitlement: 3, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "For newly married staff\n新婚"}),
-    new Leave({name: "Maternity leave 产假", type:"maternity", entitlement: 158, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "15 days have to be taken before delivery\n分娩前必须服用15天"}),
-    new Leave({name: "Miscarriage Leave 流产假", type:"miscarriage", entitlement: 45, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Within 3 months of pregnancy: 30 days\nBetween 3 to 7 months: 45 days\n after 7 months: 15 days\n3个月内流产: 30天\n3至7个月内流产: 45天\n 7个月后流产: 15天"}),
-    new Leave({name: "Natal Leave 受精相关假", type:"natal", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "As prescribed by doctor\n按医生规定"}),
-    new Leave({name: "Paternity Leave 陪产假", type:"paternity", entitlement: 20, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Male staff has to take leave within first week of child's birth\n 员工(男)必须在孩子出生第一周内用"}),
-    new Leave({name: "Unpaid Leave 无薪假", type:"unpaid", entitlement: 365, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "NA / 无"}),
-    new Leave({name: "Childcare Leave 育儿假", type:"childcare", entitlement: 10, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Only for staff with kids 3 years old and below\n仅限带 3 岁及以下儿童的员工"}),
-    new Leave({name: "Women's Day 三、八妇女节", type:"womenDay", entitlement: 0.5, pending: 0, used: 0, rollover: false, year: date.getFullYear(), note: "Can be taken on or after International Women's Day\n可在国际妇女节当天或之后休假"}),
-]
-
 exports.postCreateUser = (req,res,next) => {
     const name = req.body.name
     const isAdmin = req.body.isAdmin
@@ -57,57 +41,84 @@ exports.postCreateUser = (req,res,next) => {
                     const createdOnDate = moment(createdOn)
                     const lastUpdatedOnDate = moment(lastUpdatedOn)
 
-                    const user = new User({
-                        name: name,
-                        isAdmin: isAdmin,
-                        email: email,
-                        password: hashedPassword,
-                        createdOn: createdOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
-                        lastUpdatedOn: lastUpdatedOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
-                        // ro: ro,
-                        reportingEmail: reportingEmail,
-                        // co: co,
-                        coveringEmail: coveringEmail,
-                        leave: chengduLrsLeaveScheme,
-                        leaveHistory: [],
-                        staffLeave: [],
-                        sessionToken: jwt.sign({email}, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '7d'})
+                    const chengduLrsLeaveScheme = [
+                        new Leave({name: `Annual Leave 年额带过 (${currentYear-1})`, type:"prevYearAnnual", entitlement: 0, pending: 0, used: 0, note: "NA / 无"})
+                    ]
+
+                    LeaveEntitlement.find({}, (err, records) => {
+                        console.log("records: ", records)
+                        const leaveRecords = records[0].leaveEntitlement
+
+                        if(err) return console.log("err adding leave entitlement to new user: ", err)
+                        leaveRecords.forEach((record)=>{
+                            const leaveType = new Leave(
+                                {
+                                    name: record.name, 
+                                    type: record.type, 
+                                    entitlement: record.entitlement, 
+                                    pending: 0, 
+                                    used: 0, 
+                                    note: record.note
+                                })
+                            console.log("leaveType: ", leaveType)
+                            chengduLrsLeaveScheme.push((leaveType))
+                            console.log("chengduLrsLeaveScheme after push: ", chengduLrsLeaveScheme)
+                        })
+
+                        console.log("chengduLrsLeaveScheme: ", chengduLrsLeaveScheme)
+    
+                        const user = new User({
+                            name: name,
+                            isAdmin: isAdmin,
+                            email: email,
+                            password: hashedPassword,
+                            createdOn: createdOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
+                            lastUpdatedOn: lastUpdatedOnDate.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss"),
+                            reportingEmail: reportingEmail,
+                            coveringEmail: coveringEmail,
+                            leave: chengduLrsLeaveScheme,
+                            leaveHistory: [],
+                            staffLeave: [],
+                            sessionToken: jwt.sign({email}, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '7d'})
+                        })
+                    
+                    user
+                        .save()
+                        .then(result => {
+                            if (!result){
+                                return res.status(401).send("create user: user creation failed") 
+                            }
+                            const msg = {
+                            to: email, 
+                            from: 'mfachengdu@gmail.com', // Change to your verified sender
+                            subject: 'Welcome to LeavePlan 休划欢迎您加入',
+                            html: `
+                                <div>
+                                    <p>Welcome to LeavePlan </p> 
+                                    <p> Click <a href="${process.env.FRONTENDURL}/login"> here </a> to start making leave plans!</p>
+                                    <p> Click <a href="${process.env.FRONTENDURL}/change-password"> here </a> to change your password</p>
+                                </div>
+                                <div>
+                                    <p>Welcome to LeavePlan </p> 
+                                    <p> 点击 <a href="${process.env.FRONTENDURL}/login"> 此链接 </a> 开始申请休假</p>
+                                    <p> 点击 <a href="${process.env.FRONTENDURL}/change-password"> 此链接 </a> 重置您的密码</p>
+                                </div>
+                            `
+                            }
+                            return sendgridMail
+                                .send(msg)
+                                .then(() => {
+                                    console.log('acc creation email sent to user, user created')
+                                    return res.status(200).send(user)  
+                                })
+                                .catch((error) => {
+                                    console.error("sendgrid error: ", error)
+                                    return res.status(488).send("sendgrid error: ", error)
+                                })
+                        })
+
                     })
-                
-                user
-                    .save()
-                    .then(result => {
-                        if (!result){
-                            return res.status(401).send("create user: user creation failed") 
-                        }
-                        const msg = {
-                        to: email, 
-                        from: 'mfachengdu@gmail.com', // Change to your verified sender
-                        subject: 'Welcome to LeavePlan 休划欢迎您加入',
-                        html: `
-                            <div>
-                                <p>Welcome to LeavePlan </p> 
-                                <p> Click <a href="${process.env.FRONTENDURL}/login"> here </a> to start making leave plans!</p>
-                                <p> Click <a href="${process.env.FRONTENDURL}/change-password"> here </a> to change your password</p>
-                            </div>
-                            <div>
-                                <p>Welcome to LeavePlan </p> 
-                                <p> 点击 <a href="${process.env.FRONTENDURL}/login"> 此链接 </a> 开始申请休假</p>
-                                <p> 点击 <a href="${process.env.FRONTENDURL}/change-password"> 此链接 </a> 重置您的密码</p>
-                            </div>
-                        `
-                        }
-                        return sendgridMail
-                            .send(msg)
-                            .then(() => {
-                                console.log('acc creation email sent to user, user created')
-                                return res.status(200).send(user)  
-                            })
-                            .catch((error) => {
-                                console.error("sendgrid error: ", error)
-                                return res.status(488).send("sendgrid error: ", error)
-                            })
-                    })
+
                 })
         })
         .catch((err)=> {
@@ -150,6 +161,10 @@ exports.postCreateLeaveType = (req,res,next) => {
     const newLeaveEntitlementData = {
         name: leaveName,
         entitlement: leaveEntitlement,
+        type:leaveSlug,
+        rollover: leaveRollOver, 
+        year: date.getFullYear(), 
+        note: leaveNote,
         addedByUser: addedByUser,
         addedOn: addedOn.tz('Asia/Singapore').format("YYYY/MM/DD H:mm:ss")
     }

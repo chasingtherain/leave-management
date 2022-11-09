@@ -23,19 +23,17 @@ const leaveSchema = new Schema({
         required: true
     },
     rollover: {
-        type: Boolean,
-        required: true
+        type: Boolean
     },
     note: {
         type: String,
         required: true
     },
     year: {
-        type: Number,
-        required: true
+        type: Number
     },
     addedByUser: {
-        type: Boolean,
+        type: Boolean
     }
    
 })
